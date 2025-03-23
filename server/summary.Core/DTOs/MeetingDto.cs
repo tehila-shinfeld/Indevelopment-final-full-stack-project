@@ -14,7 +14,7 @@ namespace summary.Core.DTOs
 
         public string TranscriptionLink { get; set; } // קישור לתמלול בענן
 
-        public string SummaryLink { get; set; } // קישור לסיכום בענן
+        public string SummaryContent { get; set; } // קישור לסיכום בענן
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using summary.Core;
 using summary.Core.Entities;
 using summary.Core.IRepositories;
 using System;
@@ -42,7 +43,7 @@ namespace summary.Data.Repositories
             {
                 existingMeeting.Name = meeting.Name;
                 existingMeeting.TranscriptionLink = meeting.TranscriptionLink;
-                existingMeeting.SummaryLink = meeting.SummaryLink;
+                existingMeeting.SummaryContent = meeting.SummaryContent;
                 existingMeeting.UpdatedAt = DateTime.UtcNow;
                 existingMeeting.Users = meeting.Users;
                 return existingMeeting;
@@ -88,7 +89,18 @@ namespace summary.Data.Repositories
             }
         }
 
-   
+        public async Task SaveSummaryToDbAsync(FileSummaryDto summary)
+        {
+            var meeting = await _dataContext.Meetings.FirstOrDefaultAsync(m => m.TranscriptionLink == summary.FileUrl);
+
+            if (meeting != null)
+            {
+                meeting.SummaryContent = summary.Summary;
+                await _dataContext.SaveChangesAsync();
+            }
+        }
     }
+
+
 }
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace summary.Core
 {
-    public class FileUploadRequestDto
+    public class SaveSummaryRequestDto
     {
-        public string FileName { get; set; } = string.Empty;
-        public string FileUrl { get; set; } = string.Empty;
+        public string FileUrl { get; set; }
+        public string Summary { get; set; }
     }
 }

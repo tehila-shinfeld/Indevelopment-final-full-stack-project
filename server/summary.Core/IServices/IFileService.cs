@@ -12,6 +12,10 @@ namespace summary.Core.IServices
 
         public Task<bool> DeleteFileAsync(int fileId);
 
+        public  Task<string> GetSummaryFromAIAsync(string fileUrl);
+
+        public  Task<bool> SaveFileSummaryAsync(FileSummaryDto summary);
+
     }
 
 }

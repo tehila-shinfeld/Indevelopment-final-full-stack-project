@@ -10,5 +10,7 @@ namespace summary.Core
     {
         public int? FileId { get; set; }
         public string FileUrl { get; set; } = string.Empty;
+
+        public string S3Url { get; set; }
     }
 }

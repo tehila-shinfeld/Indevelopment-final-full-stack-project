@@ -39,7 +39,7 @@ function LoginModle({ open, onClose }: AuthModalProps) {
           <Tab label="התחברות" />
           <Tab label="הרשמה" />
         </Tabs>
-        <Box mt={2} sx={{ height: 'calc(100% - 50px)', overflowY: 'auto' }}>
+        <Box mt={2} sx={{ heightn: 'calc(100% - 50px)', overflowY: 'auto' }}>
           {tab === 0 ? <Login closeModal={onClose} /> : <Register closeModal={onClose} />}
         </Box>
       </DialogContent>

@@ -17,7 +17,7 @@ namespace summary.Core.Entities
 
         public string? TranscriptionLink { get; set; } // קישור לתמלול בענן
 
-        public string? SummaryLink { get; set; } // קישור לסיכום בענן
+        public string? SummaryContent { get; set; } // קישור לסיכום בענן
 
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow; // תאריך יצירה
 

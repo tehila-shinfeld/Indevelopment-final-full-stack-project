@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using summary.Core;
 using summary.Core.Entities;
@@ -26,7 +27,7 @@ namespace summary.Service
             // יצירת ישיבה חדשה
             var meeting = new Meeting
             {
-                Name = $"Meeting - {DateTime.UtcNow}",
+                Name = $"{fileName}",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -55,7 +56,8 @@ namespace summary.Service
             return new FileUploadResponseDto
             {
                 FileId = meeting.Id,
-                FileUrl = presignedUrl
+                FileUrl = presignedUrl,
+                S3Url=$"https://{bucketName}.s3.amazonaws.com/{fileKey}"
             };
         }
 
@@ -88,8 +90,39 @@ namespace summary.Service
             //await _meetingRepository.Delete(Smeeting.Id);
             return true;
         }
+        public async Task<string> GetSummaryFromAIAsync(string fileUrl)
+        {
+            Console.WriteLine("sersers");
+            //var requestBody = new
+            //{
+            //    url = fileUrl
+            //};
 
+            //var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+
+            //var response = await _httpClient.PostAsync("https://api.openai.com/v1/summarize", content);
+
+            //if (!response.IsSuccessStatusCode)
+            //{
+            //    throw new Exception("Failed to get summary from AI");
+            //}
+
+            //var responseContent = await response.Content.ReadAsStringAsync();
+            //var aiSummary = JsonConvert.DeserializeObject<dynamic>(responseContent)?.summary;
+
+            //return aiSummary?.ToString() ?? "No summary available.";
+            var summary = "No summary available.";
+            return summary;
+        }
+
+        public async Task<bool> SaveFileSummaryAsync(FileSummaryDto summary)
+        {
+
+            await _meetingRepository.SaveSummaryToDbAsync(summary);
+            return true;
+        }
     }
+
 
 }
 

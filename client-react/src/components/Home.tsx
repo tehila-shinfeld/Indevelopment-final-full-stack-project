@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import LoginModal from "./LoginModle";
+import AddMeeting from "./AddMeeting";
 
 // הגדרת רכיב ה-Background כסטיילד קומפוננט שמקבל את isOpen כפרופס
 const Background = styled(Box)(({ isOpen }: { isOpen: boolean }) => ({
@@ -57,31 +58,33 @@ const Home = () => {
   const [open, setOpen] = useState(false); // מצב לפתיחת המודאל
 
   return (
-    <Box position="relative">
-      {/* העברת isOpen רק ל-Background */}
-      <Background isOpen={open} />
-      <ContentContainer>
-        <Box flexGrow={1} />
-        <BottomSection>
-          <StyledButton variant="contained" onClick={() => setOpen(true)}>
-            GET STARTED
-          </StyledButton>
-          <Typography
-            variant="h5"
-            sx={{
-              maxWidth: "50%",
-              color: "#f0f4f8",
-              fontWeight: "bold",
-              fontSize: "1.4rem",
-            }}
-          >
-            חוויית ניהול פגישות שלא הכרתם – חכמה, חדשנית ומדויקת!
-          </Typography>
-        </BottomSection>
-      </ContentContainer>
+    <Box>
+      <Box position="relative">
+        {/* העברת isOpen רק ל-Background */}
+        <Background isOpen={open} />
+        <ContentContainer>
+          <Box flexGrow={1} />
+          <BottomSection>
+            <StyledButton variant="contained" onClick={() => setOpen(true)}>
+              GET STARTED
+            </StyledButton>
+            <Typography
+              variant="h5"
+              sx={{
+                maxWidth: "50%",
+                color: "#f0f4f8",
+                fontWeight: "bold",
+                fontSize: "1.4rem",
+              }}
+            >
+              חוויית ניהול פגישות שלא הכרתם – חכמה, חדשנית ומדויקת!
+            </Typography>
+          </BottomSection>
+        </ContentContainer>
 
-      {/* הפופ-אפ עם ה-LoginModal */}
-      <LoginModal  open={open} onClose={() => setOpen(false)} />
+        {/* הפופ-אפ עם ה-LoginModal */}
+        <LoginModal open={open} onClose={() => setOpen(false)} />
+      </Box>
     </Box>
   );
 };

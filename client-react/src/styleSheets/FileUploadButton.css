@@ -1,0 +1,79 @@
+/* styles.css */
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    width: 50%;
+    height: 50%;
+    max-width: 600px;
+    background-color: lightgray;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* התאמה למסכים קטנים */
+@media (max-width: 768px) {
+    .card {
+        width: 90%;
+    }
+}
+
+#circle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* לוודא שהוא מעל הכל */
+    background: rgba(255, 255, 255, 0.7);
+    /* רקע שקוף קלות להדגשה */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: aqua;
+    border-color: antiquewhite;
+}
+
+
+.notification-container {
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    background-color: azure;
+}
+
+.notification-message {
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+#buttons
+{
+    display: flex;
+    align-items: end;
+    justify-content: space-evenly;
+    width: 100%;
+}
+#upButtons
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}

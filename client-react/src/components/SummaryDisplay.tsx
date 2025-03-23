@@ -6,5 +6,6 @@ export const SummaryDisplay = () => {
       <Typography variant="h6">סיכום:</Typography>
       <Typography>{" עעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעעע"}</Typography>
     </Paper>
+    
   );
 };

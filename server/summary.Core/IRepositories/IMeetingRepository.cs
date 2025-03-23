@@ -20,5 +20,7 @@ namespace summary.Core.IRepositories
         public Task AddMeetingAsync(Meeting meeting);
         public  Task<Meeting> GetMeetingByIdAsync(int meetingId);
         public Task UpdateMeetingAsync(Meeting meeting);
+        public  Task SaveSummaryToDbAsync(FileSummaryDto summary);
+
     }
 }

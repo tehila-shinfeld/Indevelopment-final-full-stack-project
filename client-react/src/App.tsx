@@ -1,10 +1,7 @@
-import './App.css'
+import './styleSheets/App.css'
 import Home from './components/Home';
 
 const App = () => {
-
-
-
   return (
     <div>
       <Home></Home>

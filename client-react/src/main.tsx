@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'; // ייבוא של RouterProvider
 import Home from './components/Home.tsx';
-import Dashboard from './components/MainScreen.tsx';
+import MainScreen from './components/MainScreen.tsx';
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -17,7 +17,7 @@ const routes = createBrowserRouter([
   },
   {
     path: '/summary-up!', // דף הבית
-    element: <Dashboard />, // קומפוננטת Dashboard
+    element: <MainScreen />, // קומפוננטת Dashboard
   },
 ]);
 

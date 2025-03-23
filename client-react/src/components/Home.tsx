@@ -3,8 +3,6 @@ import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import LoginModal from "./LoginModle";
-import AddMeeting from "./AddMeeting";
-
 // הגדרת רכיב ה-Background כסטיילד קומפוננט שמקבל את isOpen כפרופס
 const Background = styled(Box)(({ isOpen }: { isOpen: boolean }) => ({
   position: "absolute",
@@ -60,7 +58,6 @@ const Home = () => {
   return (
     <Box>
       <Box position="relative">
-        {/* העברת isOpen רק ל-Background */}
         <Background isOpen={open} />
         <ContentContainer>
           <Box flexGrow={1} />
@@ -81,9 +78,8 @@ const Home = () => {
             </Typography>
           </BottomSection>
         </ContentContainer>
-
-        {/* הפופ-אפ עם ה-LoginModal */}
-        <LoginModal open={open} onClose={() => setOpen(false)} />
+        {/* הקומפוננטה של הרשיום לאפליקציה */}
+        <LoginModal  open={open} onClose={() => setOpen(false)} />
       </Box>
     </Box>
   );

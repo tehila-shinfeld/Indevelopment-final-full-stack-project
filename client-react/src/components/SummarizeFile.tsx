@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import "../styleSheets/FileUploadButton.css"
+// import "../styleSheets/FileUploadButton.css"
 
 const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     const [summary, setSummary] = useState<string | null>("תאור הפרויקט והתהליכים! מסך 1 התחברות \\ הרשמה המשתמש מתחבר או נרשם למערכת מקבל טוקן מסך 2 ממשק להעלאת קובץ, כפתור 'סיכום', קובץ נשמר בענן מתבצעת קריאה ל API שמחזיר את הסיכום של הקובץ הסיכום מוצג למשתמש על המסך ויש כפתור לשמירה בעת לחיצה על כפתור השמירה הקובץ נשמר בענן חוזר ה URL שלו ונשמר בדאטה בייס ברשומה של האובייקט הנוכחי – של הישיבה הנוכחית.....");

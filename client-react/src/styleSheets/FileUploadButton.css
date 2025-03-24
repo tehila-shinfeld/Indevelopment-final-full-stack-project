@@ -31,21 +31,21 @@
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 } */
 
-#allContant {
+.allContant {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+
 }
 
-#uploadCard {
+.uploadCard {
     border: 2px dashed transparent;
     height: 380px;
     width: 600px;
-
 }
 
-#all {
+.all {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -78,5 +78,15 @@
     padding-bottom: 200; */
     padding: 20;
     margin-bottom: 100px;
-    margin-top: -40px;
+    margin-top: -70px;
+}
+#summaryButton
+{
+    margin-top: 8px;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }

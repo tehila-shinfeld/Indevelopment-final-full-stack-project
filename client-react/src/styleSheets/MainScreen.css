@@ -1,10 +1,11 @@
 #main {
     display: flex;
     flex-direction: row;
-    justify-content:space-between ;
+    justify-content:space-evenly ;
     align-items: center;
-    gap: 20px; /* רווח בין הכרטיסים */
+    gap: 3%; 
     margin-top: 20px;
+    margin-left: 18px;
   }
   
   /* כרטיס העלאה */
@@ -31,8 +32,10 @@
   
   /* הוראות העלאת קובץ */
   .upload-instructions {
+
     padding: 16px;
     margin-top: 8px;
+
   }
   
   /* עיצוב כפתור */
@@ -52,6 +55,7 @@
     border-radius: 8px;
   }
   #content{
+
     display: flex;
     align-items: center;
     justify-content: center;

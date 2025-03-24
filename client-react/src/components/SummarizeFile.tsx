@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Button, Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import axios from 'axios';
-// import "../styleSheets/FileUploadButton.css"
+import "../styleSheets/FileUploadButton.css"
+import "../styleSheets/SummarizeFile.css"
+import { useSummary } from './context/SummaryContext';
 
 const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
-    const [summary, setSummary] = useState<string | null>("תאור הפרויקט והתהליכים! מסך 1 התחברות \\ הרשמה המשתמש מתחבר או נרשם למערכת מקבל טוקן מסך 2 ממשק להעלאת קובץ, כפתור 'סיכום', קובץ נשמר בענן מתבצעת קריאה ל API שמחזיר את הסיכום של הקובץ הסיכום מוצג למשתמש על המסך ויש כפתור לשמירה בעת לחיצה על כפתור השמירה הקובץ נשמר בענן חוזר ה URL שלו ונשמר בדאטה בייס ברשומה של האובייקט הנוכחי – של הישיבה הנוכחית.....");
+    const { summary } = useSummary();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -17,6 +19,8 @@ const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             return;
         }
         try {
+            console.log(fileUrl);
+            
             const summaryy = {
                 FileUrl: fileUrl, // מזהה הקובץ (אם קיים)
                 summary: summary, // הסיכום עצמו
@@ -48,22 +52,21 @@ const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     };
 
     return (
-        <>
-            <CardContent>
-                {/* כותרת */}
-                <Typography variant="h5" component="div" className="upload-title">
-                    Upload a file!
-                </Typography>
-                <Typography color="text.secondary" variant="body2">{summary}</Typography>
-
-                {error && <Typography color="error">{error}</Typography>}
-            </CardContent>
+        <div className="allContent">
+            <Card className="uploadCard">
+                <div className="all">
+                    <Typography variant="h5" component="div" >
+                    The summary is ready :
+                    </Typography>
+                    <Typography className='summaryContain' color="text.secondary" variant="body2">{summary}</Typography>
+                    {error && <Typography color="error">{error}</Typography>}
+                </div>
+            </Card>
             <div id="buttons">
-                <Button  variant="outlined" onClick={handleSaveSummary}>Save Summary</Button>
+                <Button variant="outlined" onClick={handleSaveSummary}>Save Summary</Button>
                 <Button variant="outlined" >Edit</Button>
             </div>
-        </>
-
+        </div>
     );
 };
 

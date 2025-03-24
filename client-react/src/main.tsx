@@ -4,6 +4,7 @@ import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'; // ייבוא של RouterProvider
 import Home from './components/Home.tsx';
 import MainScreen from './components/MainScreen.tsx';
+import { SummaryProvider } from './components/context/SummaryContext.tsx';
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -22,8 +23,13 @@ const routes = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    {/* אין צורך ב-<BrowserRouter> כאן, הוא כבר בעץ הקומפוננטות ב-App */}
-    <RouterProvider router={routes} /> {/* הוספת ה-RouterProvider עם הנתיבים */}
-  </StrictMode>
+  <SummaryProvider>
+    <>
+      <StrictMode>
+        {/* אין צורך ב-<BrowserRouter> כאן, הוא כבר בעץ הקומפוננטות ב-App */}
+        <RouterProvider router={routes} /> {/* הוספת ה-RouterProvider עם הנתיבים */}
+      </StrictMode>
+    </>
+  </SummaryProvider>
+
 );

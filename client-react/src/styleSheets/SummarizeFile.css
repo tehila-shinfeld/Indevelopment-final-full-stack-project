@@ -1,0 +1,14 @@
+.summaryContain {
+
+    direction: rtl;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 5px;
+
+}
+#buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 8px;
+}

@@ -1,0 +1,2 @@
+DB_CONNECTION=Server=bb7teqzcei9svbko8skc-mysql.services.clever-cloud.com;Port=3306;Database=bb7teqzcei9svbko8skc;User=unbl4onhlplzhboh;Password=3NwubM0yEuQxVl9CcFaV;Pooling=true;Min Pool Size=0;Max Pool Size=5;Connection Timeout=30;" //Pooling=true;Min Pool Size=0;Max Pool Size=5;
+JWT_KEY=aU8r7f2GqS!x9DvlMb3@jR8h2zC1Pw&Yp

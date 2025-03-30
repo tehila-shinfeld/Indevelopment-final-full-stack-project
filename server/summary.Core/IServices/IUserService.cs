@@ -7,6 +7,7 @@ namespace summary.Core.IServices
     public interface IUserService
     {
         public Task<IEnumerable<UserDto>> GetAllAsyc();
+        public  Task<IEnumerable<UserId_Name>> GetAllByCompanyAsyc(string company);
         public Task<UserDto> GetByIdAsync(int id);
         public Task AddAsync(UserDto user);
         public Task<UserDto> ChangeAsync(int id, UserDto user);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using summary.Core;
 using summary.Core.DTOs;
 using summary.Core.IServices;
 using System.Collections.Generic;
@@ -18,14 +19,18 @@ namespace summary.Api.controllerss
             this.userService = userService;
         }
 
-        [HttpGet]
-        //[Authorize]
-        //(Roles = "Admin")
-
+        [HttpGet("all")]
         public async Task<IEnumerable<UserDto>> Get()
         {
             return await userService.GetAllAsyc();
         }
+
+        [HttpGet("ByComp")]
+        public async Task<IEnumerable<UserId_Name>> Get([FromQuery] string company)
+        {
+            return await userService.GetAllByCompanyAsyc(company);
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id)

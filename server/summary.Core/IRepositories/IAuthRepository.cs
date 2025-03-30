@@ -10,6 +10,8 @@ namespace summary.Core.IRepositories
     public interface IAuthRepository
     {
         Task<User?> GetUserByNameAndPasswordAsync(string name, string password);
+        public Task<User?> GetUserByNameAsync(string name);
+
         Task<User> CreateUserAsync(User user);
 
     }

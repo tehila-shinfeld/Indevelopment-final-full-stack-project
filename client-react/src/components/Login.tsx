@@ -20,18 +20,34 @@ function Login({ closeModal }: LoginFormProps) {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post(`https://localhost:7136/api/Auth/login`, {Username: username, PasswordHash:password });
-            console.log(response.data.token);
-            
-            sessionStorage.setItem("token", response.data.token); // שמירת הטוקן
-            alert("wellcome 🤗")
+            const response = await axios.post(`https://localhost:7136/api/Auth/login`, {
+                Username: username,
+                Password: password
+            });
+    
+            const token = response.data.token?.result; // בדיקה שהטוקן קיים
+            if (!token) {
+                throw new Error("Token not received");
+            }
+    
+            sessionStorage.setItem("token", token);
+    
+            alert("Welcome 🤗");
             closeModal(); // סגירת הפופ-אפ לאחר התחברות מוצלחת
-            navigate('/summary-up!');
-
+            
+            // בדיקה נוספת שהטוקן אכן נשמר לפני הניווט
+            if (sessionStorage.getItem("token")) {
+                navigate('/summary-up!');
+            } else {
+                throw new Error("Failed to save token");
+            }
+    
         } catch (err) {
-            alert("errorrrrr 😥")
+            console.error(err);
+            alert("Error during login 😥");
         }
     };
+    
 
     return (
         <StyledCard>

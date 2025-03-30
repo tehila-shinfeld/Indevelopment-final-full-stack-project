@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using summary.Core.DTOs;
 using summary.Core.Entities;
 using summary.Core.IRepositories;
 
@@ -16,6 +17,10 @@ namespace summary.Core.IServices
 
         public  Task<bool> SaveFileSummaryAsync(FileSummaryDto summary);
 
-    }
+        public Task<bool> AssignFileToCustomersAsync(string fileUrl, List<int> customerIds);
 
+        public Task<List<MeetingDto>?> GetUserMeetingsAsync(int userId);
+
+
+    }
 }

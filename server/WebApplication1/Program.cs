@@ -1,6 +1,8 @@
 using Amazon.S3;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using summary.Core;
@@ -9,6 +11,7 @@ using summary.Core.IServices;
 using summary.Data;
 using summary.Data.Repositories;
 using summary.Service;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,12 +46,17 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+
     c.OperationFilter<SwaggerFileOperationFilter>();
 
 });//ידידינו הסווגר-----
-
 //DI
-builder.Services.AddDbContext<DataContext>();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
+    ServiceLifetime.Scoped 
+);
+
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -56,26 +64,38 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-
+builder.Services.AddScoped<IFileService, FileService>();
 // הגדרת AWS S3
 builder.Services.AddAWSService<IAmazonS3>();
-// רישום ה-Services & Repositories
-builder.Services.AddScoped<IFileService, FileService>();
-
+//mapp
 builder.Services.AddAutoMapper(typeof(Mapping));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+//jwt
+// הוספת JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
+// הוספת הרשאות מבוססות-תפקידים
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("User", policy => policy.RequireRole("Editor", "Admin"));
+});
 
 builder.Services.Configure<FormOptions>(options =>
 {

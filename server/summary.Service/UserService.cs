@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using summary.Core.DTOs;
 using summary.Core.IRepositories;
 using summary.Core.IServices;
+using summary.Core;
 
 namespace summary.Service
 {
@@ -27,7 +28,12 @@ namespace summary.Service
             var userDtos = mapper.Map<IEnumerable<UserDto>>(users);
             return userDtos;
         }
-
+        public async Task<IEnumerable<UserId_Name>> GetAllByCompanyAsyc(string company)
+        {
+            var users = await Task.Run(() => userRepository.GetAllByComp(company));
+            var userDtos = mapper.Map<IEnumerable<UserId_Name>>(users);
+            return userDtos;
+        }
         public async Task<UserDto> GetByIdAsync(int id)
         {
             var user = userRepository.GetUserById(id);

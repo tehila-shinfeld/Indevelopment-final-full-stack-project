@@ -1,4 +1,5 @@
-﻿using summary.Core.Entities;
+﻿using summary.Core.DTOs;
+using summary.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,10 @@ namespace summary.Core.IRepositories
         public  Task<Meeting> GetMeetingByIdAsync(int meetingId);
         public Task UpdateMeetingAsync(Meeting meeting);
         public  Task SaveSummaryToDbAsync(FileSummaryDto summary);
+        public Task<Meeting?> GetMeetingByUrlAsync(string fileUrl);
+        public Task<List<MeetingDto>> GetMeetingsByUserIdAsync(int userId);
+
+        public Task SaveAsync();
 
     }
 }

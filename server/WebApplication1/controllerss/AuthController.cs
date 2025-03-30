@@ -17,11 +17,12 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginModel loginModel)
     {
-        var token = _authService.AuthenticateUserAsync(loginModel.Username, loginModel.PasswordHash);
+        var token = _authService.AuthenticateUserAsync(loginModel.Username, loginModel.Password);
         if (token == null)
         {
             return Unauthorized("Invalid email or password");
         }
+
         return Ok(new { Token = token });
     }
 

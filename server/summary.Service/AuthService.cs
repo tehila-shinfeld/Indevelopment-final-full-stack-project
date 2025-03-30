@@ -1,111 +1,95 @@
 ﻿using summary.Core.IRepositories;
 using summary.Core.IServices;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using summary.Core.DTOs;
 using summary.Core.Entities;
-using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using System.Text;
+
 namespace summary.Service
 {
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _configuration;
+        private readonly PasswordHasher<User> _passwordHasher;
 
         public AuthService(IAuthRepository authRepository, IConfiguration configuration)
         {
             _authRepository = authRepository;
             _configuration = configuration;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
-        public async Task<string> AuthenticateUserAsync(string name, string password)
+        public async Task<string> AuthenticateUserAsync(string username, string password)
         {
-            var user = await _authRepository.GetUserByNameAndPasswordAsync(name, password);
+            var user = await _authRepository.GetUserByNameAsync(username);
             if (user == null)
             {
                 return null;
             }
 
-            var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role) // שמירת תפקיד המשתמש
-        };
+            // השוואת הסיסמה
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return null; // אם הסיסמה לא נכונה
+            }
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-            var tokenOptions = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: signinCredentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return GenerateJwtToken(user.Username, user.Role, user.Company);
         }
 
         public async Task<string> RegisterUserAsync(UserDto registerUserDto)
         {
-            // בדיקה אם המשתמש כבר קיים
-            var existingUser = await _authRepository.GetUserByNameAndPasswordAsync(registerUserDto.Username,registerUserDto.PasswordHash);
+            var existingUser = await _authRepository.GetUserByNameAsync(registerUserDto.Username);
+
             if (existingUser != null)
             {
                 throw new Exception("Email already in use");
             }
 
             // הצפנת הסיסמה
-            string hashedPassword = HashPassword(registerUserDto.PasswordHash);
+            var hashedPassword = _passwordHasher.HashPassword(null, registerUserDto.PasswordHash);  // הצפנה של הסיסמה
 
-            // יצירת אובייקט משתמש חדש
             var newUser = new User
             {
-                Email = registerUserDto.Email,
-                PasswordHash = hashedPassword,
                 Username = registerUserDto.Username,
-                Role = "User",
+                PasswordHash = hashedPassword,  // שמירה של הסיסמה המוצפנת ב-DB
+                Role = registerUserDto.Role,
+                Company =registerUserDto.Company,
+                Email = registerUserDto.Email,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _authRepository.CreateUserAsync(newUser);
 
-            // יצירת טוקן והחזרתו
-            return GenerateJwtToken(newUser);
+            return GenerateJwtToken(newUser.Username, newUser.Role, newUser.Company);
         }
 
-        private string HashPassword(string password)
+        private string GenerateJwtToken(string userName, string role, string company)
         {
-            using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hashBytes = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hashBytes);
-        }
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        private string GenerateJwtToken(User user)
-        {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Name, userName),   
+                new Claim(ClaimTypes.Role, role),
+                new Claim("company", company),          
             };
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-            var tokenOptions = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: signinCredentials
+                signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

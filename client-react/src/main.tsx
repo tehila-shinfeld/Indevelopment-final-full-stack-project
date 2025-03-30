@@ -5,6 +5,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Home from './components/Home.tsx';
 import MainScreen from './components/MainScreen.tsx';
 import { SummaryProvider } from './components/context/SummaryContext.tsx';
+import { UserProvider } from './components/context/UserContext.tsx';
+import UserMeetings from './components/UserMeetings.tsx';
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -20,16 +22,25 @@ const routes = createBrowserRouter([
     path: '/summary-up!', // דף הבית
     element: <MainScreen />, // קומפוננטת Dashboard
   },
+  {
+    path: '/myMeetings', // דף הבית
+    element: <UserMeetings />, // קומפוננטת Dashboard
+  },
+  // UserMeetings
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <SummaryProvider>
-    <>
-      <StrictMode>
-        {/* אין צורך ב-<BrowserRouter> כאן, הוא כבר בעץ הקומפוננטות ב-App */}
-        <RouterProvider router={routes} /> {/* הוספת ה-RouterProvider עם הנתיבים */}
-      </StrictMode>
-    </>
+    <UserProvider>
+      {/* שאר הקומפוננטות */}
+      <>
+        <StrictMode>
+          {/* אין צורך ב-<BrowserRouter> כאן, הוא כבר בעץ הקומפוננטות ב-App */}
+          <RouterProvider router={routes} /> {/* הוספת ה-RouterProvider עם הנתיבים */}
+        </StrictMode>
+      </>
+    </UserProvider>
+
   </SummaryProvider>
 
 );

@@ -10,13 +10,11 @@ namespace summary.Data
 {
     public class DataContext : DbContext
     {
+
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
         public DbSet<Meeting> Meetings { get; set; }
         public DbSet<User> Users { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=my_db");
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,4 +35,3 @@ namespace summary.Data
         }
     }
 }
-

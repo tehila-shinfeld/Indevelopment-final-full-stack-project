@@ -19,6 +19,10 @@ public class AuthRepository : IAuthRepository
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Username == name && u.PasswordHash == password);
     }
+    public async Task<User?> GetUserByNameAsync(string name)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == name );
+    }
     public async Task<User> CreateUserAsync(User user)
     {
         _context.Users.Add(user);

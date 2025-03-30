@@ -1,5 +1,4 @@
-﻿using summary.Core.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace summary.Core.DTOs
 {
-    public class UserDto
+    public class UserDtoRes
     {
-        //public int Id { get; set; } // מזהה משתמש
+        public int Id { get; set; } // מזהה משתמש
 
         public string Username { get; set; } // שם משתמש
 
@@ -21,5 +20,6 @@ namespace summary.Core.DTOs
 
         public string? Role { get; set; } // תפקיד
 
+        public string token { get; set; }
     }
 }

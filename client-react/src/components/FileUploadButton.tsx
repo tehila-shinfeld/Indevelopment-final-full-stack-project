@@ -12,15 +12,18 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [s3url, sets3url] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const { setSummary } = useSummary();
 
   useEffect(() => {
-    console.log("📡 fileUrl התעדכן:", fileUrl);
-    
-  }, [fileUrl]);
+    if (s3url) {
+      console.log("📡 מעדכנת את הקובץ בקומפוננטה הראשית:", s3url);
+      onFileUpload(s3url);
+    }
+  }, [s3url]);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -29,32 +32,35 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
   const handleFileUpload = async (selectedFile: File) => {
     setUploading(true);
     setFile(selectedFile);
+
     try {
-      console.log("שליחת שם הקובץ לשרת לקבלת Presigned URL");
+      console.log("📡 שולחת בקשה לשרת לקבלת URL...");
       const response1 = await axios.post("https://localhost:7136/api/files/upload", {
         fileName: selectedFile.name,
       });
-      console.log(" res", response1);
-      const { fileId, fileUrl } = response1.data;
+      const { fileId, fileUrl, s3Url } = response1.data; // שים לב לשינוי השם ל-s3Url
       setFileUrl(fileUrl);
-      onFileUpload(fileUrl); // 📡 מעדכן את הקומפוננטה שמעל
+      sets3url(s3Url); // עדכון הסטייט עם הערך הנכון
 
-      const response2 = await axios.put(fileUrl, selectedFile, {
+      console.log("✅ S3eUrl עודכן ל:", s3Url);
+
+      onFileUpload(s3Url);
+
+      await axios.put(fileUrl, selectedFile, {
         headers: {
           "Content-Type": selectedFile.type,
         },
       });
-      console.log("up!!", response2);
-      setMessage(`✅ The file was uploaded successfully! ID: ${fileId}`);
 
+      setMessage(`✅ הקובץ הועלה בהצלחה! ID: ${fileId}`);
     } catch (error) {
-      console.error("שגיאה בהעלאת הקובץ:", error);
+      console.error("❌ שגיאה בהעלאת הקובץ:", error);
       setMessage("❌ שגיאה בהעלאה, נסה שוב.");
     } finally {
       setUploading(false);
-      setDragging(false);
     }
   };
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUploading(true);
@@ -74,7 +80,7 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
 
   const handleSummarize = async () => {
     console.log("try....");
-    
+
     if (!fileUrl) {
       alert("No file URL provided!");
       return;
@@ -84,12 +90,11 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
     try {
       console.log("try....in");
 
-      const response = await fetch("https://localhost:7136/api/files/summarize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(fileUrl), // שולח את ה-URL ישירות לפי הגדרת ה-API שלך
+      if (!s3url) {
+        throw new Error("S3eUrl is null or undefined");
+      }
+      const response = await fetch(`https://localhost:7136/api/files/summarize?url=${encodeURIComponent(s3url)}`, {
+        method: "GET",
       });
 
       if (!response.ok) {
@@ -99,7 +104,7 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
 
       const data = await response.json();
       setSummary(data.summary);
-      
+
     } catch (error) {
       console.error("Error:", error);
       alert("Error fetching summary");

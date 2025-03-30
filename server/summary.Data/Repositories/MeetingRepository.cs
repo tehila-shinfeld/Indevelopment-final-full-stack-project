@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using summary.Core;
+using summary.Core.DTOs;
 using summary.Core.Entities;
 using summary.Core.IRepositories;
 using System;
@@ -23,7 +24,7 @@ namespace summary.Data.Repositories
         public IEnumerable<Meeting> GetAllMeetings()
         {
             return _dataContext.Meetings.Include(m => m.Users);
-//.Include(m => m.CreatedByUser);
+            //.Include(m => m.CreatedByUser);
         }
 
         public Meeting GetMeetingById(int id)
@@ -99,8 +100,28 @@ namespace summary.Data.Repositories
                 await _dataContext.SaveChangesAsync();
             }
         }
+        public async Task<Meeting?> GetMeetingByUrlAsync(string fileUrl)
+        {
+            return await _dataContext.Meetings.FirstOrDefaultAsync(m => m.TranscriptionLink == fileUrl);
+        }
+
+        public async Task<List<MeetingDto>> GetMeetingsByUserIdAsync(int userId)
+        {
+            return await _dataContext.Meetings
+                .Where(m => m.Users.Any(u => u.Id == userId))
+                .Select(m => new MeetingDto
+                {
+                    Name = m.Name,
+                    TranscriptionLink = m.TranscriptionLink,
+                    SummaryContent = m.SummaryContent,
+                })
+                .ToListAsync();
+
+        }
+        public async Task SaveAsync()
+        {
+            await _dataContext.SaveChangesAsync();
+        }
     }
-
-
 }
 

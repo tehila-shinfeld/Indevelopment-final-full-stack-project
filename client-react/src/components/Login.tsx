@@ -37,7 +37,7 @@ function Login({ closeModal }: LoginFormProps) {
             
             // בדיקה נוספת שהטוקן אכן נשמר לפני הניווט
             if (sessionStorage.getItem("token")) {
-                navigate('/summary-up!');
+                navigate('/myMeetings');
             } else {
                 throw new Error("Failed to save token");
             }

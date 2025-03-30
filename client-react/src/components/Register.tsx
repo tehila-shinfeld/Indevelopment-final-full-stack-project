@@ -44,7 +44,7 @@ function Register({ closeModal }: RegisterFormProps) {
 
       alert("sucsess!!!🤗");
       closeModal(); // סגירת הפופ-אפ לאחר הרשמה מוצלחת
-      navigate('/summary-up!'); // מעבר לדף Dashboard
+      navigate('/myMeetings'); // מעבר לדף Dashboard
 
     } catch (err) {
       setError("היתה שגיאה בהרשמה");

@@ -4,8 +4,8 @@ import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'; // ייבוא של RouterProvider
 import Home from './components/Home.tsx';
 import MainScreen from './components/MainScreen.tsx';
-import { SummaryProvider } from './components/context/SummaryContext.tsx';
-import { UserProvider } from './components/context/UserContext.tsx';
+import { SummaryProvider } from './context/SummaryContext.tsx';
+import { UserProvider } from './context/UserContext.tsx';
 import UserMeetings from './components/UserMeetings.tsx';
 
 // הגדרת הנתיבים

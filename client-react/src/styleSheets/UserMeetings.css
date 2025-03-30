@@ -1,85 +1,99 @@
 .title {
-    text-align: center;
-    margin-top: 20px;
-  }
-  .meeting-card {
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* הצל רך */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* מעבר חלק על התנועה והצל */
-    border-radius: 15px; /* עיגול עדין של הקצוות */
-  }
-  
-  .meeting-card:hover {
-    transform: scale(1.05); /* הגדלה עדינה של הכרטיס */
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* הצל גדל בזמן hover */
-  }
-  /* .loading-spinner {
-    display: block;
-    margin: 20px auto;
-  } */
-  loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-    margin-top: 20px;
-  }
-  
-  .loading-circle {
-    width: 40px;
-    height: 40px;
-    border: 4px solid transparent;
-    border-top: 4px solid #1976d2;
-    border-radius: 50%;
-  }
-  
-  .error-message,
-  .no-meetings {
-    text-align: center;
-    margin-top: 20px;
-    color: red;
-  }
-  
-  .meetings-grid {
-    margin-top: 20px;
-  }
-  
-  .meeting-card {
-    min-height: 300px; /* גובה מינימלי */
-    max-height: 450px; /* גובה מקסימלי */
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  /* .meeting-card:hover {
-    transform: scale(1.03);
-  } */
-  
-  .meeting-content {
-    flex-grow: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .meeting-title {
-    font-weight: bold;
-  }
-  
-  .meeting-summary {
-    flex-grow: 1;
-    overflow-y: auto;
-    max-height: 200px;
-    padding-right: 8px;
-  }
-  .dark-mode .meeting-card {
-    background-color: #333;
-    color: #fff;
-    box-shadow: 2px 4px 10px rgba(255, 255, 255, 0.1);
-  }
-  
-  .dark-mode .meeting-card:hover {
-    box-shadow: 4px 8px 15px rgba(255, 255, 255, 0.2);
-  }
+  text-align: center;
+  margin-top: 20px;
+}
+
+.meeting-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.error-message,
+.no-meetings {
+  text-align: center;
+  margin-top: 20px;
+  color: red;
+}
+
+.meetings-grid {
+  margin-top: 20px;
+}
+
+.meeting-card {
+  width: 100%;
+  height: 400px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out;
+  margin: 20px;
+}
+
+.meeting-content {
+  flex-grow: 1;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+.meeting-title {
+  font-weight: bold;
+}
+
+.meeting-summary {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 200px;
+  padding-right: 8px;
+}
+
+.dark-mode .meeting-card {
+  background-color: #333;
+  color: #fff;
+  box-shadow: 2px 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .meeting-card:hover {
+  box-shadow: 4px 8px 15px rgba(255, 255, 255, 0.2);
+}
+
+.meetings-grid {
+  margin-top: 20px;
+  min-height: 300px;
+}
+
+.menu-button {
+  position: absolute;
+  top: 30px;
+  left: 15px;
+  height: 70px;
+  width: 70px;
+}
+
+.sidebar {
+  width: 250px;
+  /* גודל התפריט הצדדי */
+  padding-top: 20px;
+}
+
+.sidebar .MuiListItem-root {
+  padding: 15px;
+  font-size: 18px;
+}
+
+
+.loading-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.loading-circle {
+  height: 190px;
+  width: 190px;
+  color: rgb(91, 140, 155);
+  margin-top: 50px;
+}

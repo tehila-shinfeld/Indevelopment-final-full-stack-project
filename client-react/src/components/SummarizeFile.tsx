@@ -3,7 +3,7 @@ import { Button, Card,  Typography } from '@mui/material';
 import axios from 'axios';
 import "../styleSheets/FileUploadButton.css"
 import "../styleSheets/SummarizeFile.css"
-import { useSummary } from './context/SummaryContext';
+import { useSummary } from '../context/SummaryContext';
 import UserPermissionDialog, { User } from './UserPermissionDialog';
 
 const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
@@ -28,7 +28,6 @@ const SummarizeFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                 FileUrl: fileUrl,
                 UserserIds: users.map(user => user.id)
             });
-            alert("הרשאות נשמרו בהצלחה!")
             console.log("הרשאות נשמרו בהצלחה!");
             handleSaveSummary();
         } catch (err) {

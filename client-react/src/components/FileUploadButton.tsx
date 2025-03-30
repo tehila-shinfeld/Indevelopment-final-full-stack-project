@@ -1,10 +1,10 @@
-import { Alert, Button, Card, CircularProgress, IconButton, Typography } from "@mui/material";
+import { Alert, Button, Card, CircularProgress, IconButton, LinearProgress, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import Notification from "./Notification";
 import "../styleSheets/FileUploadButton.css";
-import { useSummary } from "./context/SummaryContext";
+import { useSummary } from "../context/SummaryContext";
+import { tr } from "framer-motion/client";
 
 const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ onFileUpload }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,82 +120,72 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
       handleFileUpload(event.dataTransfer.files[0]);
     }
   };
-
   return (
-
-
     <div className="container">
       <div className="allContent">
-        <Card
-          className="uploadCard"
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}>
-          <div className="all">
-            <Typography id="title" variant="h5" component="div" className="upload-title">
-              Upload a file!
-            </Typography>
-
-            <div className="typing-container">
-              <Typography variant="body2" color="text.secondary" className="upload-instructions">
-                <span className="typing-line">Choose a PDF or TXT file from your computer</span>
-                <span className="typing-line">Drag and drop here or click to upload</span>
-                <span className="typing-line">Maximum size: 5MB</span>
-              </Typography>
-
-            </div>
-
-            <div
-              className={`dropzone ${dragging ? "dragging" : ""}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <Typography variant="body2" className="upload-instructions">
-                <span >📂 Drag & Drop a PDF or TXT file here</span>
-                <span >or Click to upload</span>
-              </Typography>
-            </div>
-
-            <div className="upload-button-container">
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
-
-              <IconButton
-                id="iconUp"
-                color="primary"
-                onClick={handleButtonClick}
-                sx={{
-                  width: 50,
-                  height: 50,
-                  border: "1px solid black",
-                  backgroundColor: 'white',
-                  '&:hover': { backgroundColor: 'ButtonFace' },
-                  transition: '0.3s',
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-
-              {uploading && (
-                <div id="circle">
-                  <CircularProgress size={80} />
-                </div>
-              )}
-
-              <Notification
-                message={message}
-                type={"info"}
-                onClose={() => setMessage("")}
-              />
-            </div>
+        {loading ? (
+          <div className="loading-container">
+            <CircularProgress style={{ height: '80px', width: '80px', color: 'rgb(91, 140, 155)', marginTop: '100px', zIndex: 1000, position: "absolute" }} />
           </div>
-        </Card>
+        ) :
+          <Card
+            className="uploadCard"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}>
+            <div className="all">
+              <Typography id="title" variant="h5" component="div" className="upload-title">
+                Upload a file!
+              </Typography>
 
+              <div className="typing-container">
+                <Typography variant="body2" color="text.secondary" className="upload-instructions">
+                  <span className="typing-line">Choose a PDF or TXT file from your computer</span>
+                  <span className="typing-line">Drag and drop here or click to upload</span>
+                  <span className="typing-line">Maximum size: 5MB</span>
+                </Typography>
+
+              </div>
+
+              <div
+                className={`dropzone ${dragging ? "dragging" : ""}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <Typography variant="body2" className="upload-instructions">
+                  <span >📂 Drag & Drop a PDF or TXT file here</span>
+                  <span >or Click to upload</span>
+                </Typography>
+              </div>
+
+              <div className="upload-button-container">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+
+                <IconButton
+                  id="iconUp"
+                  color="primary"
+                  onClick={handleButtonClick}
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    border: "1px solid black",
+                    backgroundColor: 'white',
+                    '&:hover': { backgroundColor: 'ButtonFace' },
+                    transition: '0.3s',
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </div>
+            </div>
+          </Card>
+        }
 
       </div>
       <Button
@@ -206,7 +196,7 @@ const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ o
       >
         Summary Up!
       </Button>
-    </div>
+    </div >
   );
 };
 

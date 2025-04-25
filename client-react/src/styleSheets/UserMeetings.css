@@ -97,3 +97,16 @@
   color: rgb(91, 140, 155);
   margin-top: 50px;
 }
+
+.reset-button {
+  margin-top: 8px;
+  background-color: #e0e0e0;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.reset-button:hover {
+  background-color: #bdbdbd;
+}

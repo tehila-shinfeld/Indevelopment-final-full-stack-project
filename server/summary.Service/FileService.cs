@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using summary.Core;
@@ -8,6 +9,9 @@ using summary.Core.Entities;
 using summary.Core.IRepositories;
 using summary.Core.IServices;
 using summary.Data.Repositories;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace summary.Service
 {
@@ -18,13 +22,15 @@ namespace summary.Service
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IRepositoryManager _repositoryManager;
+        private readonly HttpClient _httpClient;
 
-        public FileService(IAmazonS3 s3Client, IMeetingRepository meetingRepository, IConfiguration configuration ,IUserRepository userRepository)
+        public FileService(IAmazonS3 s3Client, IMeetingRepository meetingRepository, IConfiguration configuration, IUserRepository userRepository, HttpClient httpClient)
         {
             _s3Client = s3Client;
             _meetingRepository = meetingRepository;
             _configuration = configuration;
             _userRepository = userRepository;
+            _httpClient = httpClient;
         }
 
         public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName)
@@ -93,27 +99,47 @@ namespace summary.Service
             //await _meetingRepository.Delete(Smeeting.Id);
             return true;
         }
-        public async Task<string> GetSummaryFromAIAsync(string fileUrl)
+        public async Task<string> GetSummaryFromAIAsync(string inputText)
         {
-            var summary = "סיכום ישיבת צוות - פיתוח תוכנה\r\n📅 29 במרץ 2025 | 👥 משתתפים: דוד, שרון, אילן, מיכל, רוני\r\n\r\nעיקרי הישיבה:\r\nסטטוס פיתוח: הושלמו 80% מהמשימות לספרינט.\r\n\r\nאתגרים: בעיה בסנכרון מיקרו-שירותים – אילן יבדוק פתרון עם Redis.\r\n\r\nמשימות:\r\n\r\nשרון – סיום התחברות דרך Google.\r\n\r\nמיכל ורוני – סקירת קוד.\r\n\r\nדוד – בדיקות עומס.\r\n\r\nהחלטות:\r\n✅ הדגמת גרסה ראשונית ב-3 באפריל.\r\n✅ ישיבת מעקב ב-1 באפריל.\r\n✅ שיפור תיעוד והוספת בדיקות יחידה.\r\n\r\n⏳ סיום הישיבה: 11:30 🚀";
-            summary+="סיכום ישיבת צוות - פיתוח תוכנה\r\n📅 29 במרץ 2025 | 👥 משתתפים: דוד, שרון, אילן, מיכל, רוני\r\n\r\nעיקרי הישיבה:\r\nסטטוס פיתוח: הושלמו 80% מהמשימות לספרינט.\r\n\r\nאתגרים: בעיה בסנכרון מיקרו-שירותים – אילן יבדוק פתרון עם Redis.\r\n\r\nמשימות:\r\n\r\nשרון – סיום התחברות דרך Google.\r\n\r\nמיכל ורוני – סקירת קוד.\r\n\r\nדוד – בדיקות עומס.\r\n\r\nהחלטות:\r\n✅ הדגמת גרסה ראשונית ב-3";
-            var meeting = await _meetingRepository.GetMeetingByUrlAsync(fileUrl);
-            if (meeting == null)
+            var apiKey = ;
+            var requestBody = new
             {
-                throw new InvalidOperationException($"Meeting not found for fileUrl: {fileUrl}");
+                model = "gpt-4o-mini",
+                messages = new[]
+                {
+                    new { role = "system", content = "אתה מסכם טקסטים בשפה העברית בצורה מקצועית, תמציתית וברורה." },
+                    new { role = "user", content = $"סכם את הטקסט הבא:\n\n{inputText}" }
+                },
+                temperature = 0.7
+            };
+            Console.WriteLine("API KEY: " + apiKey); // רק לבדיקה כמובן, לא להשאיר בקוד פרודקשן
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"❌ Error: {response.StatusCode} - {err}");
             }
+            response.EnsureSuccessStatusCode();
 
-            meeting.SummaryContent = summary;
-            await _meetingRepository.UpdateMeetingAsync(meeting);
+            using var stream = await response.Content.ReadAsStreamAsync();
+            using var doc = await System.Text.Json.JsonDocument.ParseAsync(stream);
 
-            return summary;
+            return doc.RootElement
+                      .GetProperty("choices")[0]
+                      .GetProperty("message")
+                      .GetProperty("content")
+                      .GetString()!;
         }
         public async Task<bool> SaveFileSummaryAsync(FileSummaryDto summary)
         {
             await _meetingRepository.SaveSummaryToDbAsync(summary);
             return true;
         }
-
         public async Task<bool> AssignFileToCustomersAsync(string fileUrl, List<int> customerIds)
         {
             var meeting = await _meetingRepository.GetMeetingByUrlAsync(fileUrl);

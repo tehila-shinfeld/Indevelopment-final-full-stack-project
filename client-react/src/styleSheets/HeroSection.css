@@ -1,0 +1,75 @@
+.hero {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5rem 3rem;
+  /* background-color: var(--primary-dark); */
+  color: var(--text-light);
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 3.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+.highlight-blue {
+  color: var(--accent-blue);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--primary-light);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@600&display=swap');
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.hero-btn {
+  background: linear-gradient(135deg, var(--accent-orange), #ff8800) !important;
+  color: #ffffff !important;
+  font-family: 'Assistant', sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  padding: 0.9rem 2.4rem !important;
+  border-radius: 16px !important;
+  text-transform: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  border: none !important;
+  animation: pulse 1.5s ease-in-out infinite;
+  transition: background 0.4s ease, box-shadow 0.3s ease;
+}
+
+.hero-btn:hover {
+  background: var(--primary-light) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+  animation: none !important; /* כדי לא לערבב את האנימציה עם ההובר */
+  transform: scale(1.07) !important;
+  color: #5a879a !important;
+
+}
+
+
+.hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

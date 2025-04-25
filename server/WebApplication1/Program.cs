@@ -15,7 +15,6 @@ using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -65,6 +64,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddHttpClient<IFileService, FileService>();
+
 // הגדרת AWS S3
 builder.Services.AddAWSService<IAmazonS3>();
 //mapp
@@ -206,3 +207,4 @@ app.Run();
 
 
 #endregion
+

@@ -1,0 +1,41 @@
+.cta-container {
+    background-color: #1f2937; /* רקע כהה */
+    color: white; /* צבע טקסט לבן */
+    padding: 3rem; /* רווח פנימי */
+    border-radius: 1rem; /* פינות מעוגלות */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* צללים */
+    text-align: center; /* מיישר טקסט במרכז */
+  }
+  
+  .cta-content {
+    max-width: 1024px;
+    margin: 0 auto; /* ממרכז את התוכן */
+  }
+  
+  .cta-heading {
+    font-size: 2.5rem; /* גודל כותרת */
+    font-weight: 600; /* משקל טקסט כותרת */
+    margin-bottom: 1rem; /* רווח למטה */
+  }
+  
+  .cta-text {
+    font-size: 1.125rem; /* גודל טקסט */
+    margin-bottom: 2rem; /* רווח למטה */
+  }
+  
+  .cta-button {
+    background-color: #22d3ee; /* תכלת */
+    color: #111827; /* טקסט כהה */
+    padding: 1rem 2rem; /* רווח פנימי */
+    border-radius: 9999px; /* צורת כפתור עגול */
+    font-size: 1.125rem; /* גודל טקסט */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* אפקט מעבר */
+    cursor: pointer; /* מצביע על כפתור */
+    border: none; /* ללא גבול */
+  }
+  
+  .cta-button:hover {
+    background-color: #0c84b7; /* צבע שינוי בכפתור */
+    transform: translateY(-2px); /* הזזת כפתור למעלה בזמן Hover */
+  }
+  

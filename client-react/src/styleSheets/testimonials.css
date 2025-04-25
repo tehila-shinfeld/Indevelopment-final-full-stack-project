@@ -1,0 +1,127 @@
+@import "../styleSheets/variables.css";
+
+.testimonials-section {
+    padding: 4rem 2rem;
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    text-align: center;
+}
+
+.testimonials-title {
+    font-size: 2rem;
+    margin-bottom: 3rem;
+}
+
+.testimonials-title .highlight {
+    color: var(--accent-orange);
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.chat-bubble {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 100%;
+}
+
+.chat-bubble.right {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-blue);
+    filter: grayscale(0%);
+}
+
+.user-image:hover {
+    filter: grayscale(100%);
+}
+
+/* .bubble-content {
+    background-color: var(--card-bg);
+    border-radius: 1.2rem;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 75%;
+    position: relative;
+} */
+
+
+
+.chat-bubble:hover .bubble-content {
+    box-shadow: 0 0 15px var(--accent-blue);
+    transition: box-shadow 0.4s ease;
+}
+
+.bubble-content::after {
+    content: "";
+    position: absolute;
+    bottom: 0.7rem;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+}
+
+.chat-bubble.right .bubble-content::after {
+    right: -20px;
+    border-left-color: var(--card-bg);
+}
+
+.chat-bubble.left .bubble-content::after {
+    left: -20px;
+    border-right-color: var(--card-bg);
+}
+
+.message {
+    font-size: 1rem;
+    color: var(--primary-light);
+    margin: 0;
+    direction: rtl;
+    text-align: right;
+  
+}
+
+.name {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--accent-orange);
+    margin-top: 0.5rem;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent
+    }
+}
+
+.message.typing {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--accent-blue);
+    width: 0;
+    animation:
+        typing 2s steps(40, end) forwards,
+        blink 0.6s step-end infinite;
+}

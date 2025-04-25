@@ -1,0 +1,9 @@
+:root {
+    --primary-dark: #1f2937;      /* רקע אפור כהה */
+    --primary-light: #cbd5e1;     /* טקסט אפור בהיר */
+    --accent-blue: #22d3ee;       /* תכלת */
+    --accent-orange: #f97316;     /* כתום */
+    --card-bg: #111827;           /* רקע כרטיסים */
+    --text-light: #ffffff;        /* טקסט לבן */
+  }
+  

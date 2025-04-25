@@ -5,6 +5,7 @@ using summary.Core.IServices;
 using summary.Core;
 using Microsoft.EntityFrameworkCore;
 using summary.Service;
+using Azure.Core;
 [ApiController]
 [Route("api/files")]
 public class FilesController : ControllerBase
@@ -29,27 +30,6 @@ public class FilesController : ControllerBase
         return Ok(response);
     }
 
-
-    [HttpGet("summarize")]
-    public async Task<IActionResult> SummarizeFile([FromQuery] string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-        {
-            return BadRequest("URL cannot be empty");
-        }
-
-        try
-        {
-            var summary = await _fileService.GetSummaryFromAIAsync(url);
-            return Ok(new { summary });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-
     [HttpPost("save-summary")]
     public async Task<IActionResult> SaveSummary([FromBody] FileSummaryDto summary)
     {
@@ -65,8 +45,16 @@ public class FilesController : ControllerBase
         }
     }
 
+    [HttpPost("summarize")]
+    public async Task<IActionResult> Post([FromBody] SummarizeRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Text))
+            return BadRequest("Missing text");
 
-    [HttpPost("assign-file-to-customers")]
+        var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
+        return Ok(new { summary });
+    }
+    [HttpPost(" assign-file-to-customers")]
     public async Task<IActionResult> AssignFileToCustomers([FromBody] AssignFileRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.FileUrl) || request.UserserIds == null)

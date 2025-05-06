@@ -1,268 +1,418 @@
-import { Button, Card, CircularProgress, IconButton, LinearProgress, Typography } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import "../styleSheets/FileUploadButton.css";
-import { useSummary } from "../context/SummaryContext";
-import * as pdfjsLib from "pdfjs-dist";
-import * as mammoth from "mammoth";
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min?url';
-GlobalWorkerOptions.workerSrc = workerSrc;
+"use client"
+
+import type React from "react"
+
+import { useEffect, useRef, useState } from "react"
+import axios from "axios"
+import { useSummary } from "../context/SummaryContext"
+import * as mammoth from "mammoth"
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
+import workerSrc from "pdfjs-dist/build/pdf.worker.min?url"
+import { FileText, Upload, FileUp, X, Check, FileType, Loader, ChevronRight, FileSymlink, Sparkles } from "lucide-react"
+import "../styleSheets/FileUploadButton.css"
+import SummaryFile from "./SummarizeFile"
+
+// Set PDF.js worker
+GlobalWorkerOptions.workerSrc = workerSrc
 
 const FileUploadButton: React.FC<{ onFileUpload: (url: string) => void }> = ({ onFileUpload }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [s3url, sets3url] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const { setSummary } = useSummary();
-  const [fileTextContent, setFileTextContent] = useState<string | null>(null);
+  // File upload states
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [message, setMessage] = useState("")
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const { summary, setSummary } = useSummary()
+  const [fileTextContent, setFileTextContent] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
 
+  // View transition states
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [activeStep, setActiveStep] = useState(0)
+  const [processingStep, setProcessingStep] = useState<"upload" | "summarize" | "complete">("upload")
+  const [showParticles, setShowParticles] = useState(false)
 
-  useEffect(() => {
-    if (s3url) {
-      console.log("📡 מעדכנת את הקובץ בקומפוננטה הראשית:", s3url);
-      onFileUpload(s3url);
-    }
-    console.log("📄 תוכן הקובץ:", fileTextContent ? fileTextContent.substring(0, 300) : "No content available"); // תצוגה חלקית
-
-  }, [s3url, fileTextContent]);
-
+  // Handle file selection button click
   const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
+
+  // Handle file selection from input
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUploading(true);
     if (event.target.files && event.target.files.length > 0) {
-      handleFileUpload(event.target.files[0]);
-    }
-  };
-
-  // הפונקציה שמבצעת את הכניסה למצב של גרירה
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragging(true);
-  };
-
-  // הפונקציה שמבצעת את היציאה מהמצב של גרירה
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
-  // הפונקציה שמבצעת את הכניסה למצב של גרירה
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragging(false);
-    if (event.dataTransfer.files.length > 0) {
-      handleFileUpload(event.dataTransfer.files[0]);
-    }
-  };
-
-  // הפונקציה שמבצעת את הסיכום
-  const handleSummarize = async () => {
-
-    if (!fileUrl) {
-      alert("No file URL provided!");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await axios.post('https://localhost:7136/api/files/summarize', {
-        text: fileTextContent
-      });
-      setSummary(response.data.summary);
-    } catch (error) {
-      console.error('שגיאה בשליחת הבקשה:', error);
-      alert('אירעה שגיאה בשליחת הבקשה');
-    } finally {
-      setLoading(false);
+      const selectedFile = event.target.files[0]
+      setFile(selectedFile)
+      setUploadStatus("success") // Set status to success immediately to show file info
     }
   }
 
-  const handleFileUpload = async (selectedFile: File) => {
-    setUploading(true);
-    setFile(selectedFile);
+  // Handle drag and drop events
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setDragging(false)
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setDragging(false)
+    if (event.dataTransfer.files.length > 0) {
+      const selectedFile = event.dataTransfer.files[0]
+      setFile(selectedFile)
+      setUploadStatus("success") // Set status to success immediately to show file info
+    }
+  }
+
+  // Combined function to handle both upload and summary generation
+  const handleUploadAndSummarize = async () => {
+    if (!file) {
+      setError("Please select a file first")
+      return
+    }
+
+    setProcessingStep("upload")
+    setLoading(true)
+    setUploading(true)
+    setUploadStatus("uploading")
+    setError(null)
+
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(progressInterval)
+          return 90
+        }
+        return prev + 10
+      })
+    }, 300)
 
     try {
-      let textContent = "";
+      // Step 1: Process file content
+      let textContent = ""
 
-      if (selectedFile.type === "text/plain") {
-
+      if (file.type === "text/plain") {
         // TXT
-        const reader = new FileReader();
+        const reader = new FileReader()
         textContent = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsText(selectedFile);
-        });
-
-      }
-      else if (selectedFile.type === "application/pdf") {
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsText(file)
+        })
+      } else if (file.type === "application/pdf") {
         // PDF
-        const pdfData = await selectedFile.arrayBuffer();
-        const pdf = await getDocument({ data: pdfData }).promise;
+        const pdfData = await file.arrayBuffer()
+        const pdf = await getDocument({ data: pdfData }).promise
         for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const strings = content.items.map((item: any) => item.str);
-          textContent += strings.join(' ') + '\n';
+          const page = await pdf.getPage(i)
+          const content = await page.getTextContent()
+          const strings = content.items.map((item: any) => item.str)
+          textContent += strings.join(" ") + "\n"
         }
-      } else if (
-        selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
+      } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
         // DOCX
-        const arrayBuffer = await selectedFile.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        textContent = result.value;
-
+        const arrayBuffer = await file.arrayBuffer()
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        textContent = result.value
       } else {
-        throw new Error("Unsupported file type");
+        throw new Error("Unsupported file type")
       }
 
-      setFileTextContent(textContent); // שומר את התוכן
-      console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)); // תצוגה חלקית
+      setFileTextContent(textContent)
 
-      // ⬇️ המשך התהליך הרגיל של ההעלאה לשרת
-      const response1 = await axios.post("https://localhost:7136/api/files/upload", {
-        fileName: selectedFile.name,
-      });
+      // Step 2: Upload file to server
+      const uploadResponse = await axios.post("https://localhost:7136/api/files/upload", {
+        fileName: file.name,
+      })
 
-      const { fileId, fileUrl, s3Url } = response1.data;
-      setFileUrl(fileUrl);
-      sets3url(s3Url);
-      onFileUpload(s3Url);
+      const { fileId, fileUrl, s3Url } = uploadResponse.data
+      setFileUrl(fileUrl)
+      setUploadedFileUrl(s3Url)
 
-      await axios.put(fileUrl, selectedFile, {
+      await axios.put(fileUrl, file, {
         headers: {
-          "Content-Type": selectedFile.type,
+          "Content-Type": file.type,
         },
-      });
+      })
 
-      setMessage(`✅ הקובץ הועלה בהצלחה! ID: ${fileId}`);
+      setUploadProgress(100)
+      setUploadStatus("success")
+      setMessage(`File uploaded successfully!`)
+
+      // Step 3: Generate summary
+      setProcessingStep("summarize")
+
+      const summaryResponse = await axios.post("https://localhost:7136/api/files/summarize", {
+        text: textContent,
+      })
+
+      setSummary(summaryResponse.data.summary)
+
+      // Step 4: Transition to summary view
+      setProcessingStep("complete")
+
+      // Start the transition sequence
+      triggerTransitionAnimation()
     } catch (error) {
-      console.error("❌ שגיאה:", error);
-      setMessage("❌ שגיאה בהעלאה או בקריאה, נסי שוב.");
+      console.error("Error:", error)
+      setUploadStatus("error")
+      setError("Error processing file. Please try again.")
     } finally {
-      setUploading(false);
+      clearInterval(progressInterval)
+      setUploading(false)
+      setLoading(false)
     }
-  };
-  // // הפונקציה שמבצעת את ההעלאה של הקובץ לשרת
-  // const handleFileUpload = async (selectedFile: File) => {
-  //   setUploading(true);
-  //   setFile(selectedFile);
-  //   console.log(selectedFile , "selectedFile");
+  }
 
-  //   try {
-  //     console.log("📡 שולחת בקשה לשרת לקבלת URL...");
-  //     const response1 = await axios.post("https://localhost:7136/api/files/upload", {
-  //       fileName: selectedFile.name,
-  //     });
-  //     const { fileId, fileUrl, s3Url } = response1.data; // שים לב לשינוי השם ל-s3Url
-  //     setFileUrl(fileUrl);
-  //     sets3url(s3Url); // עדכון הסטייט עם הערך הנכון
+  // Add this new function to handle the transition animation sequence
+  const triggerTransitionAnimation = () => {
+    // First, add the exit animation class
+    setIsTransitioning(true)
 
-  //     console.log("✅ S3eUrl עודכן ל:", s3Url);
+    // After exit animation completes, change the view
+    setTimeout(() => {
+      setActiveStep(1)
 
-  //     onFileUpload(s3Url);
+      // Then start the entrance animation
+      setTimeout(() => {
+        setIsTransitioning(false)
+        setShowParticles(true)
+        setTimeout(() => setShowParticles(false), 5000)
+      }, 100)
+    }, 600)
+  }
 
-  //     await axios.put(fileUrl, selectedFile, {
-  //       headers: {
-  //         "Content-Type": selectedFile.type,
-  //       },
-  //     });
+  const handleReset = () => {
+    // Start exit animation
+    setIsTransitioning(true)
 
-  //     setMessage(`✅ הקובץ הועלה בהצלחה! ID: ${fileId}`);
-  //   } catch (error) {
-  //     console.error("❌ שגיאה בהעלאת הקובץ:", error);
-  //     setMessage("❌ שגיאה בהעלאה, נסה שוב.");
-  //   } finally {
-  //     setUploading(false);
-  //   }
-  // };
+    // After exit animation completes, reset state
+    setTimeout(() => {
+      setFile(null)
+      setUploadedFileUrl(null)
+      setFileTextContent(null)
+      setUploadStatus("idle")
+      setUploadProgress(0)
+      setMessage("")
+      setError(null)
+      setActiveStep(0)
+      setProcessingStep("upload")
+
+      // Start entrance animation after state change
+      setTimeout(() => {
+        setIsTransitioning(false)
+      }, 100)
+    }, 600)
+  }
+
+  // Get appropriate icon for file type
+  const getFileIcon = () => {
+    if (!file) return <Upload className="upload-icon" />
+
+    const fileType = file.type
+    if (fileType === "application/pdf") {
+      return <FileText className="file-icon pdf" />
+    } else if (fileType === "text/plain") {
+      return <FileText className="file-icon txt" />
+    } else if (fileType.includes("word")) {
+      return <FileText className="file-icon docx" />
+    }
+
+    return <FileType className="file-icon" />
+  }
 
   return (
-    <div className="container">
-      <div className="allContent">
-        {loading ? (
-          <div className="loading-container">
-            <CircularProgress style={{ height: '80px', width: '80px', color: 'rgb(91, 140, 155)', marginTop: '100px', zIndex: 1000, position: "absolute" }} />
+    <div className="main-container">
+      {/* Background elements */}
+      <div className="background-elements">
+        <div className="bg-gradient"></div>
+        <div className="bg-pattern"></div>
+        <div className="floating-shape shape1"></div>
+        <div className="floating-shape shape2"></div>
+        <div className="floating-shape shape3"></div>
+        <div className="floating-shape shape4"></div>
+        <div className="floating-shape shape5"></div>
+        <div className="floating-shape shape6"></div>
+      </div>
+
+      {/* Particles effect for summary completion */}
+      {showParticles && <div className="particles-container"></div>}
+
+      <header className="app-header">
+        <div className="logo-container">
+          <div className="logo-icon">
+            <Sparkles size={24} />
           </div>
-        ) :
-          <Card
-            className="uploadCard"
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}>
-            <div className="all">
-              <Typography id="title" variant="h5" component="div" className="upload-title">
-                Upload a file!
-              </Typography>
+          <h1 className="logo-text">Document Summarizer</h1>
+        </div>
 
-              <div className="typing-container">
-                <Typography variant="body2" color="text.secondary" className="upload-instructions">
-                  <span className="typing-line">Choose a PDF or TXT file from your computer</span>
-                  <span className="typing-line">Drag and drop here or click to upload</span>
-                  <span className="typing-line">Maximum size: 5MB</span>
-                </Typography>
+        <div className="progress-steps">
+          <div className={`step ${activeStep >= 0 ? "active" : ""}`}>
+            <div className="step-icon">
+              <FileUp size={18} />
+            </div>
+            <span className="step-text">Upload</span>
+          </div>
+          <div className={`step-connector ${activeStep >= 1 ? "active" : ""}`}>
+            <ChevronRight size={16} />
+          </div>
+          <div className={`step ${activeStep >= 1 ? "active" : ""}`}>
+            <div className="step-icon">
+              <FileSymlink size={18} />
+            </div>
+            <span className="step-text">Summary</span>
+          </div>
+        </div>
+      </header>
 
-              </div>
+      <main className="app-content">
+        <div className={`content-container ${isTransitioning ? "transitioning" : ""}`}>
+          {activeStep === 0 ? (
+            <div className="upload-section">
+              <div className="upload-container">
+                {loading ? (
+                  <div className="processing-overlay">
+                    <div className="processing-content">
+                      <div className="processing-spinner">
+                        <Loader size={40} />
+                        <svg className="spinner-track" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="40" />
+                        </svg>
+                      </div>
+                      <h3 className="processing-title">
+                        {processingStep === "upload" ? "Uploading Document" : "Generating Summary"}
+                      </h3>
+                      <p className="processing-description">
+                        {processingStep === "upload"
+                          ? `Processing your file... ${uploadProgress}%`
+                          : "Our AI is analyzing your document..."}
+                      </p>
+                      <div className="processing-progress">
+                        <div
+                          className="progress-bar"
+                          style={{
+                            width: processingStep === "upload" ? `${uploadProgress}%` : "90%",
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`upload-card ${dragging ? "dragging" : ""} ${uploadStatus !== "idle" ? "has-file" : ""}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    {uploadStatus === "idle" ? (
+                      <>
+                        <div className="upload-illustration">
+                          <div className="upload-icon-wrapper">
+                            <FileUp className="upload-icon" />
+                          </div>
+                          <div className="upload-decoration">
+                            <div className="decoration-dot dot1"></div>
+                            <div className="decoration-dot dot2"></div>
+                            <div className="decoration-dot dot3"></div>
+                            <div className="decoration-line line1"></div>
+                            <div className="decoration-line line2"></div>
+                          </div>
+                        </div>
+                        <h2 className="upload-heading">Upload Your Document</h2>
+                        <div className="upload-instructions">
+                          <p>Select a PDF, TXT, or DOCX file to generate a summary</p>
+                          <p>Drag and drop here or use the button below</p>
+                        </div>
+                        <button className="upload-button" onClick={handleButtonClick}>
+                          <FileUp size={18} />
+                          <span>Choose File</span>
+                        </button>
+                        <div className="upload-info">
+                          <span className="info-badge">Max 5MB</span>
+                          <span className="info-badge">Secure Upload</span>
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="file-input"
+                          onChange={handleFileChange}
+                          accept=".pdf,.txt,.docx"
+                        />
+                      </>
+                    ) : (
+                      <div className="file-status">
+                        <div className="file-preview">
+                          {getFileIcon()}
+                          <div className="file-info">
+                            <p className="file-name">{file?.name}</p>
+                            <p className="file-size">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ""}</p>
+                          </div>
+                          {uploadStatus !== "uploading" && (
+                            <button className="reset-button" onClick={handleReset}>
+                              <X size={18} />
+                            </button>
+                          )}
+                        </div>
 
-              <div
-                className={`dropzone ${dragging ? "dragging" : ""}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <Typography variant="body2" className="upload-instructions">
-                  <span >📂 Drag & Drop a PDF or TXT file here</span>
-                  <span >or Click to upload</span>
-                </Typography>
-              </div>
+                        {uploadStatus === "uploading" && (
+                          <div className="upload-progress-container">
+                            <div
+                              className={`upload-progress-bar ${uploadStatus === "success" ? "success" : ""} ${uploadStatus === "error" ? "error" : ""}`}
+                              style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                          </div>
+                        )}
 
-              <div className="upload-button-container">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                />
+                        <div className="upload-status">
+                          {uploadStatus === "uploading" && <p>Uploading... {uploadProgress}%</p>}
+                          {uploadStatus === "success" && !loading && (
+                            <p className="success-message">
+                              <Check size={16} /> File ready for processing
+                            </p>
+                          )}
+                          {uploadStatus === "error" && <p className="error-message">{error}</p>}
+                        </div>
 
-                <IconButton
-                  id="iconUp"
-                  color="primary"
-                  onClick={handleButtonClick}
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    border: "1px solid black",
-                    backgroundColor: 'white',
-                    '&:hover': { backgroundColor: 'ButtonFace' },
-                    transition: '0.3s',
-                  }}
-                >
-                  <AddIcon />
-                </IconButton>
+                        {uploadStatus === "success" && !loading && (
+                          <button className="process-button" onClick={handleUploadAndSummarize}>
+                            <Sparkles size={18} />
+                            <span>Generate Summary</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
-          </Card>
-        }
+          ) : (
+            <div className="summary-section">
+              {uploadedFileUrl && (
+                <>
+                  <SummaryFile fileUrl={uploadedFileUrl} />
+                  <button className="new-document-button" onClick={handleReset}>
+                    <FileUp size={18} />
+                    <span>Upload Another Document</span>
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </main>
 
-      </div>
-      <Button
-        id="summaryButton"
-        variant="contained"
-        color="primary"
-        onClick={handleSummarize}
-      >
-        Summary Up!
-      </Button>
-    </div >
-  );
-
-};
-export default FileUploadButton;
+      <footer className="app-footer">
+        <p>© {new Date().getFullYear()}  TalkToMe.Ai -  By Tehila Shinfeld • </p>
+      </footer>
+    </div>
+  )
+}
+export default FileUploadButton

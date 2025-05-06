@@ -1,41 +1,113 @@
-.cta-container {
-    background-color: #1f2937; /* רקע כהה */
-    color: white; /* צבע טקסט לבן */
-    padding: 3rem; /* רווח פנימי */
-    border-radius: 1rem; /* פינות מעוגלות */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* צללים */
-    text-align: center; /* מיישר טקסט במרכז */
+.bottom-cta-section {
+  padding: 5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.bottom-cta-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, #ec4899, #8b5cf6, #06b6d4);
+}
+
+.bottom-cta-bg-texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("/abstract-colorful-swirls.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+}
+
+.bottom-cta-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.bottom-cta-particle {
+  position: absolute;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background-color: white;
+}
+
+.bottom-cta-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.bottom-cta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  text-align: center;
+}
+
+.bottom-cta-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: white;
+}
+
+.bottom-cta-subtitle {
+  max-width: 700px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.125rem;
+}
+
+.bottom-cta-button-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.bottom-cta-button-glow {
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 9999px;
+  background-color: white;
+  opacity: 0.3;
+  filter: blur(0.5rem);
+}
+
+.bottom-cta-button {
+  position: relative;
+  border-radius: 9999px;
+  background-color: white;
+  padding: 1.5rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #7c3aed; /* violet-600 */
+}
+
+.bottom-cta-button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.bottom-cta-button-icon {
+  margin-left: 0.5rem;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .bottom-cta-title {
+    font-size: 2.25rem;
   }
-  
-  .cta-content {
-    max-width: 1024px;
-    margin: 0 auto; /* ממרכז את התוכן */
+}
+
+@media (min-width: 1024px) {
+  .bottom-cta-title {
+    font-size: 3rem;
   }
-  
-  .cta-heading {
-    font-size: 2.5rem; /* גודל כותרת */
-    font-weight: 600; /* משקל טקסט כותרת */
-    margin-bottom: 1rem; /* רווח למטה */
-  }
-  
-  .cta-text {
-    font-size: 1.125rem; /* גודל טקסט */
-    margin-bottom: 2rem; /* רווח למטה */
-  }
-  
-  .cta-button {
-    background-color: #22d3ee; /* תכלת */
-    color: #111827; /* טקסט כהה */
-    padding: 1rem 2rem; /* רווח פנימי */
-    border-radius: 9999px; /* צורת כפתור עגול */
-    font-size: 1.125rem; /* גודל טקסט */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* אפקט מעבר */
-    cursor: pointer; /* מצביע על כפתור */
-    border: none; /* ללא גבול */
-  }
-  
-  .cta-button:hover {
-    background-color: #0c84b7; /* צבע שינוי בכפתור */
-    transform: translateY(-2px); /* הזזת כפתור למעלה בזמן Hover */
-  }
-  
+}

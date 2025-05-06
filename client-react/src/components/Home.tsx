@@ -53,7 +53,7 @@ import LoginModal from "./LoginModle";
 import TestimonialsSection from './TestimonialsSection';
 import HeroSection from './HeroSection';
 import HowItWorksSection from './HowItWorksSection';
-import FinalCTA from './FinalCTA';
+// import FinalCTA from './FinalCTA';
 export default function Home() {
   const [open, setOpen] = useState(false); // מצב לפתיחת המודאל
 
@@ -92,7 +92,7 @@ export default function Home() {
       <LoginModal open={open} onClose={() => setOpen(false)} />
       <FeaturesSection />
       <TestimonialsSection></TestimonialsSection>
-      <FinalCTA></FinalCTA>
+      {/* <FinalCTA></FinalCTA> */}
     </div>
 
 

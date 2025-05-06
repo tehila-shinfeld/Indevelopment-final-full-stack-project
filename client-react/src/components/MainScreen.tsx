@@ -1,7 +1,7 @@
 import { Card, CardContent, Typography } from "@mui/material";
 import FileUploadButton from "./FileUploadButton";
 import SummarizeFile from "./SummarizeFile";
-import "../styleSheets/MainScreen.css";
+// import "../styleSheets/MainScreen.css";
 import { useState } from "react";
 
 const MainScreen = () => {
@@ -10,7 +10,7 @@ const MainScreen = () => {
   return (
     <div id="main">
       <FileUploadButton  onFileUpload={(url) => setUploadedFileUrl(url)} ></FileUploadButton>
-      <SummarizeFile fileUrl={uploadedFileUrl || ""}/>
+      {/* <SummarizeFile fileUrl={uploadedFileUrl || ""}/> */}
     </div>
   );
 };

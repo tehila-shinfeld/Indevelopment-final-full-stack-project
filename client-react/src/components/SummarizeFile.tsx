@@ -67,7 +67,7 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 
         try {
             // Save permissions
-            await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
+           const res = await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
                 FileUrl: fileUrl,
                 UserserIds: users.map((user) => user.id),
             })
@@ -256,11 +256,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                         <button className="action-button download-button" disabled={loading} onClick={handleDownload}>
                             <Download size={18} />
                             <span>Download</span>
-                        </button>
-
-                        <button className="action-button share-button" disabled={loading}>
-                            <Share2 size={18} />
-                            <span>Share</span>
                         </button>
 
                         <button className="action-button edit-button" disabled={loading}>

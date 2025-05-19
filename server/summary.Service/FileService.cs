@@ -8,9 +8,6 @@ using summary.Core.DTOs;
 using summary.Core.Entities;
 using summary.Core.IRepositories;
 using summary.Core.IServices;
-using summary.Data.Repositories;
-using System.IO;
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace summary.Service
@@ -101,17 +98,32 @@ namespace summary.Service
         }
         public async Task<string> GetSummaryFromAIAsync(string inputText)
         {
-            var apiKey = ;
+            //var apiKey = _configuration["OpenAI:ApiKey"];
+            var apiKey = _configuration["OpenAI:ApiKey"];
+            Console.WriteLine(apiKey);
             var requestBody = new
             {
                 model = "gpt-4o-mini",
                 messages = new[]
                 {
-                    new { role = "system", content = "אתה מסכם טקסטים בשפה העברית בצורה מקצועית, תמציתית וברורה." },
-                    new { role = "user", content = $"סכם את הטקסט הבא:\n\n{inputText}" }
-                },
-                temperature = 0.7
+                    new { role = "system", content = " אתה מסכם תמלולים של ישיבות צוות בצורה תמציתית, ברורה, ומסודרת. הסיכום חייב לכלול כותרת ראשית, חלוקה לפסקאות קצרות, שימוש ברשימות ממוספרות או בתבליטים לנקודות עיקריות, ושמירה על עימוד ברור." },
+
+            new {
+            role = "user",
+            content =  $@"אתה עוזר חכם שמסכם ישיבות צוות בעברית בפורמט מסודר:
+📅 תאריך הישיבה: 
+👥 משתתפים: 
+📝 עיקרי הדברים:
+✅ החלטות שהתקבלו:
+📌משימות להמשך, אם מתאים גם מחולק לכל מישתתף את המשימות עבורו  :
+❓ נושאים פתוחים/להמשך טיפול:
+הנה התמלול לסיכום:
+{inputText}"
+        }
+    },
+                temperature = 0.6
             };
+
             Console.WriteLine("API KEY: " + apiKey); // רק לבדיקה כמובן, לא להשאיר בקוד פרודקשן
 
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");

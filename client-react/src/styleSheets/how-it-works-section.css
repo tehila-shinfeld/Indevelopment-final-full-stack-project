@@ -1,0 +1,351 @@
+.how-it-works-section {
+  padding: 5rem 0;
+  direction: rtl;
+  position: relative;
+  background-color: #f8fafc;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  visibility: visible;
+}
+
+.how-it-works-section.section-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  animation: fadeIn 0.8s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-description {
+  font-size: 1.125rem;
+  max-width: 700px;
+  margin: 1rem auto 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0;
+  margin: 0 auto;
+  position: relative;
+}
+
+.step-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.5s ease;
+  max-width: 280px;
+  opacity: 0;
+  transform: translateY(30px);
+  z-index: 1;
+}
+
+.step-card.animate-in {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.step-card.active {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.step-icon-wrapper {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.step-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all 0.4s ease;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-icon::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.4s ease;
+}
+
+.step-upload .step-icon {
+  background-color: #f97316; /* Orange */
+  box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3);
+}
+
+.step-ai .step-icon {
+  background-color: #06b6d4; /* Cyan */
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
+}
+
+.step-share .step-icon {
+  background-color: #d946ef; /* Purple */
+  box-shadow: 0 10px 15px -3px rgba(217, 70, 239, 0.3);
+}
+
+.step-card:hover .step-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.step-card:hover .step-icon::before {
+  transform: scale(1);
+}
+
+.step-card:hover .step-icon svg {
+  transform: scale(1.1);
+  transition: transform 0.4s ease;
+}
+
+.step-card.active .step-icon {
+  transform: scale(1.1);
+}
+
+.step-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #1e293b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #1e293b;
+}
+
+.step-description {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.step-connector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  position: relative;
+  z-index: 0;
+}
+
+.connector-line {
+  width: 100%;
+  height: 2px;
+  background-color: #e2e8f0;
+  position: relative;
+}
+
+.connector-arrow {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  color: #94a3b8;
+  animation: arrowPulse 2s infinite;
+}
+
+@keyframes arrowPulse {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.connector-arrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 900px) {
+  .steps-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .step-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .step-connector {
+    width: auto;
+    height: 40px;
+    flex-direction: row;
+  }
+
+  .connector-line {
+    width: 2px;
+    height: 100%;
+  }
+
+  .connector-arrow {
+    transform: rotate(90deg);
+    animation: arrowPulseVertical 2s infinite;
+  }
+
+  @keyframes arrowPulseVertical {
+    0% {
+      transform: rotate(90deg) translateX(0);
+    }
+    50% {
+      transform: rotate(90deg) translateX(-3px);
+    }
+    100% {
+      transform: rotate(90deg) translateX(0);
+    }
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .how-it-works-section {
+    background-color: #0f172a;
+  }
+
+  .section-title {
+    color: #f1f5f9;
+  }
+
+  .section-description {
+    color: #cbd5e1;
+  }
+
+  .step-card {
+    background-color: #1e293b;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  .step-title {
+    color: #f1f5f9;
+  }
+
+  .step-description {
+    color: #cbd5e1;
+  }
+
+  .step-number {
+    background-color: #0f172a;
+  }
+
+  .connector-line {
+    background-color: #334155;
+  }
+
+  .connector-arrow {
+    color: #64748b;
+  }
+}
+
+/* Hover effects */
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Step-specific styling */
+.step-upload.active {
+  border-top: 3px solid #f97316;
+}
+
+.step-ai.active {
+  border-top: 3px solid #06b6d4;
+}
+
+.step-share.active {
+  border-top: 3px solid #d946ef;
+}
+
+/* Add specific hover effects for each icon */
+.step-upload:hover .step-icon {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+.step-ai:hover .step-icon {
+  background: linear-gradient(135deg, #06b6d4, #22d3ee);
+}
+
+.step-share:hover .step-icon {
+  background: linear-gradient(135deg, #d946ef, #e879f9);
+}

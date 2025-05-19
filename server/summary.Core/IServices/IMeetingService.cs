@@ -15,5 +15,7 @@ namespace summary.Core.IServices
         public Task AddAsync(MeetingDto meeting);
         public Task<MeetingDto> ChangeAsync(int id, MeetingDto meeting);
         public Task<MeetingDto> DelAsync(int id);
+        public Task<bool> RemoveUserFromMeetingAsync(int meetingId, int userId);
+
     }
 }

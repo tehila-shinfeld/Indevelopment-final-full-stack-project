@@ -1,12 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-
-// 📌 ממשק המייצג את פרטי המשתמש
 interface User {
-    username?: string;
-    passwordHash?: string; // עדיף לא לשמור סיסמאות בצד לקוח!
-    company?: string;
-    role?: string;
-    email?: string;
+    username: string;
+    id: number;        
 }
 
 // 📌 ממשק לניהול ההקשר של המשתמש

@@ -1,0 +1,66 @@
+/* CTA Section */
+.cta-section {
+  padding: 6rem 0;
+  background-color: var(--background);
+}
+
+.cta-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 3rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section-visible .cta-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cta-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+.cta-title {
+  font-size: 2.25rem;
+  margin-bottom: 1rem;
+}
+
+.cta-description {
+  font-size: 1.125rem;
+  color: var(--muted-foreground);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
+}
+
+@media (max-width: 768px) {
+  .cta-buttons {
+    flex-direction: column;
+  }
+}

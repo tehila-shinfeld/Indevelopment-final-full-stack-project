@@ -2,11 +2,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'; // ייבוא של RouterProvider
-import Home from './components/Home.tsx';
 import MainScreen from './components/MainScreen.tsx';
 import { SummaryProvider } from './context/SummaryContext.tsx';
 import { UserProvider } from './context/UserContext.tsx';
 import UserMeetings from './components/UserMeetings.tsx';
+import HomePage from './components/home-page.tsx';
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -16,7 +16,7 @@ const routes = createBrowserRouter([
   },
   {
     path: '/home', // דף הבית
-    element: <Home />, // קומפוננטת Home
+    element: <HomePage />, // קומפוננטת Home
   },
   {
     path: '/summary-up!', // דף הבית
@@ -32,11 +32,9 @@ const routes = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <SummaryProvider>
     <UserProvider>
-      {/* שאר הקומפוננטות */}
       <>
         <StrictMode>
-          {/* אין צורך ב-<BrowserRouter> כאן, הוא כבר בעץ הקומפוננטות ב-App */}
-          <RouterProvider router={routes} /> {/* הוספת ה-RouterProvider עם הנתיבים */}
+          <RouterProvider router={routes} /> 
         </StrictMode>
       </>
     </UserProvider>

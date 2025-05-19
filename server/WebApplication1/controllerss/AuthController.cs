@@ -2,6 +2,8 @@
 using summary.Api;
 using summary.Core.DTOs;
 using summary.Core.IServices;
+using System.Linq;
+using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -15,15 +17,15 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginModel loginModel)
+    public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
     {
-        var token = _authService.AuthenticateUserAsync(loginModel.Username, loginModel.Password);
-        if (token == null)
+        var user = await _authService.AuthenticateUserAsync(loginModel.Username, loginModel.Password); 
+        if (user == null)
         {
             return Unauthorized("Invalid email or password");
         }
 
-        return Ok(new { Token = token });
+        return Ok(new { Token = user.Token, Username = user.Username, UserId = user.Id });
     }
 
     [HttpPost("register")]
@@ -34,8 +36,8 @@ public class AuthController : ControllerBase
 
         try
         {
-            var token = await _authService.RegisterUserAsync(registerUserDto);
-            return Ok(new { Token = token });
+            var user = await _authService.RegisterUserAsync(registerUserDto);
+            return Ok(new { Token = user.Token, Username = user.Username, UserId = user.Id });
         }
         catch (Exception ex)
         {

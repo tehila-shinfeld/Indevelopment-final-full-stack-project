@@ -16,8 +16,6 @@ namespace summary.Core
             CreateMap<Meeting, MeetingDto>().ReverseMap();
             CreateMap<User,UserDto>().ReverseMap();
             CreateMap<User, UserId_Name>().ReverseMap();
-
-
         }
     }
 }

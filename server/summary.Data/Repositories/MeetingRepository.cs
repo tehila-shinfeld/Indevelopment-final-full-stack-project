@@ -108,15 +108,29 @@ namespace summary.Data.Repositories
         public async Task<List<MeetingDto>> GetMeetingsByUserIdAsync(int userId)
         {
             return await _dataContext.Meetings
-                .Where(m => m.Users.Any(u => u.Id == userId))
+                .Where(m => m.Users.Any(u => u.Id == userId)) // כאן הקסם
                 .Select(m => new MeetingDto
                 {
+                    Id = m.Id,
                     Name = m.Name,
                     TranscriptionLink = m.TranscriptionLink,
-                    SummaryContent = m.SummaryContent,
+                    SummaryContent = m.SummaryContent
                 })
                 .ToListAsync();
+        }
 
+
+        public async Task<Meeting?> GetMeetingWithUsersAsync(int meetingId)
+        {
+            return await _dataContext.Meetings
+                .Include(m => m.Users)
+                .FirstOrDefaultAsync(m => m.Id == meetingId);
+        }
+
+        public async Task UpdateAsync(Meeting meeting)
+        {
+            _dataContext.Meetings.Update(meeting);
+            await _dataContext.SaveChangesAsync();
         }
         public async Task SaveAsync()
         {

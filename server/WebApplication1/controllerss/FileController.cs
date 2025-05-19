@@ -54,7 +54,8 @@ public class FilesController : ControllerBase
         var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
         return Ok(new { summary });
     }
-    [HttpPost(" assign-file-to-customers")]
+
+    [HttpPost("assign-file-to-customers")]
     public async Task<IActionResult> AssignFileToCustomers([FromBody] AssignFileRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.FileUrl) || request.UserserIds == null)

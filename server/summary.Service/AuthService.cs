@@ -8,6 +8,8 @@ using summary.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity.Data;
+using summary.Core;
 
 namespace summary.Service
 {
@@ -24,9 +26,10 @@ namespace summary.Service
             _passwordHasher = new PasswordHasher<User>();
         }
 
-        public async Task<string> AuthenticateUserAsync(string username, string password)
+        public async Task<LoginResponse> AuthenticateUserAsync(string username, string password)
         {
             var user = await _authRepository.GetUserByNameAsync(username);
+
             if (user == null)
             {
                 return null;
@@ -38,11 +41,19 @@ namespace summary.Service
             {
                 return null; // אם הסיסמה לא נכונה
             }
+            var token = GenerateJwtToken(user.Username, user.Role, user.Company);
+            return new LoginResponse
+            {
+                Token = token,
+                Username = user.Username,
+                Id = user.Id
 
-            return GenerateJwtToken(user.Username, user.Role, user.Company);
+            }; 
+
+
         }
 
-        public async Task<string> RegisterUserAsync(UserDto registerUserDto)
+        public async Task<LoginResponse> RegisterUserAsync(UserDto registerUserDto)
         {
             var existingUser = await _authRepository.GetUserByNameAsync(registerUserDto.Username);
 
@@ -66,7 +77,14 @@ namespace summary.Service
 
             await _authRepository.CreateUserAsync(newUser);
 
-            return GenerateJwtToken(newUser.Username, newUser.Role, newUser.Company);
+            var token =  GenerateJwtToken(newUser.Username, newUser.Role, newUser.Company);
+
+            return new LoginResponse
+            {
+                Token = token,
+                Username = newUser.Username,
+                Id = newUser.Id
+            };
         }
 
         private string GenerateJwtToken(string userName, string role, string company)
@@ -76,9 +94,9 @@ namespace summary.Service
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, userName),   
+                new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.Role, role),
-                new Claim("company", company),          
+                new Claim("company", company),
             };
 
             var token = new JwtSecurityToken(

@@ -8,7 +8,7 @@ namespace summary.Core.Entities
 {
    public class Meeting
     {
-        public int? Id { get; set; } // מזהה ישיבה
+        public int Id { get; set; } // מזהה ישיבה
 
         public string? Name { get; set; } // שם הישיבה
         public User? CreatedByUser { get; set; } // הקשר למשתמש שיצר את הישיבה
@@ -23,8 +23,9 @@ namespace summary.Core.Entities
 
         public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow; // תאריך עדכון
 
-        public List<User>? Users { get; set; } = new List<User>(); // קשר רבים לרבים עם משתמשים נוספים בישיבה
+        public string? MeetinDate { get; set; }
 
+        public List<User>? Users { get; set; } = new List<User>(); // קשר רבים לרבים עם משתמשים נוספים בישיבה
     }
 }
 

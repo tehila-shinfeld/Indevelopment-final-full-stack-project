@@ -10,7 +10,7 @@ namespace summary.Core.IServices
 {
     public interface IAuthService
     {
-        Task<string> AuthenticateUserAsync(string name, string password);
-        Task<string> RegisterUserAsync(UserDto UserDto);
+        Task<LoginResponse> AuthenticateUserAsync(string name, string password);
+        Task<LoginResponse> RegisterUserAsync(UserDto UserDto);
     }
 }

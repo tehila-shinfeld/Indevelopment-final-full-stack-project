@@ -1,12 +1,10 @@
-import './styleSheets/App.css'
-import Home from './components/Home';
+"use client"
+import HomePage from "./components/home-page"
+import "./styleSheets/App.css"
 
 const App = () => {
-  return (
-    <div>
-      <Home></Home>
-    </div>
-  );
-};
-
+  <>
+    <HomePage />
+  </>
+}
 export default App

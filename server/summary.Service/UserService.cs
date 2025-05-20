@@ -30,7 +30,7 @@ namespace summary.Service
         }
         public async Task<IEnumerable<UserId_Name>> GetAllByCompanyAsyc(string company)
         {
-            var users = await Task.Run(() => userRepository.GetAllByComp(company));
+            var users = await userRepository.GetAllByCompAsync(company);
             var userDtos = mapper.Map<IEnumerable<UserId_Name>>(users);
             return userDtos;
         }

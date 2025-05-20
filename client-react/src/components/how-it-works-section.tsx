@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, type RefObject } from "react"
+import { useTheme } from "next-themes" // Import useTheme hook
 import "../styleSheets/how-it-works-section.css"
 
 interface HowItWorksSectionProps {
@@ -11,11 +12,19 @@ interface HowItWorksSectionProps {
 const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) => {
   const stepsRef = useRef<(HTMLDivElement | null)[]>([])
   const sectionInViewRef = useRef(false)
+  const { theme, resolvedTheme } = useTheme() // Get current theme and resolved theme
 
   useEffect(() => {
     // וודא שהסקשן גלוי תמיד
     if (sectionRef.current) {
       sectionRef.current.classList.add("section-visible")
+
+      // Add dark mode class if theme is dark
+      if (theme === "dark") {
+        sectionRef.current.classList.add("dark-mode")
+      } else {
+        sectionRef.current.classList.remove("dark-mode")
+      }
     }
 
     // הגדרת האובזרבר לאנימציה בעת גלילה
@@ -52,10 +61,14 @@ const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) =
         observer.unobserve(sectionRef.current)
       }
     }
-  }, [sectionRef])
+  }, [sectionRef, theme, resolvedTheme]) // Add theme as a dependency
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="how-it-works-section">
+    <section
+      ref={sectionRef}
+      id="how-it-works"
+      className={`how-it-works-section ${theme === "dark" || resolvedTheme === "dark" ? "dark-mode" : ""}`}
+    >
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">
@@ -68,7 +81,9 @@ const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) =
 
         <div className="steps-container">
           <div
-            ref={(el) => { stepsRef.current[0] = el }}
+            ref={(el) => {
+              stepsRef.current[0] = el
+            }}
             className={`step-card step-upload ${activeStep === 0 ? "active" : ""}`}
           >
             <div className="step-icon-wrapper">
@@ -112,7 +127,9 @@ const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) =
           </div>
 
           <div
-            ref={(el) => { stepsRef.current[1] = el }}
+            ref={(el) => {
+              stepsRef.current[1] = el
+            }}
             className={`step-card step-ai ${activeStep === 1 ? "active" : ""}`}
           >
             <div className="step-icon-wrapper">
@@ -158,7 +175,9 @@ const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) =
           </div>
 
           <div
-            ref={(el) => { stepsRef.current[2] = el }}
+            ref={(el) => {
+              stepsRef.current[2] = el
+            }}
             className={`step-card step-share ${activeStep === 2 ? "active" : ""}`}
           >
             <div className="step-icon-wrapper">

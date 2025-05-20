@@ -105,7 +105,7 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost",
-        policy => policy.WithOrigins("http://localhost:5173", "https://localhost:5174", "http://localhost:5238") // כתובת הלקוח שלך
+        policy => policy.WithOrigins("http://localhost:5173", "https://localhost:5174", "http://localhost:7136") // כתובת הלקוח שלך
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
@@ -120,6 +120,7 @@ var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
+app.UseCors("AllowLocalhost5174");
 
 // Configure the HTTP request pipeline.
 if (true)

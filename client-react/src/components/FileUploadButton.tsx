@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
 import {
@@ -19,17 +18,18 @@ import {
   ArrowUp,
   Loader2,
 } from "lucide-react"
-import "../stylesheets/FileUploadButton.css"
-
-// הוספת הקובץ המקורי כקובץ נפרד
 import SummaryFile from "./SummarizeFile"
+import axios from "axios"
+import mammoth from "mammoth"
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
+import "pdfjs-dist/build/pdf.worker.entry"
+import "../styleSheets/FileUploadButton.css"
 
 const FileUploadButton = () => {
   // מצבי העלאת קובץ
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
-  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
   const { summary, setSummary } = useSummary()
@@ -39,20 +39,21 @@ const FileUploadButton = () => {
   const [uploading, setUploading] = useState(false)
   const [celebrationActive, setCelebrationActive] = useState(false)
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false)
-
   const [dragFileValid, setDragFileValid] = useState<boolean | null>(null)
   const [showDropSuccess, setShowDropSuccess] = useState(false)
   const [showDropError, setShowDropError] = useState(false)
-
   // מצבי מעבר תצוגה
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const [processingStep, setProcessingStep] = useState<"upload" | "summarize" | "complete">("upload")
   const [showUploadAnimation, setShowUploadAnimation] = useState(false)
-
   // מצבי ממשק
   const [darkMode, setDarkMode] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // מצב חדש לבקרת תהליך העבודה
+  const [isReadyToSummarize, setIsReadyToSummarize] = useState(false)
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  const [s3url, sets3url] = useState<string | null>(null)
 
   // טיפול בלחיצה על כפתור בחירת קובץ
   const handleButtonClick = () => {
@@ -147,135 +148,134 @@ const FileUploadButton = () => {
     }
   }
 
-  // פונקציה משולבת לטיפול בהעלאה ויצירת סיכום
-  const handleUploadAndSummarize = async () => {
-    if (!file) {
-      setError("אנא בחר קובץ תחילה")
-      return
-    }
-
-    setProcessingStep("upload")
-    setLoading(true)
+  // פונקציה 1: טיפול בהעלאת הקובץ בלבד
+  const handleFileUpload = async (selectedFile: File) => {
     setUploading(true)
-    setUploadStatus("uploading")
-    setError(null)
+    setFile(selectedFile)
+    setLoading(true)
+    setProcessingStep("upload")
 
-    // סימולציה של התקדמות העלאה
+    // Simulate upload progress
     const progressInterval = setInterval(() => {
       setUploadProgress((prev) => {
-        if (prev >= 90) {
+        if (prev >= 95) {
           clearInterval(progressInterval)
-          return 90
+          return prev
         }
-        return prev + 10
+        return prev + 5
       })
-    }, 300)
+    }, 200)
 
     try {
-      // שלב 1: עיבוד תוכן הקובץ
       let textContent = ""
 
-      if (file.type === "text/plain") {
+      if (selectedFile.type === "text/plain") {
         // TXT
         const reader = new FileReader()
         textContent = await new Promise<string>((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string)
           reader.onerror = reject
-          reader.readAsText(file)
+          reader.readAsText(selectedFile)
         })
-      } else if (file.type === "application/pdf") {
-        // PDF - סימולציה של עיבוד PDF
-        textContent = "תוכן מעובד מקובץ PDF"
-      } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        // DOCX - סימולציה של עיבוד DOCX
-        textContent = "תוכן מעובד מקובץ DOCX"
+      } else if (selectedFile.type === "application/pdf") {
+        // PDF
+        const pdfData = await selectedFile.arrayBuffer()
+        const pdf = await getDocument({ data: pdfData }).promise
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i)
+          const content = await page.getTextContent()
+          const strings = content.items.map((item: any) => item.str)
+          textContent += strings.join(" ") + "\n"
+        }
+      } else if (selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        // DOCX
+        const arrayBuffer = await selectedFile.arrayBuffer()
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        textContent = result.value
       } else {
-        throw new Error("סוג קובץ לא נתמך")
+        throw new Error("Unsupported file type")
       }
 
-      setFileTextContent(textContent)
+      setFileTextContent(textContent) // שומר את התוכן
+      console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
-      // שלב 2: העלאת קובץ לשרת - סימולציה
-      // במציאות, כאן היינו מבצעים קריאת API אמיתית
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // ⬇️ המשך התהליך הרגיל של ההעלאה לשרת
+      const response1 = await axios.post("https://localhost:7136/api/files/upload", {
+        fileName: selectedFile.name,
+      })
 
-      const mockS3Url = "https://example.com/s3/mock-s3-url"
+      const { fileUrl, s3Url } = response1.data
+      setFileUrl(fileUrl)
+      sets3url(s3Url)
 
-      // No need to set fileUrl since we're using uploadedFileUrl
-      setUploadedFileUrl(mockS3Url)
+      await axios.put(fileUrl, selectedFile, {
+        headers: {
+          "Content-Type": selectedFile.type,
+        },
+      })
 
+      // Complete the progress bar
       setUploadProgress(100)
-      setUploadStatus("success")
-
-      // שלב 3: יצירת סיכום - סימולציה
-      setProcessingStep("summarize")
-
-      // סימולציה של עיבוד AI
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      const mockSummary =
-        "זהו סיכום לדוגמה שנוצר על ידי מערכת ה-AI. הסיכום מכיל את הנקודות העיקריות מהמסמך שהועלה, מאורגן בצורה ברורה וקריאה. המערכת מזהה מושגים מרכזיים, רעיונות חשובים ומסקנות, ומציגה אותם בצורה תמציתית."
-      setSummary(mockSummary)
-
-      // הצגת אנימציית סיום עיבוד
-      setShowCompletionAnimation(true)
-      setTimeout(() => setShowCompletionAnimation(false), 2000)
-
-      // שלב 4: מעבר לתצוגת סיכום
-      setProcessingStep("complete")
-
-      // התחלת רצף המעבר
-      triggerTransitionAnimation()
-    } catch (error) {
-      console.error("שגיאה:", error)
-      setUploadStatus("error")
-      setError("שגיאה בעיבוד הקובץ. אנא נסה שוב.")
-    } finally {
       clearInterval(progressInterval)
+
+      // Show completion animation
+      setShowCompletionAnimation(true)
+      setTimeout(() => {
+        setShowCompletionAnimation(false)
+        setIsReadyToSummarize(true)
+      }, 1500)
+    } catch (error) {
+      console.error("❌ שגיאה:", error)
+      setError("שגיאה בהעלאה או בקריאה, נסי שוב.")
+      setUploadStatus("error")
+      clearInterval(progressInterval)
+    } finally {
       setUploading(false)
       setLoading(false)
     }
   }
 
-  // פונקציה חדשה לטיפול ברצף אנימציית המעבר
-  const triggerTransitionAnimation = () => {
-    // ראשית, הוספת מחלקת אנימציית יציאה
-    setIsTransitioning(true)
+  // פונקציה 2: טיפול בסיכום הקובץ בלבד
+  const handleSummarize = async () => {
+    if (!fileUrl) {
+      alert("No file URL provided!")
+      return
+    }
+    setLoading(true)
+    setProcessingStep("summarize")
 
-    // לאחר השלמת אנימציית היציאה, שינוי התצוגה
-    setTimeout(() => {
-      setActiveStep(1)
+    try {
+      const response = await axios.post("https://localhost:7136/api/files/summarize", {
+        text: fileTextContent,
+      })
+      setSummary(response.data.summary)
 
-      // ואז התחלת אנימציית הכניסה
+      // Show success animation
+      setCelebrationActive(true)
       setTimeout(() => {
-        setIsTransitioning(false)
-        // הפעלת אנימציית חגיגה
-        setCelebrationActive(true)
-        setTimeout(() => setCelebrationActive(false), 4000)
-      }, 100)
-    }, 600)
+        setCelebrationActive(false)
+        setActiveStep(1)
+      }, 2000)
+    } catch (error) {
+      console.error("שגיאה בשליחת הבקשה:", error)
+      setError("אירעה שגיאה בשליחת הבקשה")
+      setUploadStatus("error")
+    } finally {
+      setLoading(false)
+    }
   }
 
+  // Reset function
   const handleReset = () => {
-    // התחלת אנימציית יציאה
-    setIsTransitioning(true)
-
-    // לאחר השלמת אנימציית היציאה, איפוס המצב
-    setTimeout(() => {
-      setFile(null)
-      setUploadedFileUrl(null)
-      setFileTextContent(null)
-      setUploadStatus("idle")
-      setUploadProgress(0)
-      setError(null)
-      setActiveStep(0)
-      setProcessingStep("upload")
-
-      // התחלת אנימציית כניסה לאחר שינוי המצב
-      setTimeout(() => {
-        setIsTransitioning(false)
-      }, 100)
-    }, 600)
+    setFile(null)
+    setUploadStatus("idle")
+    setError(null)
+    setUploadProgress(0)
+    setIsReadyToSummarize(false)
+    setActiveStep(0)
+    setFileUrl(null)
+    sets3url(null)
+    setFileTextContent(null)
   }
 
   // קבלת אייקון מתאים לסוג הקובץ
@@ -335,6 +335,15 @@ const FileUploadButton = () => {
     return () => mediaQuery.removeEventListener("change", handleChange)
   }, [])
 
+  // Add this useEffect to set up PDF.js worker
+  // Add it right after the existing useEffect hooks
+  useEffect(() => {
+    // Set the worker source path for PDF.js
+    if (!GlobalWorkerOptions.workerSrc) {
+      GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${getDocument.version}/pdf.worker.js`
+    }
+  }, [])
+
   return (
     <div className={`main-container ${darkMode ? "dark-mode" : ""}`}>
       {/* אלמנטי רקע */}
@@ -346,11 +355,12 @@ const FileUploadButton = () => {
         <div className="geometric-shape shape3"></div>
         <div className="geometric-shape shape4"></div>
       </div>
+
       {/* תפריט צד */}
       {menuOpen && <div className="sidebar-overlay" onClick={toggleMenu} />}
       <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <button className="close-menu" onClick={toggleMenu}>
+          <button className="close-menu" onClick={toggleMenu} aria-label="סגור תפריט">
             <X size={24} />
           </button>
         </div>
@@ -395,7 +405,8 @@ const FileUploadButton = () => {
           <p>© {new Date().getFullYear()} TalkToMe.AI</p>
         </div>
       </aside>
-      {/* הדר (Header) בסגנון USERMEETINGS */}
+
+      {/* הדר (Header) */}
       <header className="dashboard-header">
         <div className="header-content">
           <div className="header-controls">
@@ -425,6 +436,8 @@ const FileUploadButton = () => {
           </div>
         </div>
       </header>
+
+      {/* אנימציות */}
       {showUploadAnimation && <div className="upload-animation-container"></div>}
       {celebrationActive && (
         <div className="celebration-container">
@@ -491,19 +504,20 @@ const FileUploadButton = () => {
                           <div className="progress-glow"></div>
                         </div>
                       </div>
+
+                      {showCompletionAnimation && (
+                        <div className="completion-animation">
+                          <div className="success-checkmark">
+                            <div className="check-icon">
+                              <span className="icon-line line-tip"></span>
+                              <span className="icon-line line-long"></span>
+                            </div>
+                          </div>
+                          <div className="completion-text">העיבוד הושלם בהצלחה!</div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  // {showCompletionAnimation && (
-                  //   <div className="completion-animation">
-                  //     <div className="success-checkmark">
-                  //       <div className="check-icon">
-                  //         <span className="icon-line line-tip"></span>
-                  //         <span className="icon-line line-long"></span>
-                  //       </div>
-                  //     </div>
-                  //     <div className="completion-text">העיבוד הושלם בהצלחה!</div>
-                  //   </div>
-                  // )}
                 ) : (
                   <div
                     className={`upload-card ${dragging ? "dragging" : ""} ${uploadStatus !== "idle" ? "has-file" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
@@ -517,13 +531,15 @@ const FileUploadButton = () => {
                       <div className="decoration-line line2"></div>
                       <div className="decoration-line line3"></div>
                       <div className="decoration-dot dot1"></div>
-                      <div className="decoration-dot dot2"></div>\
+                      <div className="decoration-dot dot2"></div>
                       <div className="decoration-dot dot3"></div>
                     </div>
 
                     {/* Drag overlay */}
                     {dragging && (
-                      <div className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${dragFileValid === true ? "valid" : ""}`}>
+                      <div
+                        className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${dragFileValid === true ? "valid" : ""}`}
+                      >
                         <div className="drag-icon">
                           {dragFileValid === true && <FileUp size={48} />}
                           {dragFileValid === false && <X size={48} />}
@@ -541,6 +557,7 @@ const FileUploadButton = () => {
                         </p>
                       </div>
                     )}
+
                     {uploadStatus === "idle" ? (
                       <>
                         <div className="upload-illustration">
@@ -579,12 +596,12 @@ const FileUploadButton = () => {
                             <p className="file-size">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ""}</p>
                           </div>
                           {uploadStatus !== "uploading" && (
-                            <button className="reset-button" onClick={handleReset}>
+                            <button className="reset-button" onClick={handleReset} aria-label="הסר קובץ">
                               <X size={18} />
                             </button>
                           )}
                         </div>
-                      
+
                         {uploadStatus === "uploading" && (
                           <div className="upload-progress-container">
                             <div
@@ -606,8 +623,17 @@ const FileUploadButton = () => {
                           {uploadStatus === "error" && <p className="error-message">{error}</p>}
                         </div>
 
-                        {uploadStatus === "success" && !loading && (
-                          <button className="process-button" onClick={handleUploadAndSummarize}>
+                        {/* שלב 1: כפתור העלאה */}
+                        {uploadStatus === "success" && !isReadyToSummarize && !loading && (
+                          <button className="process-button" onClick={() => file && handleFileUpload(file)}>
+                            <span className="button-text">העלאת הקובץ</span>
+                            <FileUp size={18} className="button-icon" />
+                          </button>
+                        )}
+
+                        {/* שלב 2: כפתור סיכום (מופיע רק לאחר העלאה מוצלחת) */}
+                        {isReadyToSummarize && !loading && (
+                          <button className="process-button summarize-button" onClick={handleSummarize}>
                             <span className="button-text">יצירת סיכום</span>
                             <Sparkles size={18} className="button-icon" />
                           </button>
@@ -620,9 +646,9 @@ const FileUploadButton = () => {
             </div>
           ) : (
             <div className="summary-section">
-              {uploadedFileUrl && (
+              {summary && (
                 <>
-                  <SummaryFile fileUrl={uploadedFileUrl} />
+                  <SummaryFile fileUrl={summary} />
                   <button className="new-document-button" onClick={handleReset}>
                     <span className="button-text">העלאת מסמך נוסף</span>
                     <FileUp size={18} className="button-icon" />

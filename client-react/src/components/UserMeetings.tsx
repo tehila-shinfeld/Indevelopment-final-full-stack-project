@@ -211,9 +211,13 @@ const UserMeetings = () => {
     meetingId: null as number | null,
     meetingName: "",
   })
-  const [notifications, setNotifications] = useState<ErrorNotification[]>([])
+  // const [notifications, setNotifications] = useState<ErrorNotification[]>([])
   const [scrollY, setScrollY] = useState(0)
-  const [favorites, setFavorites] = useState<number[]>([])
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    // Load favorites from localStorage on initial render
+    const savedFavorites = localStorage.getItem("userFavorites")
+    return savedFavorites ? JSON.parse(savedFavorites) : []
+  })
   // Add dark mode state
   const [darkMode, setDarkMode] = useState(false)
   // Add PDF download state
@@ -311,9 +315,9 @@ const UserMeetings = () => {
     }
   }, [])
 
-  const dismissNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-  }
+  // const dismissNotification = (id: string) => {
+  //   setNotifications((prev) => prev.filter((notification) => notification.id !== id))
+  // }
 
   // ===== ERROR HANDLING =====
   const handleError = useCallback(
@@ -427,11 +431,11 @@ const UserMeetings = () => {
     event.stopPropagation()
 
     setFavorites((prev) => {
-      if (prev.includes(meetingId)) {
-        return prev.filter((id) => id !== meetingId)
-      } else {
-        return [...prev, meetingId]
-      }
+      const newFavorites = prev.includes(meetingId) ? prev.filter((id) => id !== meetingId) : [...prev, meetingId]
+
+      // Save to localStorage
+      localStorage.setItem("userFavorites", JSON.stringify(newFavorites))
+      return newFavorites
     })
   }
 
@@ -496,7 +500,7 @@ const UserMeetings = () => {
   })
 
   // ===== MEETING ACTIONS =====
-  const handleCardClick = (meeting: Meeting, event: React.MouseEvent) => {
+  const handleCardClick = (meeting: Meeting) => {
     // Check if user is authenticated
     if (!userId) {
       handleError(new Error("User not authenticated"), "userAuthentication")
@@ -1004,6 +1008,12 @@ const UserMeetings = () => {
     }, 100)
   }, [handleScroll, meetings])
 
+  // Add this after other useEffect hooks
+  useEffect(() => {
+    // This ensures favorites stay in sync if modified elsewhere
+    localStorage.setItem("userFavorites", JSON.stringify(favorites))
+  }, [favorites])
+
   // ===== RENDER METHODS =====
   // Render meeting details view
   const renderMeetingDetails = () => {
@@ -1124,12 +1134,12 @@ const UserMeetings = () => {
 
     return (
       <div className="meetings-grid" ref={meetingsRef}>
-        {filteredMeetings.map((meeting, index) => (
+        {filteredMeetings.map((meeting) => (
           <div
             key={meeting.id}
             data-id={meeting.id}
             className={`meeting-card ${deletingMeetingId === meeting.id ? "deleting" : ""}`}
-            onClick={(e) => handleCardClick(meeting, e)}
+            onClick={() => handleCardClick(meeting)}
           >
             <div className="card-header">
               <h3 className="meeting-title">{highlightMatch(meeting.name, searchName)}</h3>

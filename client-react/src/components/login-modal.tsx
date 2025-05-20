@@ -1,24 +1,39 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
 import "../styleSheets/login-modal.css"
 import { useUser } from "../context/UserContext"
+
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   onNavigate: (path: string) => void
 }
 
+// Password strength types
+type PasswordStrength = "empty" | "weak" | "medium" | "strong" | "very-strong"
+
 export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
   const [isLoading, setIsLoading] = useState(false)
-  const { setUser } = useUser();
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>("empty")
+  const { setUser } = useUser()
+
   // Login form state
   const [loginForm, setLoginForm] = useState({
     username: "",
     password: "",
+  })
+
+  // Login form errors
+  const [loginErrors, setLoginErrors] = useState({
+    username: "",
+    password: "",
+    general: "",
   })
 
   // Register form state
@@ -30,64 +45,353 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
     role: "",
   })
 
-  // Error messages
-  const [loginError, setLoginError] = useState("")
-  const [registerError, setRegisterError] = useState("")
+  // Register form errors
+  const [registerErrors, setRegisterErrors] = useState({
+    username: "",
+    password: "",
+    email: "",
+    general: "",
+  })
+
+  // Load saved credentials on component mount
+  useEffect(() => {
+    if (isOpen) {
+      loadSavedCredentials()
+    }
+  }, [isOpen])
+
+  // Update password strength when password changes
+  useEffect(() => {
+    if (activeTab === "register") {
+      const strength = calculatePasswordStrength(registerForm.password)
+      setPasswordStrength(strength)
+    }
+  }, [registerForm.password, activeTab])
+
+  // Calculate password strength
+  const calculatePasswordStrength = (password: string): PasswordStrength => {
+    if (!password) return "empty"
+
+    let score = 0
+
+    // Length check
+    if (password.length >= 8) score += 1
+    if (password.length >= 12) score += 1
+
+    // Complexity checks
+    if (/[A-Z]/.test(password)) score += 1 // Has uppercase
+    if (/[a-z]/.test(password)) score += 1 // Has lowercase
+    if (/[0-9]/.test(password)) score += 1 // Has number
+    if (/[^A-Za-z0-9]/.test(password)) score += 1 // Has special char
+
+    // Variety check
+    const uniqueChars = new Set(password).size
+    if (uniqueChars > 5) score += 1
+    if (uniqueChars > 10) score += 1
+
+    // Determine strength based on score
+    if (score <= 2) return "weak"
+    if (score <= 5) return "medium"
+    if (score <= 7) return "strong"
+    return "very-strong"
+  }
+
+  // Get password strength text
+  const getPasswordStrengthText = (): string => {
+    switch (passwordStrength) {
+      case "empty":
+        return "הזן סיסמה"
+      case "weak":
+        return "חלשה"
+      case "medium":
+        return "בינונית"
+      case "strong":
+        return "חזקה"
+      case "very-strong":
+        return "חזקה מאוד"
+      default:
+        return ""
+    }
+  }
+
+  // Get password strength color
+  const getPasswordStrengthColor = (): string => {
+    switch (passwordStrength) {
+      case "empty":
+        return "#e2e8f0" // gray
+      case "weak":
+        return "#f56565" // red
+      case "medium":
+        return "#ed8936" // orange
+      case "strong":
+        return "#48bb78" // green
+      case "very-strong":
+        return "#2b6cb0" // blue
+      default:
+        return "#e2e8f0"
+    }
+  }
+
+  // Get password strength percentage for progress bar
+  const getPasswordStrengthPercentage = (): number => {
+    switch (passwordStrength) {
+      case "empty":
+        return 0
+      case "weak":
+        return 25
+      case "medium":
+        return 50
+      case "strong":
+        return 75
+      case "very-strong":
+        return 100
+      default:
+        return 0
+    }
+  }
+
+  // Get password strength tips
+  const getPasswordStrengthTips = (): string => {
+    if (passwordStrength === "empty") return ""
+    if (passwordStrength === "weak") {
+      return "נסה להוסיף אותיות גדולות, מספרים ותווים מיוחדים"
+    }
+    if (passwordStrength === "medium") {
+      return "נסה להוסיף תווים מיוחדים ולהאריך את הסיסמה"
+    }
+    return ""
+  }
+
+  // Load saved credentials from localStorage
+  const loadSavedCredentials = () => {
+    try {
+      const savedCredentials = localStorage.getItem("rememberedCredentials")
+
+      if (savedCredentials) {
+        const { username, rememberEnabled } = JSON.parse(savedCredentials)
+
+        if (rememberEnabled) {
+          setLoginForm((prev) => ({ ...prev, username }))
+          setRememberMe(true)
+
+          // Focus on password field if username is already filled
+          setTimeout(() => {
+            const passwordInput = document.getElementById("login-password")
+            if (passwordInput) {
+              passwordInput.focus()
+            }
+          }, 100)
+        }
+      }
+    } catch (error) {
+      console.error("Error loading saved credentials:", error)
+      // Clear potentially corrupted data
+      localStorage.removeItem("rememberedCredentials")
+    }
+  }
+
+  // Save credentials to localStorage
+  const saveCredentials = (username: string) => {
+    try {
+      if (rememberMe) {
+        localStorage.setItem(
+          "rememberedCredentials",
+          JSON.stringify({
+            username,
+            rememberEnabled: true,
+            // We don't store the password for security reasons
+          }),
+        )
+      } else {
+        // If remember me is unchecked, clear any saved credentials
+        localStorage.removeItem("rememberedCredentials")
+      }
+    } catch (error) {
+      console.error("Error saving credentials:", error)
+    }
+  }
+
+  // Handle remember me checkbox change
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRememberMe(e.target.checked)
+  }
+
+  // Simulate loading progress
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined
+
+    if (isLoading) {
+      setLoadingProgress(0)
+      interval = setInterval(() => {
+        setLoadingProgress((prev) => {
+          // Slow down progress as it approaches 90%
+          const increment = prev < 50 ? 15 : prev < 80 ? 5 : 1
+          const newProgress = Math.min(prev + increment, 90)
+          return newProgress
+        })
+      }, 200)
+    } else if (loadingProgress > 0) {
+      // When loading completes, quickly fill to 100%
+      setLoadingProgress(100)
+      setTimeout(() => {
+        setLoadingProgress(0)
+      }, 500)
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [isLoading, loadingProgress])
 
   // Handle login form changes
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setLoginForm((prev) => ({ ...prev, [name]: value }))
-    setLoginError("")
+
+    // Clear specific field error when typing
+    setLoginErrors((prev) => ({
+      ...prev,
+      [name]: "",
+      general: "",
+    }))
   }
 
   // Handle register form changes
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setRegisterForm((prev) => ({ ...prev, [name]: value }))
-    setRegisterError("")
+
+    // Clear specific field error when typing
+    setRegisterErrors((prev) => ({
+      ...prev,
+      [name]: "",
+      general: "",
+    }))
   }
 
-  // Handle social login
+  const handleGoogleLogin = () => {
+    const clientId = "הקליינט איידי שלך"
+    const redirectUri = "http://localhost:5116/api/Auth/google-login-callback"
+    const scope = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
+    const responseType = "code"
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}`
+  }
+
+  // Handle social login (for Google button)
   const handleSocialLogin = (provider: string) => {
-    console.log(`Logging in with ${provider}`)
-    // In a real app, you would redirect to the OAuth provider
-    showNotification(`מתחבר באמצעות ${provider}...`)
+    if (provider === "Google") {
+      handleGoogleLogin()
+    }
+  }
+
+  // Validate login form
+  const validateLoginForm = () => {
+    const errors = {
+      username: "",
+      password: "",
+      general: "",
+    }
+    let isValid = true
+
+    if (!loginForm.username.trim()) {
+      errors.username = "שם משתמש הוא שדה חובה"
+      isValid = false
+    }
+
+    if (!loginForm.password) {
+      errors.password = "סיסמה היא שדה חובה"
+      isValid = false
+    } else if (loginForm.password.length < 6) {
+      errors.password = "סיסמה חייבת להכיל לפחות 6 תווים"
+      isValid = false
+    }
+
+    setLoginErrors(errors)
+    return isValid
+  }
+
+  // Validate register form
+  const validateRegisterForm = () => {
+    const errors = {
+      username: "",
+      password: "",
+      email: "",
+      general: "",
+    }
+    let isValid = true
+
+    if (!registerForm.username.trim()) {
+      errors.username = "שם משתמש הוא שדה חובה"
+      isValid = false
+    } else if (registerForm.username.length < 3) {
+      errors.username = "שם משתמש חייב להכיל לפחות 3 תווים"
+      isValid = false
+    }
+
+    if (!registerForm.password) {
+      errors.password = "סיסמה היא שדה חובה"
+      isValid = false
+    } else if (registerForm.password.length < 6) {
+      errors.password = "סיסמה חייבת להכיל לפחות 6 תווים"
+      isValid = false
+    } else if (passwordStrength === "weak") {
+      errors.password = "הסיסמה חלשה מדי, נסה להשתמש בסיסמה חזקה יותר"
+      isValid = false
+    }
+
+    if (!registerForm.email.trim()) {
+      errors.email = "כתובת אימייל היא שדה חובה"
+      isValid = false
+    } else if (!/\S+@\S+\.\S+/.test(registerForm.email)) {
+      errors.email = "כתובת אימייל אינה תקינה"
+      isValid = false
+    }
+
+    setRegisterErrors(errors)
+    return isValid
   }
 
   // Handle login submission
   const handleLogin = async () => {
     try {
-      setIsLoading(true)
-      setLoginError("")
-      // Validate form
-      if (!loginForm.username || !loginForm.password) {
-        setLoginError("נא למלא את כל השדות")
-        setIsLoading(false)
+      // Validate form first
+      if (!validateLoginForm()) {
         return
       }
+
+      setIsLoading(true)
+
       const response = await axios.post(`https://localhost:7136/api/Auth/login`, {
         Username: loginForm.username,
         Password: loginForm.password,
       })
-      const token = response.data.token;
-      const userId = response.data.userId;
-      const username = response.data.username;
+
+      const token = response.data.token
+      const userId = response.data.userId
+      const username = response.data.username
+
       if (!token) {
         throw new Error("Token not received")
       }
+
       if (!userId || !username) {
-        throw new Error("נתוני התחברות חסרים");
+        throw new Error("נתוני התחברות חסרים")
       }
+
+      // Save credentials if remember me is checked
+      saveCredentials(loginForm.username)
+
       sessionStorage.setItem("token", token)
       const loggedInUser = {
         username: username,
-        id: userId
-      };
-      setUser(loggedInUser);
-      localStorage.setItem('userID', userId);
-      console.log("User logged in:", loggedInUser);
+        id: userId,
+      }
+
+      setUser(loggedInUser)
+      localStorage.setItem("userID", userId)
+      console.log("User logged in:", loggedInUser)
       showNotification("התחברת בהצלחה! 🎉")
+
       // Close modal and navigate
       setTimeout(() => {
         onClose()
@@ -95,9 +399,21 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
           onNavigate("/myMeetings")
         }
       }, 1500)
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setLoginError("שם משתמש או סיסמה שגויים")
+
+      // Handle specific error responses
+      if (err.response) {
+        if (err.response.status === 401) {
+          setLoginErrors((prev) => ({ ...prev, general: "שם משתמש או סיסמה שגויים" }))
+        } else if (err.response.status === 404) {
+          setLoginErrors((prev) => ({ ...prev, general: "משתמש לא נמצא" }))
+        } else {
+          setLoginErrors((prev) => ({ ...prev, general: "אירעה שגיאה בהתחברות, נסה שוב מאוחר יותר" }))
+        }
+      } else {
+        setLoginErrors((prev) => ({ ...prev, general: "אירעה שגיאה בהתחברות, בדוק את החיבור לאינטרנט" }))
+      }
     } finally {
       setIsLoading(false)
     }
@@ -106,40 +422,44 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
   // Handle register submission
   const handleRegister = async () => {
     try {
-      setIsLoading(true)
-      setRegisterError("")
-      // Validate form
-      if (!registerForm.username || !registerForm.password || !registerForm.email) {
-        setRegisterError("נא למלא את כל שדות החובה")
-        setIsLoading(false)
+      // Validate form first
+      if (!validateRegisterForm()) {
         return
       }
 
+      setIsLoading(true)
+
+      // Make sure we're sending the data in the format the API expects
       const response = await axios.post(`https://localhost:7136/api/Auth/register`, {
         Username: registerForm.username,
         PasswordHash: registerForm.password,
-        Company: registerForm.company,
+        Company: registerForm.company || "",
         Email: registerForm.email,
-        Role: registerForm.role,
+        Role: registerForm.role || "",
       })
-      const userId = response.data.userId;
-      const username = response.data.username;
+
+      // Process the response
+      const userId = response.data.userId
+      const username = response.data.username
+      const token = response.data.token
+
       if (!userId || !username) {
-        throw new Error("נתוני ההרשמה חסרים");
+        throw new Error("נתוני ההרשמה חסרים")
       }
+
       const loggedInUser = {
         username: username,
-        id: userId
-      };
-      setUser(loggedInUser);
-      localStorage.setItem('userID', userId);
-      console.log("User registered:", loggedInUser);
-      const token = response.data.token
+        id: userId,
+      }
+
+      setUser(loggedInUser)
+      localStorage.setItem("userID", userId)
+
       if (token) {
         sessionStorage.setItem("token", token)
       }
 
-      // Success notification
+      console.log("User registered:", loggedInUser)
       showNotification("נרשמת בהצלחה! 🎉")
 
       // Close modal and navigate
@@ -147,12 +467,75 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
         onClose()
         onNavigate("/myMeetings")
       }, 1500)
-    } catch (err) {
-      console.error(err)
-      setRegisterError("אירעה שגיאה בתהליך ההרשמה")
+    } catch (err: any) {
+      console.error("Registration error:", err)
+
+      // Handle specific error responses with more detailed feedback
+      if (err.response) {
+        const status = err.response.status
+        const responseData = err.response.data
+
+        if (status === 400) {
+          // Try to extract specific validation errors from the response
+          if (typeof responseData === "string") {
+            if (responseData.includes("username") || responseData.toLowerCase().includes("שם משתמש")) {
+              setRegisterErrors((prev) => ({ ...prev, username: "שם משתמש כבר קיים במערכת" }))
+            } else if (responseData.includes("email") || responseData.toLowerCase().includes("אימייל")) {
+              setRegisterErrors((prev) => ({ ...prev, email: "כתובת אימייל כבר קיימת במערכת" }))
+            } else if (responseData.includes("password") || responseData.toLowerCase().includes("סיסמה")) {
+              setRegisterErrors((prev) => ({ ...prev, password: "הסיסמה אינה עומדת בדרישות" }))
+            } else {
+              setRegisterErrors((prev) => ({ ...prev, general: responseData || "אירעה שגיאה בתהליך ההרשמה" }))
+            }
+          } else if (responseData && typeof responseData === "object") {
+            // Handle structured error response
+            if (responseData.errors) {
+              const errors = responseData.errors
+              if (errors.Username) {
+                setRegisterErrors((prev) => ({ ...prev, username: errors.Username[0] }))
+              }
+              if (errors.PasswordHash) {
+                setRegisterErrors((prev) => ({ ...prev, password: errors.PasswordHash[0] }))
+              }
+              if (errors.Email) {
+                setRegisterErrors((prev) => ({ ...prev, email: errors.Email[0] }))
+              }
+            } else {
+              setRegisterErrors((prev) => ({ ...prev, general: "אירעה שגיאה בתהליך ההרשמה" }))
+            }
+          } else {
+            setRegisterErrors((prev) => ({ ...prev, general: "אירעה שגיאה בתהליך ההרשמה" }))
+          }
+        } else if (status === 409) {
+          setRegisterErrors((prev) => ({ ...prev, username: "שם משתמש כבר קיים במערכת" }))
+        } else {
+          setRegisterErrors((prev) => ({ ...prev, general: "אירעה שגיאה בתהליך ההרשמה" }))
+        }
+      } else {
+        setRegisterErrors((prev) => ({ ...prev, general: "אירעה שגיאה בתהליך ההרשמה, בדוק את החיבור לאינטרנט" }))
+      }
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Get all active error messages for login form
+  const getLoginErrorMessages = () => {
+    const messages = []
+    if (loginErrors.username) messages.push(`שם משתמש: ${loginErrors.username}`)
+    if (loginErrors.password) messages.push(`סיסמה: ${loginErrors.password}`)
+    if (loginErrors.general) messages.push(loginErrors.general)
+    return messages
+  }
+
+  // Get all active error messages for register form
+  const getRegisterErrorMessages = () => {
+    const messages = []
+    if (registerErrors.username) messages.push(`שם משתמש: ${registerErrors.username}`)
+    if (registerErrors.password) messages.push(`סיסמה: ${registerErrors.password}`)
+    if (registerErrors.email) messages.push(`אימייל: ${registerErrors.email}`)
+    if (registerErrors.general) messages.push(registerErrors.general)
+    return messages
   }
 
   // Handle form submission with Enter key
@@ -184,8 +567,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
     }
   }
 
-  if (!isOpen) 
-    return null
+  if (!isOpen) return null
 
   return (
     <div className="auth-modal-overlay" onClick={handleOverlayClick}>
@@ -228,6 +610,12 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
           </button>
         </div>
 
+        {loadingProgress > 0 && (
+          <div className="auth-progress-bar-container">
+            <div className="auth-progress-bar" style={{ width: `${loadingProgress}%` }}></div>
+          </div>
+        )}
+
         <div className="auth-modal-content">
           <AnimatePresence mode="wait">
             {activeTab === "login" ? (
@@ -240,8 +628,6 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 className="auth-form"
               >
                 <h2 className="auth-form-title">התחברות ל-TalkToMe.AI</h2>
-
-                {loginError && <div className="auth-error">{loginError}</div>}
 
                 <div className="social-login-buttons">
                   <button className="social-login-button google-button" onClick={() => handleSocialLogin("Google")}>
@@ -263,7 +649,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 </div>
 
                 <div className="scrollable-form-content">
-                  <div className="form-group">
+                  <div className={`form-group ${loginErrors.username ? "has-error" : ""}`}>
                     <label htmlFor="login-username">שם משתמש</label>
                     <input
                       id="login-username"
@@ -273,10 +659,11 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                       onChange={handleLoginChange}
                       onKeyDown={(e) => handleKeyDown(e, "login")}
                       placeholder="הזן שם משתמש"
+                      className={loginErrors.username ? "input-error" : ""}
                     />
                   </div>
 
-                  <div className="form-group">
+                  <div className={`form-group ${loginErrors.password ? "has-error" : ""}`}>
                     <label htmlFor="login-password">סיסמה</label>
                     <input
                       id="login-password"
@@ -286,12 +673,13 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                       onChange={handleLoginChange}
                       onKeyDown={(e) => handleKeyDown(e, "login")}
                       placeholder="הזן סיסמה"
+                      className={loginErrors.password ? "input-error" : ""}
                     />
                   </div>
 
                   <div className="form-options">
                     <div className="remember-me">
-                      <input type="checkbox" id="remember" />
+                      <input type="checkbox" id="remember" checked={rememberMe} onChange={handleRememberMeChange} />
                       <label htmlFor="remember">זכור אותי</label>
                     </div>
                     <a href="#forgot-password" className="forgot-password">
@@ -300,12 +688,50 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                   </div>
                 </div>
 
+                {/* Error messages section at the bottom of the form */}
+                <AnimatePresence>
+                  {getLoginErrorMessages().length > 0 && (
+                    <motion.div
+                      className="auth-errors-container"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                    >
+                      {getLoginErrorMessages().map((message, index) => (
+                        <div key={index} className="auth-error-message">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                          </svg>
+                          <span>{message}</span>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <button
                   className={`auth-submit-button ${isLoading ? "loading" : ""}`}
                   onClick={handleLogin}
                   disabled={isLoading}
                 >
-                  {isLoading ? <div className="button-loader"></div> : "התחבר"}
+                  {isLoading ? (
+                    <div className="button-loader-container">
+                      <div className="button-loader"></div>
+                      <span>מתחבר...</span>
+                    </div>
+                  ) : (
+                    "התחבר"
+                  )}
                 </button>
 
                 <div className="auth-switch">
@@ -325,8 +751,6 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 className="auth-form"
               >
                 <h2 className="auth-form-title">הרשמה ל-TalkToMe.AI</h2>
-
-                {registerError && <div className="auth-error">{registerError}</div>}
 
                 <div className="social-login-buttons">
                   <button className="social-login-button google-button" onClick={() => handleSocialLogin("Google")}>
@@ -348,7 +772,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 </div>
 
                 <div className="scrollable-form-content">
-                  <div className="form-group">
+                  <div className={`form-group ${registerErrors.username ? "has-error" : ""}`}>
                     <label htmlFor="register-username">שם משתמש *</label>
                     <input
                       id="register-username"
@@ -358,10 +782,11 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                       onChange={handleRegisterChange}
                       onKeyDown={(e) => handleKeyDown(e, "register")}
                       placeholder="הזן שם משתמש"
+                      className={registerErrors.username ? "input-error" : ""}
                     />
                   </div>
 
-                  <div className="form-group">
+                  <div className={`form-group ${registerErrors.password ? "has-error" : ""}`}>
                     <label htmlFor="register-password">סיסמה *</label>
                     <input
                       id="register-password"
@@ -371,10 +796,33 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                       onChange={handleRegisterChange}
                       onKeyDown={(e) => handleKeyDown(e, "register")}
                       placeholder="הזן סיסמה"
+                      className={registerErrors.password ? "input-error" : ""}
                     />
+
+                    {/* Password strength meter */}
+                    {registerForm.password && (
+                      <div className="password-strength-container">
+                        <div className="password-strength-meter">
+                          <div
+                            className="password-strength-progress"
+                            style={{
+                              width: `${getPasswordStrengthPercentage()}%`,
+                              backgroundColor: getPasswordStrengthColor(),
+                            }}
+                          ></div>
+                        </div>
+                        <div className="password-strength-text">
+                          <span>חוזק הסיסמה: </span>
+                          <span style={{ color: getPasswordStrengthColor() }}>{getPasswordStrengthText()}</span>
+                        </div>
+                        {getPasswordStrengthTips() && (
+                          <div className="password-strength-tips">{getPasswordStrengthTips()}</div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="form-group">
+                  <div className={`form-group ${registerErrors.email ? "has-error" : ""}`}>
                     <label htmlFor="register-email">מייל *</label>
                     <input
                       id="register-email"
@@ -384,6 +832,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                       onChange={handleRegisterChange}
                       onKeyDown={(e) => handleKeyDown(e, "register")}
                       placeholder="הזן כתובת מייל"
+                      className={registerErrors.email ? "input-error" : ""}
                     />
                   </div>
 
@@ -414,12 +863,50 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                   </div>
                 </div>
 
+                {/* Error messages section at the bottom of the form */}
+                <AnimatePresence>
+                  {getRegisterErrorMessages().length > 0 && (
+                    <motion.div
+                      className="auth-errors-container"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                    >
+                      {getRegisterErrorMessages().map((message, index) => (
+                        <div key={index} className="auth-error-message">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                          </svg>
+                          <span>{message}</span>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <button
                   className={`auth-submit-button ${isLoading ? "loading" : ""}`}
                   onClick={handleRegister}
                   disabled={isLoading}
                 >
-                  {isLoading ? <div className="button-loader"></div> : "הירשם"}
+                  {isLoading ? (
+                    <div className="button-loader-container">
+                      <div className="button-loader"></div>
+                      <span>נרשם...</span>
+                    </div>
+                  ) : (
+                    "הירשם"
+                  )}
                 </button>
 
                 <div className="auth-switch">

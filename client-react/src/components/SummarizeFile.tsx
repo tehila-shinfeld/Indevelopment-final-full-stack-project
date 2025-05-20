@@ -9,9 +9,6 @@ import UserPermissionDialog, { type User } from "./UserPermissionDialog"
 import { Save, Edit, CopyIcon as ContentCopy, CheckCircle, Sparkles, Loader, AlertCircle, Download, Share2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import "../styleSheets/SummarizeFile.css"
-
-
-
 const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     const { summary } = useSummary()
     const [loading, setLoading] = useState(false)
@@ -23,7 +20,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     const [isTyping, setIsTyping] = useState(true)
     const [saveSuccess, setSaveSuccess] = useState(false)
     const summaryRef = useRef<HTMLDivElement>(null)
-
     const handleOpenPermissionDialog = () => setOpenPermissionDialog(true)
     const handleClosePermissionDialog = () => setOpenPermissionDialog(false)
 
@@ -60,65 +56,55 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     }, [fileUrl])
 
     const handleSavePermissionsAndSummary = async (users: User[]) => {
-        setLoading(true)
-        setError(null)
-        setSelectedUsers(users)
-        console.log(users.map((user) => user.id))
-
+        setSelectedUsers(users);
+        console.log(users.map(user => user.id));
+        // 1️⃣ שמירת ההרשאות
         try {
-            // Save permissions
-           const res = await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
+            alert({ fileUrl } + "hashrmmm!")
+            await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
                 FileUrl: fileUrl,
-                UserserIds: users.map((user) => user.id),
-            })
-
-            console.log("הרשאות נשמרו בהצלחה!")
-            await handleSaveSummary()
-        } catch (err) {
-            setError("Error saving permissions. Please try again.")
-        } finally {
-            setLoading(false)
+                UserIds: users.map(user => user.id) // ✅ נכון
+            });
+            console.log("הרשאות נשמרו בהצלחה!");
+            handleSaveSummary();
+        } catch {
+            setError("שגיאה בשמירת ההרשאות");
+            return;
         }
-    }
+    };
 
-    // Save summary to DB
+    // שמירת הסיכום ב-DB
     const handleSaveSummary = async () => {
         if (!summary) {
-            setError("No summary to save")
-            return
+            alert("error")
+            return;
         }
-
         try {
-            const summaryData = {
+            console.log(fileUrl);
+            const summaryy = {
                 FileUrl: fileUrl,
                 summary: summary,
-            }
-
-            console.log("שולח נתונים:", summaryData)
-
-            const response = await axios.post("https://localhost:7136/api/files/save-summary", summaryData, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-
+            };
+            console.log("שולח נתונים:", summaryy);
+            const response = await axios.post('https://localhost:7136/api/files/save-summary', summaryy,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
             if (response.data.success) {
-                console.log("הסיכום נשמר בהצלחה!")
-                // Show success animation
-                setSaveSuccess(true)
-                triggerSuccessAnimation()
-                setTimeout(() => {
-                    setSaveSuccess(false)
-                }, 3000)
+                console.log("הסיכום נשמר בהצלחה!");
+                // setMessage("הסיכום נשמר בהצלחה!");
             } else {
-                console.error("שגיאה בשמירת הסיכום")
-                setError("Error saving summary. Please try again.")
+                console.error("שגיאה בשמירת הסיכום");
+                setError("שגיאה בשמירת הסיכום");
             }
         } catch (err) {
-            setError("Unexpected error. Please try again.")
+            // console.error('שגיאה בשמירת הסיכום:', err.response?.data || err.message);
+            setError("שגיאה לא צפויה. אנא נסה שוב.");
         }
-    }
-
+    };
     const handleCopyToClipboard = () => {
         if (!summary) return
 
@@ -133,47 +119,47 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             })
     }
 
-    const triggerSuccessAnimation = () => {
-        // Create success particles container if it doesn't exist
-        let particlesContainer = document.querySelector(".success-particles-container")
+    // const triggerSuccessAnimation = () => {
+    //     // Create success particles container if it doesn't exist
+    //     let particlesContainer = document.querySelector(".success-particles-container")
 
-        if (!particlesContainer) {
-            particlesContainer = document.createElement("div")
-            particlesContainer.className = "success-particles-container"
-            document.body.appendChild(particlesContainer)
-        } else {
-            // Clear existing particles
-            particlesContainer.innerHTML = ""
-        }
+    //     if (!particlesContainer) {
+    //         particlesContainer = document.createElement("div")
+    //         particlesContainer.className = "success-particles-container"
+    //         document.body.appendChild(particlesContainer)
+    //     } else {
+    //         // Clear existing particles
+    //         particlesContainer.innerHTML = ""
+    //     }
 
-        // Create particles
-        const colors = ["#10B981", "#5D3FD3", "#43B0F1", "#FFD166"]
+    //     // Create particles
+    //     const colors = ["#10B981", "#5D3FD3", "#43B0F1", "#FFD166"]
 
-        for (let i = 0; i < 60; i++) {
-            const particle = document.createElement("div")
-            particle.className = "success-particle"
-            particle.style.setProperty("--particle-color", colors[Math.floor(Math.random() * colors.length)])
-            particle.style.setProperty("--particle-left", Math.random() * 100 + "vw")
-            particle.style.setProperty("--particle-delay", Math.random() * 1 + "s")
-            particle.style.setProperty("--particle-duration", Math.random() * 2 + 1 + "s")
-            particle.style.setProperty("--particle-size", Math.random() * 0.5 + 0.25 + "rem")
-            particle.style.setProperty("--particle-rotation", Math.random() * 360 + "deg")
+    //     for (let i = 0; i < 60; i++) {
+    //         const particle = document.createElement("div")
+    //         particle.className = "success-particle"
+    //         particle.style.setProperty("--particle-color", colors[Math.floor(Math.random() * colors.length)])
+    //         particle.style.setProperty("--particle-left", Math.random() * 100 + "vw")
+    //         particle.style.setProperty("--particle-delay", Math.random() * 1 + "s")
+    //         particle.style.setProperty("--particle-duration", Math.random() * 2 + 1 + "s")
+    //         particle.style.setProperty("--particle-size", Math.random() * 0.5 + 0.25 + "rem")
+    //         particle.style.setProperty("--particle-rotation", Math.random() * 360 + "deg")
 
-            particlesContainer.appendChild(particle)
-        }
+    //         particlesContainer.appendChild(particle)
+    //     }
 
-        // Remove particles after animation completes
-        setTimeout(() => {
-            if (particlesContainer) {
-                particlesContainer.classList.add("fade-out")
-                setTimeout(() => {
-                    if (document.body.contains(particlesContainer)) {
-                        document.body.removeChild(particlesContainer)
-                    }
-                }, 1000)
-            }
-        }, 3000)
-    }
+    //     // Remove particles after animation completes
+    //     setTimeout(() => {
+    //         if (particlesContainer) {
+    //             particlesContainer.classList.add("fade-out")
+    //             setTimeout(() => {
+    //                 if (document.body.contains(particlesContainer)) {
+    //                     document.body.removeChild(particlesContainer)
+    //                 }
+    //             }, 1000)
+    //         }
+    //     }, 3000)
+    // }
 
     const handleDownload = () => {
         const link = document.createElement("a")

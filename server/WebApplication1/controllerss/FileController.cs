@@ -58,12 +58,12 @@ public class FilesController : ControllerBase
     [HttpPost("assign-file-to-customers")]
     public async Task<IActionResult> AssignFileToCustomers([FromBody] AssignFileRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.FileUrl) || request.UserserIds == null)
+        if (string.IsNullOrWhiteSpace(request.FileUrl) || request.UserIds == null)
         {
             return BadRequest("Invalid file URL or customer IDs.");
         }
 
-        var success = await _fileService.AssignFileToCustomersAsync(request.FileUrl, request.UserserIds);
+        var success = await _fileService.AssignFileToCustomersAsync(request.FileUrl, request.UserIds);
 
         if (!success)
         {

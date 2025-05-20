@@ -6,7 +6,7 @@ namespace summary.Core.IRepositories
     public interface IUserRepository
     {
         public IEnumerable<User> GetAllUsers();
-        public IEnumerable<User> GetAllByComp(string comp);
+        public  Task<List<User>> GetAllByCompAsync(string comp);
         public User GetUserById(int id);
         public void AddUser(User user);
         public User ChangeUser(int id, User user);

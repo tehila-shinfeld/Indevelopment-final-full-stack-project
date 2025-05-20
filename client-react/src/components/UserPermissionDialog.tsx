@@ -18,7 +18,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const token = sessionStorage.getItem("token");
+    // const token = sessionStorage.getItem("token");
 
     const stringToColor = (string: string) => {
         let hash = 0;

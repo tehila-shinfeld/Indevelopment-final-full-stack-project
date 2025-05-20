@@ -21,13 +21,14 @@ namespace summary.Data.Repositories
         {
             return _dataContext.Users.Include(f => f.Meetings);
         }
-
-        public IEnumerable<User> GetAllByComp(string comp)
+        public async Task<List<User>> GetAllByCompAsync(string comp)
         {
-            return _dataContext.Users
+            return await _dataContext.Users
                 .Include(f => f.Meetings)
-                .Where(u => u.Company == comp);
+                .Where(u => u.Company == comp)
+                .ToListAsync();
         }
+
         public User GetUserById(int id)
         {
             return _dataContext.Users.FirstOrDefault(u => u.Id == id);
@@ -75,6 +76,7 @@ namespace summary.Data.Repositories
         {
             return await _dataContext.Users.AnyAsync(u => u.Id == userId);
         }
+
 
     }
 }

@@ -125,13 +125,13 @@
 
 /* Dark mode variables */
 .dark-mode {
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-tertiary: #2a2a2a;
-  --text-primary: #f3f4f6;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --border-color: #333333;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #1e293b;
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --text-tertiary: #94a3b8;
+  --border-color: #334155;
 
   /* Shadows for dark mode */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -141,6 +141,8 @@
 
   /* Gradients for dark mode */
   --gradient-glass: linear-gradient(135deg, rgba(30, 30, 30, 0.8), rgba(20, 20, 20, 0.4));
+  --gradient-primary: linear-gradient(135deg, #d946ef, #c026d3);
+  --gradient-blue-purple: linear-gradient(135deg, #d946ef, #c026d3);
 }
 
 /* ===== 2. BASE STYLES ===== */
@@ -538,8 +540,8 @@ button {
 }
 
 .dark-mode .sidebar-nav li.active button {
-  background-color: rgba(12, 150, 230, 0.2);
-  color: var(--primary-300);
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
 }
 
 .sidebar-footer {
@@ -674,8 +676,8 @@ button {
 }
 
 .dark-mode .filter-tab.active {
-  background-color: rgba(12, 150, 230, 0.2);
-  color: var(--primary-300);
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
 }
 
 /* ===== 7. MEETING CARDS ===== */
@@ -896,7 +898,7 @@ button {
 }
 
 .dark-mode .card-expand {
-  color: var(--primary-300);
+  color: #f0abfc;
   background-color: transparent;
 }
 
@@ -907,8 +909,8 @@ button {
 }
 
 .dark-mode .card-expand:hover {
-  background-color: rgba(12, 150, 230, 0.3);
-  color: var(--primary-200);
+  background-color: rgba(217, 70, 239, 0.3);
+  color: #f5d0fe;
 }
 
 /* ===== 8. MEETING DETAILS ===== */
@@ -938,6 +940,10 @@ button {
   border-bottom: 1px solid var(--border-color);
   background: linear-gradient(135deg, #36aef5, #0078c8);
   color: white;
+}
+
+.dark-mode .meeting-details-title-section {
+  background: linear-gradient(135deg, #d946ef, #c026d3);
 }
 
 .meeting-details-title {
@@ -1003,8 +1009,8 @@ button {
 }
 
 .dark-mode .details-action.downloading {
-  background-color: rgba(12, 150, 230, 0.2);
-  color: var(--primary-300);
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
 }
 
 @keyframes pulse {
@@ -1051,6 +1057,10 @@ button {
   transition: all 0.5s ease;
 }
 
+.dark-mode .magic-btn::before {
+  background: linear-gradient(90deg, #d946ef, #c026d3, #d946ef);
+}
+
 .magic-btn:hover::before {
   background-position: 100% 0;
 }
@@ -1066,6 +1076,10 @@ button {
   filter: blur(8px);
   transition: opacity 0.5s ease;
   border-radius: var(--radius-full);
+}
+
+.dark-mode .magic-btn::after {
+  background: linear-gradient(90deg, #d946ef, #c026d3, #d946ef);
 }
 
 .magic-btn:hover::after {
@@ -1152,7 +1166,7 @@ button {
 }
 
 .dark-mode .modern-back-button {
-  color: var(--primary-300);
+  color: #f0abfc;
 }
 
 .modern-back-button::before {
@@ -1165,6 +1179,10 @@ button {
   transition: opacity 0.3s ease;
 }
 
+.dark-mode .modern-back-button::before {
+  background: linear-gradient(135deg, #f0abfc, #f5d0fe);
+}
+
 .modern-back-button::after {
   content: "";
   position: absolute;
@@ -1173,6 +1191,10 @@ button {
   opacity: 0;
   z-index: -1;
   transition: opacity 0.3s ease;
+}
+
+.dark-mode .modern-back-button::after {
+  background: linear-gradient(135deg, #d946ef, #c026d3);
 }
 
 .modern-back-button:hover {
@@ -1230,7 +1252,7 @@ button {
 }
 
 .dark-mode .scroll-to-top-button {
-  color: var(--primary-300);
+  color: #f0abfc;
 }
 
 .scroll-to-top-button.visible {
@@ -1278,8 +1300,8 @@ button {
 }
 
 .dark-mode .confirmation-header {
-  background-color: rgba(12, 150, 230, 0.2);
-  border-bottom-color: rgba(12, 150, 230, 0.3);
+  background-color: rgba(217, 70, 239, 0.2);
+  border-bottom-color: rgba(217, 70, 239, 0.3);
 }
 
 .confirmation-title {
@@ -1293,7 +1315,7 @@ button {
 }
 
 .dark-mode .confirmation-title {
-  color: var(--primary-300);
+  color: #f0abfc;
 }
 
 .confirmation-content {
@@ -1381,6 +1403,10 @@ button {
   border-right-color: var(--primary-500);
 }
 
+.dark-mode .error-notification.info {
+  border-right-color: #d946ef;
+}
+
 .error-icon-container {
   display: flex;
   align-items: center;
@@ -1396,6 +1422,10 @@ button {
 
 .error-notification.info .error-icon-container {
   color: var(--primary-500);
+}
+
+.dark-mode .error-notification.info .error-icon-container {
+  color: #d946ef;
 }
 
 .error-content {
@@ -1453,6 +1483,10 @@ button {
   background-color: var(--primary-500);
 }
 
+.dark-mode .error-notification.info .error-progress-bar {
+  background-color: #d946ef;
+}
+
 .error-actions {
   display: flex;
   gap: var(--spacing-2);
@@ -1473,8 +1507,8 @@ button {
 }
 
 .dark-mode .error-action-button.primary {
-  background-color: rgba(12, 150, 230, 0.2);
-  color: var(--primary-300);
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
 }
 
 .error-action-button.primary:hover {
@@ -1482,7 +1516,7 @@ button {
 }
 
 .dark-mode .error-action-button.primary:hover {
-  background-color: rgba(12, 150, 230, 0.3);
+  background-color: rgba(217, 70, 239, 0.3);
 }
 
 .error-action-button.secondary {
@@ -1528,6 +1562,11 @@ button {
   animation: dash 1.5s ease-in-out infinite;
   stroke-linecap: round;
   filter: drop-shadow(0 0 2px rgba(54, 174, 245, 0.3));
+}
+
+.dark-mode .path {
+  stroke: #d946ef;
+  filter: drop-shadow(0 0 2px rgba(217, 70, 239, 0.3));
 }
 
 .loading-container p {
@@ -2032,11 +2071,11 @@ body.tab-closing::after {
 }
 
 .dark-mode .logo-text {
-  color: var(--primary-300);
+  color: #f0abfc;
 }
 
 .dark-mode .meeting-card:hover {
-  border-color: rgba(54, 174, 245, 0.2);
+  border-color: rgba(217, 70, 239, 0.2);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -2076,6 +2115,10 @@ body.tab-closing::after {
   transform: scale(0.5);
 }
 
+.dark-mode .details-action-fixed::after {
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.2) 0%, transparent 70%);
+}
+
 .details-action-fixed:hover::after {
   opacity: 1;
   transform: scale(1.5);
@@ -2090,8 +2133,8 @@ body.tab-closing::after {
 }
 
 .dark-mode .details-action-fixed.downloading {
-  background-color: rgba(12, 150, 230, 0.2);
-  color: var(--primary-300);
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
 }
 
 /* שיפור סגנון כפתור "פתח בחלון חדש" */
@@ -2121,6 +2164,10 @@ body.tab-closing::after {
   transform: scale(0.5);
 }
 
+.dark-mode .card-expand::after {
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.2) 0%, transparent 70%);
+}
+
 .card-expand:hover::after {
   opacity: 1;
   transform: scale(1.5);
@@ -2134,13 +2181,13 @@ body.tab-closing::after {
 
 /* תיקון למצב חושך */
 .dark-mode .card-expand {
-  color: var(--primary-300);
+  color: #f0abfc;
   background-color: transparent;
 }
 
 .dark-mode .card-expand:hover {
-  background-color: rgba(12, 150, 230, 0.3);
-  color: var(--primary-200);
+  background-color: rgba(217, 70, 239, 0.3);
+  color: #f5d0fe;
 }
 
 /* תיקון למצב מובייל */
@@ -2277,6 +2324,10 @@ body.tab-closing::after {
 
 .share-icon.copy {
   background-color: var(--primary-500);
+}
+
+.dark-mode .share-icon.copy {
+  background-color: #d946ef;
 }
 
 .share-option span {

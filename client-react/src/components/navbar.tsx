@@ -18,11 +18,11 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
 
   const handleStartNowClick = () => {
     // Check if a valid token exists in session storage
-    const token = sessionStorage.getItem("userToken")
+    const token = sessionStorage.getItem("token")
 
     if (token) {
       // If token exists, redirect to the dashboard or next page
-      navigate("/myMeetings")
+      navigate('/myMeetings')
     } else {
       // If no token, open the login/signup modal
       openModal()

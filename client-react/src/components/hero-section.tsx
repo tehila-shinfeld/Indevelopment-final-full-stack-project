@@ -121,7 +121,7 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
       }
 
       // If we got here, token is valid - redirect to next page
-      window.location.href = "/next-page" // Replace with your actual next page URL
+      window.location.href = "/myMeetings" // Replace with your actual next page URL
     } catch (error) {
       // Show error message to user
       const errorMessage = error instanceof Error ? error.message : "טוקן לא תקין, אנא התחבר מחדש"

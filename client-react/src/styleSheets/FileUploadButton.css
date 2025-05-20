@@ -1,143 +1,3 @@
-/* סגנונות טקסט בכפתורים */
-.button-text {
-  color: inherit;
-  font-weight: 600;
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-}
-
-/* תיקון צבע טקסט בכפתורים */
-.upload-button,
-.process-button,
-.new-document-button,
-.add-meeting-button {
-  color: white;
-  font-weight: 600;
-}
-
-.upload-button .button-text,
-.process-button .button-text,
-.new-document-button .button-text,
-.add-meeting-button .button-text {
-  color: white;
-}
-
-/* תיקון לכפתור במצב חושך */
-.dark-mode .upload-button .button-text,
-.dark-mode .process-button .button-text,
-.dark-mode .new-document-button .button-text,
-.dark-mode .add-meeting-button .button-text {
-  color: white;
-}
-
-/* תיקון לכפתור העלאת מסמך נוסף */
-.new-document-button {
-  color: hsla(var(--primary), 1);
-}
-
-.new-document-button .button-text {
-  color: hsla(var(--primary), 1);
-}
-
-/* תיקון לכפתורי פעולה בכרטיס הסיכום */
-.action-button {
-  color: hsla(var(--foreground), 0.8);
-}
-
-.action-button span {
-  color: hsla(var(--foreground), 0.8);
-}
-
-.action-button:hover span {
-  color: hsla(var(--foreground), 1);
-}
-
-.upload-button {
-  background-color: hsla(var(--primary), 1);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.process-button {
-  background-color: hsla(var(--primary), 1);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  width: 100%;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.new-document-button {
-  background-color: white;
-  color: hsla(var(--primary), 1);
-  border: 2px solid hsla(var(--primary), 0.2);
-  border-radius: 50px;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 2rem auto 0;
-  box-shadow: var(--shadow-sm);
-  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.add-meeting-button {
-  position: relative;
-  padding: 0.7rem 1.4rem;
-  background: linear-gradient(90deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  border: none;
-  color: white;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  z-index: 1;
-}
-
-.btn-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 2;
-}
 /* ===== משתנים וערכת נושא ===== */
 :root {
   /* צבעי בסיס */
@@ -803,6 +663,61 @@ body {
   animation-delay: 0.2s;
 }
 
+/* סגנונות טקסט בכפתורים */
+.button-text {
+  color: inherit;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+}
+
+/* תיקון צבע טקסט בכפתורים */
+.upload-button,
+.process-button,
+.new-document-button,
+.add-meeting-button {
+  color: white;
+  font-weight: 600;
+}
+
+.upload-button .button-text,
+.process-button .button-text,
+.new-document-button .button-text,
+.add-meeting-button .button-text {
+  color: white;
+}
+
+/* תיקון לכפתור במצב חושך */
+.dark-mode .upload-button .button-text,
+.dark-mode .process-button .button-text,
+.dark-mode .new-document-button .button-text,
+.dark-mode .add-meeting-button .button-text {
+  color: white;
+}
+
+/* תיקון לכפתור העלאת מסמך נוסף */
+.new-document-button {
+  color: hsla(var(--primary), 1);
+}
+
+.new-document-button .button-text {
+  color: hsla(var(--primary), 1);
+}
+
+/* תיקון לכפתורי פעולה בכרטיס הסיכום */
+.action-button {
+  color: hsla(var(--foreground), 0.8);
+}
+
+.action-button span {
+  color: hsla(var(--foreground), 0.8);
+}
+
+.action-button:hover span {
+  color: hsla(var(--foreground), 1);
+}
+
 .upload-button {
   background-color: hsla(var(--primary), 1);
   color: white;
@@ -819,6 +734,7 @@ body {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .upload-button::before {
@@ -1067,6 +983,13 @@ body {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  z-index: 1;
+}
+
+/* סגנון מיוחד לכפתור סיכום */
+.process-button.summarize-button {
+  background: linear-gradient(90deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
+  animation: fadeIn 0.5s ease-out;
 }
 
 .process-button::before {
@@ -1084,6 +1007,10 @@ body {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
   background-color: hsla(var(--primary), 0.9);
+}
+
+.process-button.summarize-button:hover {
+  background: linear-gradient(90deg, hsla(var(--primary), 0.9), hsla(var(--accent-4), 0.9));
 }
 
 .process-button:hover::before {
@@ -1466,6 +1393,7 @@ body {
   animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .dark-mode .new-document-button {
@@ -1726,6 +1654,7 @@ body {
   transition: all 0.3s ease;
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  z-index: 1;
 }
 
 .add-meeting-button::before {
@@ -2062,89 +1991,60 @@ body.menu-open {
   }
 }
 
-.celebration-container::before {
-  content: "";
+.firework {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.3);
+  animation: firework 2s ease-out forwards;
 }
 
-.celebration-container::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.firework:nth-child(1) {
+  top: 20%;
+  left: 20%;
+  background-color: hsla(var(--accent-1), 1);
+  animation-delay: 0.2s;
 }
 
-/* Generate confetti particles */
-.celebration-container {
-  animation: generate-confetti 0.1s steps(1) 30;
+.firework:nth-child(2) {
+  top: 40%;
+  left: 60%;
+  background-color: hsla(var(--accent-2), 1);
+  animation-delay: 0.5s;
 }
 
-@keyframes generate-confetti {
+.firework:nth-child(3) {
+  top: 70%;
+  left: 30%;
+  background-color: hsla(var(--accent-3), 1);
+  animation-delay: 0.8s;
+}
+
+.firework:nth-child(4) {
+  top: 30%;
+  left: 80%;
+  background-color: hsla(var(--accent-4), 1);
+  animation-delay: 1.1s;
+}
+
+.firework:nth-child(5) {
+  top: 60%;
+  left: 70%;
+  background-color: hsla(var(--primary), 1);
+  animation-delay: 1.4s;
+}
+
+@keyframes firework {
   0% {
-    box-shadow:
-      calc(10vw * 1) calc(-30px * 1) 0 0 hsla(var(--accent-1), 0.8),
-      calc(20vw * 1) calc(-20px * 1) 0 0 hsla(var(--accent-2), 0.8),
-      calc(30vw * 1) calc(-40px * 1) 0 0 hsla(var(--accent-3), 0.8),
-      calc(40vw * 1) calc(-25px * 1) 0 0 hsla(var(--accent-4), 0.8),
-      calc(50vw * 1) calc(-35px * 1) 0 0 hsla(var(--primary), 0.8),
-      calc(60vw * 1) calc(-15px * 1) 0 0 hsla(var(--accent-5), 0.8),
-      calc(70vw * 1) calc(-45px * 1) 0 0 hsla(var(--accent-1), 0.8),
-      calc(80vw * 1) calc(-25px * 1) 0 0 hsla(var(--accent-3), 0.8),
-      calc(90vw * 1) calc(-35px * 1) 0 0 hsla(var(--accent-2), 0.8);
-  }
-  25% {
-    box-shadow:
-      calc(15vw * 1) calc(-20px * 2) 0 0 hsla(var(--accent-2), 0.8),
-      calc(25vw * 1) calc(-30px * 2) 0 0 hsla(var(--accent-3), 0.8),
-      calc(35vw * 1) calc(-15px * 2) 0 0 hsla(var(--accent-4), 0.8),
-      calc(45vw * 1) calc(-40px * 2) 0 0 hsla(var(--primary), 0.8),
-      calc(55vw * 1) calc(-25px * 2) 0 0 hsla(var(--accent-5), 0.8),
-      calc(65vw * 1) calc(-35px * 2) 0 0 hsla(var(--accent-1), 0.8),
-      calc(75vw * 1) calc(-20px * 2) 0 0 hsla(var(--accent-2), 0.8),
-      calc(85vw * 1) calc(-40px * 2) 0 0 hsla(var(--accent-4), 0.8),
-      calc(95vw * 1) calc(-30px * 2) 0 0 hsla(var(--accent-3), 0.8);
-  }
-  50% {
-    box-shadow:
-      calc(5vw * 1) calc(-35px * 3) 0 0 hsla(var(--accent-3), 0.8),
-      calc(15vw * 1) calc(-25px * 3) 0 0 hsla(var(--accent-4), 0.8),
-      calc(25vw * 1) calc(-45px * 3) 0 0 hsla(var(--primary), 0.8),
-      calc(35vw * 1) calc(-20px * 3) 0 0 hsla(var(--accent-5), 0.8),
-      calc(45vw * 1) calc(-30px * 3) 0 0 hsla(var(--accent-1), 0.8),
-      calc(55vw * 1) calc(-40px * 3) 0 0 hsla(var(--accent-2), 0.8),
-      calc(65vw * 1) calc(-15px * 3) 0 0 hsla(var(--accent-3), 0.8),
-      calc(75vw * 1) calc(-35px * 3) 0 0 hsla(var(--accent-5), 0.8),
-      calc(85vw * 1) calc(-25px * 3) 0 0 hsla(var(--accent-1), 0.8);
-  }
-  75% {
-    box-shadow:
-      calc(10vw * 1) calc(-40px * 4) 0 0 hsla(var(--accent-4), 0.8),
-      calc(20vw * 1) calc(-15px * 4) 0 0 hsla(var(--primary), 0.8),
-      calc(30vw * 1) calc(-30px * 4) 0 0 hsla(var(--accent-5), 0.8),
-      calc(40vw * 1) calc(-45px * 4) 0 0 hsla(var(--accent-1), 0.8),
-      calc(50vw * 1) calc(-20px * 4) 0 0 hsla(var(--accent-2), 0.8),
-      calc(60vw * 1) calc(-35px * 4) 0 0 hsla(var(--accent-3), 0.8),
-      calc(70vw * 1) calc(-25px * 4) 0 0 hsla(var(--accent-4), 0.8),
-      calc(80vw * 1) calc(-40px * 4) 0 0 hsla(var(--primary), 0.8),
-      calc(90vw * 1) calc(-15px * 4) 0 0 hsla(var(--accent-5), 0.8);
+    transform: scale(0);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0);
   }
   100% {
-    box-shadow:
-      calc(5vw * 1) calc(-25px * 5) 0 0 hsla(var(--primary), 0.8),
-      calc(15vw * 1) calc(-40px * 5) 0 0 hsla(var(--accent-5), 0.8),
-      calc(25vw * 1) calc(-20px * 5) 0 0 hsla(var(--accent-1), 0.8),
-      calc(35vw * 1) calc(-35px * 5) 0 0 hsla(var(--accent-2), 0.8),
-      calc(45vw * 1) calc(-15px * 5) 0 0 hsla(var(--accent-3), 0.8),
-      calc(55vw * 1) calc(-30px * 5) 0 0 hsla(var(--accent-4), 0.8),
-      calc(65vw * 1) calc(-45px * 5) 0 0 hsla(var(--primary), 0.8),
-      calc(75vw * 1) calc(-20px * 5) 0 0 hsla(var(--accent-5), 0.8),
-      calc(85vw * 1) calc(-35px * 5) 0 0 hsla(var(--accent-1), 0.8);
+    transform: scale(1);
+    opacity: 0;
+    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0), 0 0 0 40px rgba(255, 255, 255, 0), 0 0 0 60px rgba(255, 255, 255, 0);
   }
 }
 
@@ -2159,8 +2059,7 @@ body.menu-open {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--muted-foreground);
-
+  background-color: rgba(255, 255, 255, 0.95);
   z-index: 20;
   border-radius: var(--radius-xl);
   animation: fadeIn 0.3s ease-out;
@@ -2320,76 +2219,6 @@ body.menu-open {
     width: 47px;
     right: 8px;
     top: 38px;
-  }
-}
-
-/* אנימציית זיקוקים */
-.celebration-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.2));
-  opacity: 0;
-  animation: celebration-bg 3s ease-out forwards;
-}
-
-.firework {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.3);
-  animation: firework 2s ease-out forwards;
-}
-
-.firework:nth-child(1) {
-  top: 20%;
-  left: 20%;
-  background-color: hsla(var(--accent-1), 1);
-  animation-delay: 0.2s;
-}
-
-.firework:nth-child(2) {
-  top: 40%;
-  left: 60%;
-  background-color: hsla(var(--accent-2), 1);
-  animation-delay: 0.5s;
-}
-
-.firework:nth-child(3) {
-  top: 70%;
-  left: 30%;
-  background-color: hsla(var(--accent-3), 1);
-  animation-delay: 0.8s;
-}
-
-.firework:nth-child(4) {
-  top: 30%;
-  left: 80%;
-  background-color: hsla(var(--accent-4), 1);
-  animation-delay: 1.1s;
-}
-
-.firework:nth-child(5) {
-  top: 60%;
-  left: 70%;
-  background-color: hsla(var(--primary), 1);
-  animation-delay: 1.4s;
-}
-
-@keyframes firework {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0), 0 0 0 40px rgba(255, 255, 255, 0), 0 0 0 60px rgba(255, 255, 255, 0);
   }
 }
 

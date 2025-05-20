@@ -7,6 +7,7 @@ import { SummaryProvider } from './context/SummaryContext.tsx';
 import { UserProvider } from './context/UserContext.tsx';
 import UserMeetings from './components/UserMeetings.tsx';
 import HomePage from './components/home-page.tsx';
+import OAuthCallback from './components/OAuthCallback.tsx';
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -26,6 +27,9 @@ const routes = createBrowserRouter([
     path: '/myMeetings', // דף הבית
     element: <UserMeetings />, // קומפוננטת Dashboard
   },
+  {path:'/oauth', element: <OAuthCallback />}, // דף הבית
+
+
   // UserMeetings
 ]);
 
@@ -38,7 +42,6 @@ createRoot(document.getElementById('root')!).render(
         </StrictMode>
       </>
     </UserProvider>
-
   </SummaryProvider>
 
 );

@@ -1,26 +1,25 @@
 "use client"
 
 import { useEffect, useRef, type RefObject } from "react"
-import { useTheme } from "next-themes" // Import useTheme hook
 import "../styleSheets/how-it-works-section.css"
 
 interface HowItWorksSectionProps {
   sectionRef: RefObject<HTMLElement>
   activeStep: number
+  isDarkMode?: boolean
 }
 
-const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) => {
+const HowItWorksSection = ({ sectionRef, activeStep, isDarkMode = false }: HowItWorksSectionProps) => {
   const stepsRef = useRef<(HTMLDivElement | null)[]>([])
   const sectionInViewRef = useRef(false)
-  const { theme, resolvedTheme } = useTheme() // Get current theme and resolved theme
 
   useEffect(() => {
     // וודא שהסקשן גלוי תמיד
     if (sectionRef.current) {
       sectionRef.current.classList.add("section-visible")
 
-      // Add dark mode class if theme is dark
-      if (theme === "dark") {
+      // Ensure dark mode class is applied to the section element
+      if (isDarkMode) {
         sectionRef.current.classList.add("dark-mode")
       } else {
         sectionRef.current.classList.remove("dark-mode")
@@ -61,13 +60,14 @@ const HowItWorksSection = ({ sectionRef, activeStep }: HowItWorksSectionProps) =
         observer.unobserve(sectionRef.current)
       }
     }
-  }, [sectionRef, theme, resolvedTheme]) // Add theme as a dependency
+  }, [sectionRef, isDarkMode])
 
   return (
     <section
       ref={sectionRef}
       id="how-it-works"
-      className={`how-it-works-section ${theme === "dark" || resolvedTheme === "dark" ? "dark-mode" : ""}`}
+      className={`how-it-works-section ${isDarkMode ? "dark-mode" : ""}`}
+      style={{ backgroundColor: isDarkMode ? "#0f172a" : "#f8fafc" }}
     >
       <div className="container">
         <div className="section-header">

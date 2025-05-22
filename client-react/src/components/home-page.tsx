@@ -125,11 +125,14 @@ const HomePage = () => {
         setIsMenuOpen={setIsMenuOpen}
         openModal={openModal}
       />
+
       <main>
         <HeroSection sectionRef={sectionsRef.hero as React.RefObject<HTMLElement>} isVisible={visibleSections.hero} openModal={openModal} />
-        <HowItWorksSection sectionRef={sectionsRef.howItWorks as React.RefObject<HTMLElement>}
-          activeStep={activeStep}
-        />
+
+ <HowItWorksSection sectionRef={sectionsRef.howItWorks as React.RefObject<HTMLElement>}
+        activeStep={activeStep}
+        isDarkMode={isDarkMode}
+      />
         <FeaturesSection sectionRef={sectionsRef.features as React.RefObject<HTMLElement>} isVisible={visibleSections.features} />
 
         <TestimonialsSection sectionRef={sectionsRef.testimonials as React.RefObject<HTMLElement>} isVisible={visibleSections.testimonials} />
@@ -139,10 +142,12 @@ const HomePage = () => {
       
       <Footer />
       
-      {/* Enhanced Login Modal */}
-      <EnhancedLoginModal isOpen={isModalOpen} onClose={closeModal} onNavigate={handleNavigate} />
-
-
+      <EnhancedLoginModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onNavigate={handleNavigate}
+        isDarkMode={isDarkMode}
+      />
       <FloatingThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} /> 
     </div>
   )

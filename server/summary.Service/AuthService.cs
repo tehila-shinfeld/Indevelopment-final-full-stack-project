@@ -41,18 +41,15 @@ namespace summary.Service
             {
                 return null; // אם הסיסמה לא נכונה
             }
-            var token = GenerateJwtToken(user.Username, user.Role, user.Company);
+            var token = GenerateJwtToken(user.Username, user.Role, user.Company, user.Email);
             return new LoginResponse
             {
                 Token = token,
                 Username = user.Username,
                 Id = user.Id
 
-            }; 
-
-
+            };
         }
-
         public async Task<LoginResponse> RegisterUserAsync(UserDto registerUserDto)
         {
             var existingUser = await _authRepository.GetUserByNameAsync(registerUserDto.Username);
@@ -77,7 +74,7 @@ namespace summary.Service
 
             await _authRepository.CreateUserAsync(newUser);
 
-            var token =  GenerateJwtToken(newUser.Username, newUser.Role, newUser.Company);
+            var token = GenerateJwtToken(newUser.Username, newUser.Role, newUser.Company, newUser.Email);
 
             return new LoginResponse
             {
@@ -87,7 +84,7 @@ namespace summary.Service
             };
         }
 
-        private string GenerateJwtToken(string userName, string role, string company)
+        private string GenerateJwtToken(string userName, string role, string company, string email)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -97,6 +94,7 @@ namespace summary.Service
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.Role, role),
                 new Claim("company", company),
+                new Claim("email", email),
             };
 
             var token = new JwtSecurityToken(

@@ -10,12 +10,13 @@ interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   onNavigate: (path: string) => void
+  isDarkMode?: boolean
 }
 
 // Password strength types
 type PasswordStrength = "empty" | "weak" | "medium" | "strong" | "very-strong"
 
-export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: AuthModalProps) {
+export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDarkMode = false }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
   const [isLoading, setIsLoading] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
@@ -399,7 +400,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
           onNavigate("/myMeetings")
         }
       }, 1500)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
 
@@ -468,7 +469,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
         onClose()
         onNavigate("/myMeetings")
       }, 1500)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Registration error:", err)
 
@@ -572,15 +573,15 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
   if (!isOpen) return null
 
   return (
-    <div className="auth-modal-overlay" onClick={handleOverlayClick}>
+    <div className={`auth-modal-overlay ${isDarkMode ? "dark-mode" : ""}`} onClick={handleOverlayClick}>
       <motion.div
-        className="auth-modal"
+        className={`auth-modal ${isDarkMode ? "dark-mode" : ""}`}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
       >
-        <div className="auth-modal-header">
+        <div className={`auth-modal-header ${isDarkMode ? "dark-mode" : ""}`}>
           <div className="auth-modal-tabs">
             <button
               className={`auth-tab ${activeTab === "login" ? "active" : ""}`}
@@ -632,7 +633,10 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 <h2 className="auth-form-title">התחברות ל-TalkToMe.AI</h2>
 
                 <div className="social-login-buttons">
-                  <button className="social-login-button google-button" onClick={() => handleSocialLogin("Google")}>
+                  <button
+                    className={`social-login-button google-button ${isDarkMode ? "dark-mode" : ""}`}
+                    onClick={() => handleSocialLogin("Google")}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -647,7 +651,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 </div>
 
                 <div className="auth-divider">
-                  <span>או</span>
+                  <span className={isDarkMode ? "dark-mode" : ""}>או</span>
                 </div>
 
                 <div className="scrollable-form-content">
@@ -755,7 +759,10 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 <h2 className="auth-form-title">הרשמה ל-TalkToMe.AI</h2>
 
                 <div className="social-login-buttons">
-                  <button className="social-login-button google-button" onClick={() => handleSocialLogin("Google")}>
+                  <button
+                    className={`social-login-button google-button ${isDarkMode ? "dark-mode" : ""}`}
+                    onClick={() => handleSocialLogin("Google")}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20"
@@ -770,7 +777,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
                 </div>
 
                 <div className="auth-divider">
-                  <span>או</span>
+                  <span className={isDarkMode ? "dark-mode" : ""}>או</span>
                 </div>
 
                 <div className="scrollable-form-content">

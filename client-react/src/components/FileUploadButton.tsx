@@ -10,6 +10,7 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
 import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
 import { useNavigate } from "react-router-dom"
+
 const FileUploadButton = () => {
   // מצבי העלאת קובץ
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -42,6 +43,8 @@ const FileUploadButton = () => {
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [s3url, sets3url] = useState<string | null>(null)
   const navigate = useNavigate()
+  // מצב חדש לאנימציית כותרת
+  const [titleChanged, setTitleChanged] = useState(false)
 
   // טיפול בלחיצה על כפתור בחירת קובץ
   const handleButtonClick = () => {
@@ -246,6 +249,8 @@ const FileUploadButton = () => {
       setTimeout(() => {
         setCelebrationActive(false)
         setActiveStep(1)
+        // Trigger title animation
+        setTitleChanged(true)
       }, 2000)
     } catch (error) {
       console.error("שגיאה בשליחת הבקשה:", error)
@@ -267,6 +272,7 @@ const FileUploadButton = () => {
     setFileUrl(null)
     sets3url(null)
     setFileTextContent(null)
+    setTitleChanged(false)
   }
 
   // קבלת אייקון מתאים לסוג הקובץ
@@ -327,7 +333,6 @@ const FileUploadButton = () => {
   }, [])
 
   // Add this useEffect to set up PDF.js worker
-  // Add it right after the existing useEffect hooks
   useEffect(() => {
     // Set the worker source path for PDF.js
     if (!GlobalWorkerOptions.workerSrc) {
@@ -336,23 +341,15 @@ const FileUploadButton = () => {
     }
   }, [])
 
-  // Add CSS for active menu item
+  // Reset title animation after it completes
   useEffect(() => {
-    const style = document.createElement("style")
-    style.innerHTML = `
-    .active-menu-item {
-      background-color: rgba(var(--primary), 0.1);
-      color: hsl(var(--primary));
-      border-right: 3px solid hsl(var(--primary));
-      font-weight: 600;
+    if (titleChanged) {
+      const timer = setTimeout(() => {
+        setTitleChanged(false)
+      }, 1000) // Match this with the CSS animation duration
+      return () => clearTimeout(timer)
     }
-  `
-    document.head.appendChild(style)
-
-    return () => {
-      document.head.removeChild(style)
-    }
-  }, [])
+  }, [titleChanged])
 
   return (
     <div className={`main-container ${darkMode ? "dark-mode" : ""}`}>
@@ -391,11 +388,8 @@ const FileUploadButton = () => {
                 <span>פרופיל שלי</span>
               </button>
             </li>
-            <li>
-              <button
-                onClick={() => console.log("העלאת מסמך נלחץ")}
-                className={activeStep === 0 ? "active-menu-item" : ""}
-              >
+            <li className={activeStep === 0 ? "active-menu-item" : ""}>
+              <button onClick={() => console.log("העלאת מסמך נלחץ")}>
                 <FileUp size={20} />
                 <span>העלאת מסמך</span>
               </button>
@@ -406,12 +400,6 @@ const FileUploadButton = () => {
                 <span>הסיכומים שלי</span>
               </button>
             </li>
-            {/* <li>
-              <button onClick={() => console.log("הגדרות נלחצו")}>
-                <Settings size={20} />
-                <span>הגדרות</span>
-              </button>
-            </li> */}
           </ul>
         </nav>
         <div className="sidebar-footer">
@@ -430,17 +418,11 @@ const FileUploadButton = () => {
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
           </div>
-          <h1 className="dashboard-title">
+          <h1 className={`dashboard-title ${titleChanged ? "title-change-animation" : ""}`}>
             <FileText className="title-icon" size={24} />
             <span>{activeStep === 0 ? "העלאת מסמך לסיכום" : `סיכום הקובץ ${file?.name || ""}`}</span>
           </h1>
           <div className="header-right-group">
-            {/* <button className="add-meeting-button">
-              <div className="btn-content">
-                <Sparkles size={18} className="btn-icon" />
-                <span className="button-text">סיכום חדש</span>
-              </div>
-            </button> */}
             <div className="logo" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
               <span className="logo-text">
                 TalkToMe.<span className="logo-highlight">AI</span>
@@ -449,6 +431,21 @@ const FileUploadButton = () => {
           </div>
         </div>
       </header>
+
+      {/* מחוון שלבים */}
+      <div className="process-steps-container">
+        <div className="process-steps">
+          <div className={`process-step ${activeStep === 0 ? "active" : ""} ${activeStep > 0 ? "completed" : ""}`}>
+            <div className="step-number">{activeStep > 0 ? <Check size={16} /> : "1"}</div>
+            <div className="step-label">העלאת מסמך</div>
+          </div>
+          <div className="step-connector"></div>
+          <div className={`process-step ${activeStep === 1 ? "active" : ""}`}>
+            <div className="step-number">2</div>
+            <div className="step-label">סיכום הקובץ</div>
+          </div>
+        </div>
+      </div>
 
       {/* אנימציות */}
       {showUploadAnimation && <div className="upload-animation-container"></div>}

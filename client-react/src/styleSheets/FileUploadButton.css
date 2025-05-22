@@ -1,6 +1,6 @@
-/* שינוי משתני צבע בסיסיים להגדלת ניגודיות */
+/* Base variables */
 :root {
-  /* צבעי בסיס */
+  /* Base colors */
   --background: 220, 25%, 98%;
   --foreground: 224, 71%, 4%;
   --card: 0, 0%, 100%;
@@ -9,1559 +9,245 @@
   --input: 220, 13%, 91%;
   --ring: 262, 83%, 58%;
 
-  /* צבעים ראשיים - צבעים חדשים ויברנטיים */
-  --primary: 263, 90%, 51%;
+  /* Primary colors */
+  --primary: 262, 83%, 58%;
   --primary-foreground: 210, 40%, 98%;
 
-  /* צבעים משניים - הגדלת ניגודיות */
+  /* Secondary colors */
   --secondary: 220, 14%, 96%;
-  --secondary-foreground: 220, 15%, 30%; /* כהה יותר מקודם לניגודיות טובה יותר */
+  --secondary-foreground: 220, 9%, 46%;
 
-  /* צבעי הדגשה - צבעים חדשים ויברנטיים */
-  --accent-1: 326, 100%, 60%;
-  --accent-2: 190, 90%, 50%;
-  --accent-3: 43, 96%, 56%;
-  --accent-4: 280, 100%, 65%;
-  --accent-5: 160, 84%, 39%;
+  /* Accent colors */
+  --accent: 262, 83%, 58%;
+  --accent-foreground: 210, 40%, 98%;
 
-  /* צבעי הרס */
+  /* Destructive colors */
   --destructive: 0, 84%, 60%;
   --destructive-foreground: 210, 40%, 98%;
 
-  /* צבעים מעומעמים - הגדלת ניגודיות */
+  /* Muted colors */
   --muted: 220, 14%, 96%;
-  --muted-foreground: 220, 15%, 35%; /* כהה יותר לניגודיות טובה יותר */
+  --muted-foreground: 220, 9%, 46%;
 
-  /* רדיוס וצללים */
-  --radius-sm: 0.25rem;
+  /* Gradient colors */
+  --gradient-start: 262, 83%, 58%;
+  --gradient-mid: 245, 58%, 51%;
+  --gradient-end: 224, 76%, 48%;
+
+  /* Accent colors */
+  --accent-teal: 174, 86%, 45%;
+  --accent-pink: 330, 86%, 65%;
+  --accent-yellow: 42, 96%, 59%;
+
+  /* Success color */
+  --success: 142, 76%, 45%;
+
+  /* Radius and shadows */
   --radius: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-  /* מעברים */
+  /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
-  --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-/* מצב חושך - הגדלת ניגודיות */
-.dark-mode {
-  --background: 222, 20%, 10%;
-  --foreground: 210, 20%, 98%;
-  --card: 222, 20%, 15%;
-  --card-foreground: 210, 20%, 98%;
-  --border: 215, 15%, 25%;
-  --input: 215, 15%, 25%;
-  --secondary: 217, 19%, 20%;
-  --secondary-foreground: 210, 20%, 90%; /* בהיר יותר לניגודיות טובה יותר במצב חושך */
-
-  /* צללים למצב חושך */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
-}
-
-/* סגנונות גלובליים */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* הגדלת ניגודיות טקסט כללי */
-body {
-  color: hsl(var(--foreground)) !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
-  background-color: hsl(var(--background));
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  direction: rtl;
-}
-
-/* מיכל ראשי */
-.main-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* ===== 1. שיפור הדגשת התפריט הצדדי ===== */
+.sidebar-nav ul li.active-menu-item {
   position: relative;
-  overflow: hidden;
-}
-
-/* אלמנטי רקע */
-.background-elements {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.bg-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, hsla(var(--background), 1) 0%, hsla(var(--background), 0.95) 100%);
-  opacity: 0.8;
-}
-
-.bg-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(hsla(var(--primary), 0.03) 1px, transparent 1px),
-    radial-gradient(hsla(var(--primary), 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
-}
-
-/* צורות גיאומטריות */
-.geometric-shape {
-  position: absolute;
-  opacity: 0.05;
-  transition: all 0.8s ease;
-}
-
-.shape1 {
-  width: 300px;
-  height: 300px;
-  background-color: hsla(var(--accent-1), 1);
-  top: -150px;
-  right: -150px;
-  transform: rotate(45deg);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
-}
-
-.shape2 {
-  width: 200px;
-  height: 200px;
-  background-color: hsla(var(--accent-2), 1);
-  bottom: -100px;
-  left: -100px;
-  border-radius: 50%;
-}
-
-.shape3 {
-  width: 150px;
-  height: 150px;
-  background-color: hsla(var(--accent-3), 1);
-  top: 30%;
-  left: 5%;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  animation: rotate 30s linear infinite;
-}
-
-.shape4 {
-  width: 180px;
-  height: 180px;
-  background-color: hsla(var(--accent-4), 1);
-  bottom: 20%;
-  right: 10%;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-  animation: rotate 25s linear infinite reverse;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* אנימציית העלאה */
-.upload-animation-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upload-animation-container::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  background-color: hsla(var(--primary), 0.2);
-  border-radius: 50%;
-  animation: pulse-out 1.5s ease-out forwards;
-}
-
-.upload-animation-container::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    45deg,
-    hsla(var(--primary), 0.05) 25%,
-    transparent 25%,
-    transparent 50%,
-    hsla(var(--primary), 0.05) 50%,
-    hsla(var(--primary), 0.05) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-size: 20px 20px;
-  opacity: 0.3;
-  animation: bg-slide 20s linear infinite;
-}
-
-@keyframes pulse-out {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0.8;
-  }
-  100% {
-    width: 500px;
-    height: 500px;
-    opacity: 0;
-  }
-}
-
-@keyframes bg-slide {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 400px 400px;
-  }
-}
-
-/* תוכן ראשי */
-.app-content {
-  flex: 1;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-}
-
-.content-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  perspective: 1000px;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-}
-
-.content-container.transitioning {
-  opacity: 0;
-  transform: translateY(30px) scale(0.97);
-}
-
-/* מקטע העלאה */
-.upload-section {
-  width: 100%;
-  animation: slideInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  transform-origin: center bottom;
-}
-
-.upload-container {
-  width: 100%;
-  position: relative;
-}
-
-/* ===== עיצוב חדש לכרטיס העלאה ===== */
-.upload-card {
-  background-color: white;
-  border-radius: var(--radius-xl);
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s ease;
-  border: 2px solid transparent;
-}
-
-.dark-mode .upload-card {
-  background-color: hsla(var(--card), 1);
-  border-color: hsla(var(--border), 0.2);
-}
-
-.upload-card:hover:not(.has-file) {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-xl);
-  border-color: hsla(var(--primary), 0.3);
-}
-
-.upload-card.dragging {
-  background-color: hsla(var(--primary), 0.05);
-  border-color: hsla(var(--primary), 0.5);
-  transform: scale(1.02);
-}
-
-.upload-card.has-file {
-  border-color: hsla(var(--border), 0.5);
-  padding: 2rem;
-}
-
-/* === סגנונות גרירה ושחרור משופרים === */
-.upload-card.dragging {
-  background-color: hsla(var(--primary), 0.05);
-  border-color: hsla(var(--primary), 0.5);
-  border-width: 3px;
-  border-style: dashed;
-  transform: scale(1.02);
-  box-shadow: var(--shadow-xl), 0 0 0 10px hsla(var(--primary), 0.05);
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.upload-card.valid-file {
-  border-color: hsla(var(--accent-5), 0.7);
-  background-color: hsla(var(--accent-5), 0.05);
-  box-shadow: var(--shadow-xl), 0 0 0 10px hsla(var(--accent-5), 0.05);
-}
-
-.upload-card.invalid-file {
-  border-color: hsla(var(--destructive), 0.7);
-  background-color: hsla(var(--destructive), 0.05);
-  box-shadow: var(--shadow-xl), 0 0 0 10px hsla(var(--destructive), 0.05);
-}
-
-.upload-card.drop-success {
-  animation: drop-success-pulse 1.5s ease;
-}
-
-.upload-card.drop-error {
-  animation: drop-error-pulse 1.5s ease;
-}
-
-@keyframes drop-success-pulse {
-  0% {
-    box-shadow: var(--shadow-lg), 0 0 0 0 hsla(var(--accent-5), 0.7);
-  }
-  50% {
-    box-shadow: var(--shadow-xl), 0 0 0 20px hsla(var(--accent-5), 0);
-  }
-  100% {
-    box-shadow: var(--shadow-lg), 0 0 0 0 hsla(var(--accent-5), 0);
-  }
-}
-
-@keyframes drop-error-pulse {
-  0% {
-    box-shadow: var(--shadow-lg), 0 0 0 0 hsla(var(--destructive), 0.7);
-  }
-  50% {
-    box-shadow: var(--shadow-xl), 0 0 0 20px hsla(var(--destructive), 0);
-  }
-  100% {
-    box-shadow: var(--shadow-lg), 0 0 0 0 hsla(var(--destructive), 0);
-  }
-}
-
-.drag-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  border-radius: var(--radius-xl);
-  padding: 2rem;
-  animation: fade-in 0.3s ease;
-}
-
-.dark-mode .drag-overlay {
-  background-color: rgba(30, 30, 40, 0.95);
-}
-
-.drag-overlay.valid {
-  background-color: hsla(var(--accent-5), 0.1);
-  border: 3px dashed hsla(var(--accent-5), 0.5);
-}
-
-.drag-overlay.invalid {
-  background-color: hsla(var(--destructive), 0.1);
-  border: 3px dashed hsla(var(--destructive), 0.5);
-}
-
-.drag-icon {
-  margin-bottom: 1.5rem;
-  color: hsla(var(--primary), 1);
-  animation: drag-icon-bounce 1s infinite alternate ease-in-out;
-}
-
-.drag-overlay.valid .drag-icon {
-  color: hsla(var(--accent-5), 1);
-}
-
-.drag-overlay.invalid .drag-icon {
-  color: hsla(var(--destructive), 1);
-}
-
-@keyframes drag-icon-bounce {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-10px);
-  }
-}
-
-.drag-message {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: hsla(var(--primary), 1);
-  text-align: center;
-}
-
-.drag-overlay.valid .drag-message {
-  color: hsla(var(--accent-5), 1);
-}
-
-.drag-overlay.invalid .drag-message {
-  color: hsla(var(--destructive), 1);
-}
-
-/* הגדלת ניגודיות בהודעת גרירה */
-.drag-submessage {
-  font-size: 1rem;
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  text-align: center;
-  max-width: 400px;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Responsive adjustments for drag overlay */
-@media (max-width: 480px) {
-  .drag-message {
-    font-size: 1.25rem;
-  }
-
-  .drag-submessage {
-    font-size: 0.875rem;
-  }
-
-  .drag-icon svg {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-/* קישוטי כרטיס */
-.card-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.decoration-line {
-  position: absolute;
-  height: 3px;
-  background-color: hsla(var(--accent-2), 0.2);
-  border-radius: 3px;
-  transition: all 0.5s ease;
-}
-
-.line1 {
-  width: 60px;
-  top: 20px;
-  right: 20px;
-  transform: rotate(-45deg);
-}
-
-.line2 {
-  width: 40px;
-  bottom: 30px;
-  left: 25px;
-  background-color: hsla(var(--accent-1), 0.2);
-  transform: rotate(45deg);
-}
-
-.line3 {
-  width: 50px;
-  top: 40px;
-  left: 20px;
-  background-color: hsla(var(--accent-3), 0.2);
-  transform: rotate(30deg);
-}
-
-.decoration-dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: hsla(var(--accent-4), 0.3);
-  transition: all 0.5s ease;
-}
-
-.dot1 {
-  top: 15%;
-  right: 10%;
-}
-
-.dot2 {
-  bottom: 20%;
-  left: 15%;
-  background-color: hsla(var(--accent-5), 0.3);
-}
-
-.dot3 {
-  top: 30%;
-  left: 10%;
-  background-color: hsla(var(--accent-1), 0.3);
-}
-
-.upload-card:hover .decoration-line {
-  transform: scale(1.2) rotate(var(--rotation, 0deg));
-  opacity: 0.5;
-}
-
-.upload-card:hover .decoration-dot {
-  transform: scale(1.5);
-  opacity: 0.7;
-}
-
-/* איור העלאה */
-.upload-illustration {
-  position: relative;
-  margin-bottom: 2.5rem;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upload-icon-wrapper {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: hsla(var(--primary), 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.4s ease;
-}
-
-.upload-card:hover .upload-icon-wrapper {
-  transform: translateY(-8px);
   background-color: hsla(var(--primary), 0.15);
+  border-right: 4px solid hsl(var(--primary));
 }
 
-.upload-icon {
-  color: hsla(var(--primary), 1);
-  width: 40px;
-  height: 40px;
-  transition: all 0.4s ease;
-}
-
-.icon-pulse {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 2px solid hsla(var(--primary), 0.3);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.8;
-  }
-  70% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 0;
-  }
-}
-
-/* הגדלת ניגודיות בכותרת */
-.upload-heading {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: hsla(var(--foreground), 1) !important;
-  transition: all 0.4s ease;
-}
-
-/* הגדלת ניגודיות בטקסט הוראות */
-.upload-instructions {
-  color: hsla(var(--foreground), 0.9) !important;
-  font-size: 1rem;
-  line-height: 1.6;
-  max-width: 400px;
-}
-
-.button-text {
-  color: hsla(var(--foreground), 0.9);
+.sidebar-nav ul li.active-menu-item button {
+  color: hsl(var(--primary));
   font-weight: 600;
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-
-}
-
-/* הגדלת ניגודיות טקסט בכפתורים */
-.button-text {
-  color: hsla(var(--foreground), 1) !important;
-  font-weight: 600 !important;
-}
-
-/* תיקון צבע טקסט בכפתורים - הוספת !important לכל הכפתורים */
-.upload-button,
-.process-button,
-.add-meeting-button {
-  color: white !important;
-  font-weight: 600 !important;
-}
-
-.upload-button .button-text,
-.process-button .button-text,
-.add-meeting-button .button-text {
-  color: white !important;
-}
-
-.upload-button .button-icon,
-.process-button .button-icon,
-.add-meeting-button .btn-icon {
-  color: white !important;
-}
-
-/* תיקון ספציפי לכפתור העלאת מסמך נוסף */
-.new-document-button {
-  background-color: white !important;
-  color: hsla(var(--primary), 1) !important;
-  font-weight: 600 !important;
-  border: 2px solid hsla(var(--primary), 0.2) !important;
-}
-
-.new-document-button .button-text {
-  color: hsla(var(--primary), 1) !important;
-}
-
-.new-document-button .button-icon {
-  color: hsla(var(--primary), 1) !important;
-}
-
-/* תיקון למצב חושך */
-.dark-mode .new-document-button {
-  background-color: hsla(var(--card), 1) !important;
-  border-color: hsla(var(--primary), 0.3) !important;
-}
-
-.dark-mode .new-document-button .button-text {
-  color: hsla(var(--primary), 1) !important;
-  font-weight: 700 !important;
-}
-
-.dark-mode .new-document-button .button-icon {
-  color: hsla(var(--primary), 1) !important;
-}
-
-/* תיקון לכפתורי פעולה בכרטיס הסיכום */
-.action-button {
-  color: hsla(var(--foreground), 1) !important;
-  background-color: white !important;
-  border: 1px solid hsla(var(--border), 1) !important;
-}
-
-.action-button span {
-  color: hsla(var(--foreground), 1) !important;
-}
-
-.dark-mode .action-button {
-  background-color: hsla(var(--card), 1) !important;
-  color: hsla(var(--foreground), 1) !important;
-  border-color: hsla(var(--border), 1) !important;
-}
-
-.action-button:hover span {
-  color: hsla(var(--foreground), 1) !important;
-}
-
-/* תיקון ספציפי לכפתור "סיכום חדש" */
-.add-meeting-button {
-  position: relative;
-  padding: 0.7rem 1.4rem;
-  background: linear-gradient(90deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1)) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  z-index: 1;
-}
-
-/* תיקון ספציפי לכפתור "בחר קובץ" */
-.upload-button {
-  background-color: hsla(var(--primary), 1) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 50px;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600 !important;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-/* סגנון מיוחד לכפתור סיכום */
-.process-button.summarize-button {
-  background: linear-gradient(90deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1)) !important;
-  animation: fadeIn 0.5s ease-out;
-}
-
-.process-button {
-  background-color: hsla(var(--primary), 1) !important;
-  color: white !important;
-  border: none !important;
-}
-
-.upload-info {
-  margin-top: 1.5rem;
-  display: flex;
-  gap: 1rem;
-}
-
-/* הגדלת ניגודיות בתגיות מידע */
-.info-badge {
-  font-size: 0.75rem;
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  background-color: hsla(var(--secondary), 1);
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  transition: all 0.3s ease;
-}
-
-.dark-mode .info-badge {
-  background-color: hsla(var(--secondary), 0.8);
-}
-
-.upload-card:hover .info-badge {
-  color: hsla(var(--secondary-foreground), 1);
-  transform: translateY(-2px);
-}
-
-.file-input {
-  display: none;
-}
-
-/* סטטוס קובץ */
-.file-status {
-  width: 100%;
-  animation: fadeIn 0.4s ease-out;
-}
-
-.file-preview {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  background-color: hsla(var(--secondary), 0.5);
-  padding: 1.25rem;
-  border-radius: var(--radius-md);
-  transition: all 0.4s ease;
-}
-
-.dark-mode .file-preview {
-  background-color: hsla(var(--secondary), 0.3);
-}
-
-.file-preview:hover {
-  background-color: hsla(var(--secondary), 0.7);
-}
-
-.file-icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.4s ease;
-}
-
-.file-icon {
-  width: 40px;
-  height: 40px;
-  transition: all 0.4s ease;
-}
-
-.file-icon.pdf {
-  color: #e53935;
-}
-
-.file-icon.txt {
-  color: #2196f3;
-}
-
-.file-icon.docx {
-  color: #1565c0;
-}
-
-.file-info {
-  flex: 1;
-  text-align: right;
-}
-
-/* הגדלת ניגודיות בשם קובץ */
-.file-name {
-  font-weight: 600;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 300px;
-  color: hsla(var(--foreground), 1) !important;
-}
-
-/* הגדלת ניגודיות בגודל קובץ */
-.file-size {
-  font-size: 0.875rem;
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  margin: 0.25rem 0 0 0;
-}
-
-.reset-button {
-  background: none !important;
-  border: none !important;
-  color: hsla(var(--foreground), 0.7) !important;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.reset-button:hover {
-  background-color: hsla(var(--secondary-foreground), 0.1) !important;
-  color: hsla(var(--destructive), 1) !important;
-  transform: rotate(90deg);
-}
-
-.upload-progress-container {
-  width: 100%;
-  height: 8px;
-  background-color: hsla(var(--secondary), 0.5);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  position: relative;
-}
-
-.dark-mode .upload-progress-container {
-  background-color: hsla(var(--secondary), 0.3);
-}
-
-.upload-progress-bar {
-  height: 100%;
-  background-color: hsla(var(--primary), 1);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  border-radius: 4px;
-}
-
-.progress-pulse {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: progressPulse 1.5s infinite;
-}
-
-@keyframes progressPulse {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.upload-progress-bar.success {
-  background-color: hsla(var(--accent-5), 1);
-}
-
-.upload-progress-bar.error {
-  background-color: hsla(var(--destructive), 1);
-}
-
-/* הגדלת ניגודיות בסטטוס העלאה */
-.upload-status {
-  font-size: 0.95rem;
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  justify-content: center;
-}
-
-.success-message {
-  color: hsla(var(--accent-5), 1);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  animation: fadeIn 0.4s ease-out;
-  font-weight: 600; /* Bolder for better visibility */
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1); /* Subtle text shadow for better readability */
-}
-
-.error-message {
-  color: hsla(var(--destructive), 1);
-  animation: fadeIn 0.4s ease-out;
-  font-weight: 600; /* Bolder for better visibility */
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1); /* Subtle text shadow for better readability */
-}
-
-/* כפתור תפריט */
-.menu-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: hsla(var(--primary), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 0.5) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-/* כפתור החלפת ערכת נושא */
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: hsla(var(--secondary-foreground), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 0.5) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-/* כפתור איפוס */
-/* הגדלת ניגודיות בכפתור איפוס */
-.reset-button {
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  background: none !important;
-  border: none !important;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.reset-button:hover {
-  background-color: hsla(var(--secondary-foreground), 0.1) !important;
-  color: hsla(var(--destructive), 1) !important;
-}
-
-/* כפתור סגירת תפריט */
-.close-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: hsla(var(--secondary-foreground), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 1) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-.close-menu:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-  color: hsla(var(--foreground), 1) !important;
-}
-
-/* כפתורים בתפריט הצד */
-.sidebar-nav li button {
-  color: hsla(var(--foreground), 0.7) !important;
-  background: none !important;
-  border: none !important;
-}
-
-.sidebar-nav li button:hover {
-  background-color: hsla(var(--secondary), 1) !important;
-  color: hsla(var(--foreground), 1) !important;
-}
-
-.sidebar-nav li.active button {
-  background-color: hsla(var(--primary), 0.1) !important;
-  color: hsla(var(--primary), 1) !important;
-}
-
-/* מצב חושך לכפתורים בתפריט */
-.dark-mode .sidebar-nav li button:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-}
-
-.dark-mode .sidebar-nav li.active button {
-  background-color: hsla(var(--primary), 0.2) !important;
-  color: hsla(var(--primary), 0.8) !important;
-}
-
-/* מצב מעבר עכבר לכפתורים */
-.upload-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  background-color: hsla(var(--primary), 0.9) !important;
-}
-
-.process-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  background-color: hsla(var(--primary), 0.9) !important;
-}
-
-.process-button.summarize-button:hover {
-  background: linear-gradient(90deg, hsla(var(--primary), 0.9), hsla(var(--accent-4), 0.9)) !important;
-}
-
-.new-document-button:hover {
-  background-color: hsla(var(--primary), 0.05) !important;
-  border-color: hsla(var(--primary), 0.5) !important;
-}
-
-.action-button:hover {
-  color: hsla(var(--foreground), 1) !important;
-  border-color: hsla(var(--primary), 0.3) !important;
-}
-
-.menu-button:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-  color: hsla(var(--primary), 0.8) !important;
-}
-
-.theme-toggle:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-  color: hsla(var(--foreground), 1) !important;
-}
-
-.add-meeting-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
 }
 
-.process-button::before {
+.sidebar-nav ul li.active-menu-item::before {
   content: "";
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: all 0.4s ease;
-}
-
-.process-button:hover::before {
-  left: 100%;
-  transition: 0.7s;
-}
-
-.process-button:hover .button-icon {
-  transform: translateY(-3px);
-}
-
-.process-button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* שכבת עיבוד */
-.processing-overlay {
-  position: absolute;
-  top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: white;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, hsla(var(--gradient-start), 1), hsla(var(--gradient-end), 1));
+}
+
+.sidebar-nav ul li.active-menu-item button svg {
+  color: hsl(var(--primary));
+  filter: drop-shadow(0 0 3px hsla(var(--primary), 0.3));
+}
+
+/* ===== 2. הוספת מחוון שלבים ===== */
+.process-steps-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.process-steps {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: var(--radius-xl);
-  animation: fadeIn 0.3s ease-out;
-  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  padding: 0 1rem;
 }
 
-.dark-mode .processing-overlay {
-  background-color: hsla(var(--card), 1);
-}
-
-.processing-content {
+.process-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  max-width: 400px;
-  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
 }
 
-.processing-spinner {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  margin-bottom: 2rem;
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: hsla(var(--secondary), 1);
+  color: hsla(var(--secondary-foreground), 1);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
 }
 
-.upload-animation {
+.step-label {
+  font-size: 0.875rem;
+  color: hsla(var(--secondary-foreground), 1);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background-color: hsla(var(--secondary), 1);
+  margin: 0 0.5rem;
   position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: -16px;
+  transition: all 0.3s ease;
 }
 
-.file-icon-animated {
-  color: hsla(var(--primary), 1);
-  animation: fileIconAnimation 2s infinite ease-in-out;
-  z-index: 2;
+/* Active step styling */
+.process-step.active .step-number {
+  background-color: hsla(var(--primary), 1);
+  color: white;
+  box-shadow: 0 0 0 4px hsla(var(--primary), 0.2);
+  transform: scale(1.1);
 }
 
-@keyframes fileIconAnimation {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+.process-step.active .step-label {
+  color: hsla(var(--foreground), 1);
+  font-weight: 600;
 }
 
-.upload-progress-ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.progress-ring {
-  transform: rotate(-90deg);
-  width: 100%;
-  height: 100%;
-}
-
-.progress-ring-circle {
-  fill: none;
-  stroke: hsla(var(--secondary), 0.3);
-  stroke-width: 4;
-  stroke-linecap: round;
-}
-
-.progress-ring-circle-fill {
-  fill: none;
-  stroke: hsla(var(--primary), 1);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-dasharray: 283;
-  stroke-dashoffset: 283;
-  transition: stroke-dashoffset 0.5s ease;
-}
-
-.upload-arrow {
-  position: absolute;
-  bottom: 10px;
-  color: hsla(var(--primary), 1);
-  animation: arrowAnimation 2s infinite ease-in-out;
-}
-
-@keyframes arrowAnimation {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(-15px);
-    opacity: 1;
-  }
-}
-
-.processing-animation {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.spinner-icon {
-  color: hsla(var(--primary), 1);
-  animation: spin 1.5s linear infinite;
-}
-
-.sparkle-icon {
-  position: absolute;
-  color: hsla(var(--accent-3), 1);
-  animation: sparkleAnimation 2s infinite ease-in-out;
-}
-
-@keyframes sparkleAnimation {
-  0%,
-  100% {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.processing-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: hsla(var(--primary), 1);
-  background: linear-gradient(to right, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* הגדלת ניגודיות בתיאור עיבוד */
-.processing-description {
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  margin-bottom: 2rem;
-  font-size: 1rem;
-}
-
-.processing-progress {
-  width: 100%;
-  height: 8px;
-  background-color: hsla(var(--secondary), 0.5);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-
-.dark-mode .processing-progress {
-  background-color: hsla(var(--secondary), 0.3);
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(to right, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  border-radius: 4px;
-}
-
-.progress-glow {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 20px;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8));
-  animation: progressGlow 1.5s infinite;
-}
-
-@keyframes progressGlow {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(500%);
-  }
-}
-
-/* מקטע סיכום */
-.summary-section {
-  width: 100%;
-  animation: fadeInScale 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.summary-card.celebrate::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, hsla(var(--primary), 0.2) 0%, transparent 70%);
-  z-index: -1;
-  opacity: 0;
-  animation: card-celebrate 1s ease-out forwards;
-  border-radius: var(--radius);
-  pointer-events: none;
-}
-
-@keyframes card-celebrate {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.2);
-  }
-}
-
-.summary-card {
-  background-color: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  position: relative;
-}
-
-.summary-card.animated {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card-header {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
+/* Completed step styling */
+.process-step.completed .step-number {
+  background-color: hsla(var(--success), 1);
   color: white;
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.process-step.completed + .step-connector {
+  background: linear-gradient(to right, hsla(var(--success), 1), hsla(var(--primary), 1));
 }
 
-.header-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-text {
-  flex: 1;
-}
-
-.summary-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-}
-
-.summary-date {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  opacity: 0.9;
-}
-
-.summary-content-wrapper {
-  padding: 2rem;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-/* הגדלת ניגודיות בתוכן סיכום */
-.summary-content {
-  line-height: 1.7;
-  color: hsla(var(--foreground), 1) !important;
-  white-space: pre-wrap;
-}
-
-.card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-top: 1px solid hsla(var(--border), 1);
-  background-color: hsla(var(--secondary), 0.5);
-}
-
-/* הגדלת ניגודיות בכפתורי פעולה */
-.action-button {
-  color: hsla(var(--foreground), 1) !important;
-  background-color: white !important;
-  border: 1px solid hsla(var(--border), 1) !important;
-}
-
-.action-button span {
-  color: hsla(var(--foreground), 1) !important;
-}
-
-.new-document-button {
-  background-color: white !important;
-  color: hsla(var(--primary), 1) !important;
-  border: 2px solid hsla(var(--primary), 0.2) !important;
-  border-radius: 50px;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
-  font-weight: 600 !important;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 2rem auto 0;
-  box-shadow: var(--shadow-sm);
-  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+/* ===== 3. אנימציה לשינוי כותרת ===== */
+.dashboard-title {
   position: relative;
-  overflow: hidden;
-  z-index: 1;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.dark-mode .new-document-button {
-  background-color: hsla(var(--card), 1) !important;
-  border-color: hsla(var(--primary), 0.3) !important;
+.title-change-animation {
+  animation: titleChange 0.8s ease-in-out;
 }
 
-.new-document-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: all 0.4s ease;
+@keyframes titleChange {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  80% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.new-document-button:hover {
-  background-color: hsla(var(--primary), 0.05) !important;
-  border-color: hsla(var(--primary), 0.5) !important;
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+/* ===== תיקונים נוספים ===== */
+
+/* שיפור תצוגה במובייל */
+@media (max-width: 768px) {
+  .process-steps {
+    padding: 0 0.5rem;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+  }
+
+  .step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
+  }
+
+  .sidebar-nav ul li.active-menu-item {
+    border-right-width: 6px;
+  }
 }
 
-.new-document-button:hover::before {
-  left: 100%;
-  transition: 0.7s;
+/* שיפור נראות בדארק מוד */
+.dark-mode .process-step .step-number {
+  background-color: hsla(var(--secondary), 0.2);
+  color: hsla(var(--secondary-foreground), 0.8);
 }
 
-.new-document-button:hover .button-icon {
-  transform: translateY(-3px);
+.dark-mode .step-connector {
+  background-color: hsla(var(--secondary), 0.2);
 }
 
-.new-document-button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+.dark-mode .process-step.active .step-number {
+  background-color: hsla(var(--primary), 0.8);
+  color: white;
+  box-shadow: 0 0 0 4px hsla(var(--primary), 0.3);
 }
 
-/* כותרת תחתונה */
-/* הגדלת ניגודיות בכותרת תחתונה */
-.app-footer {
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  padding: 1.5rem;
-  text-align: center;
-  font-size: 0.875rem;
-  border-top: 1px solid hsla(var(--border), 0.5);
-  background-color: white;
-  position: relative;
-  z-index: 10;
+.dark-mode .sidebar-nav ul li.active-menu-item {
+  background-color: hsla(var(--primary), 0.25);
 }
 
-.dark-mode .app-footer {
-  background-color: hsla(var(--card), 1);
+/* אנימציות נוספות */
+.process-step {
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* אנימציות */
+.process-step:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.process-step:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1573,6 +259,25 @@ body {
   }
 }
 
+/* שיפור נראות כפתורים */
+.process-button {
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.process-button:active {
+  transform: translateY(0);
+}
+
+/* שיפור נראות הסיכום */
+.summary-section {
+  animation: fadeInUp 0.5s ease-out;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -1582,884 +287,4 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ===== סגנונות הדר (Header) ===== */
-.dashboard-header {
-  background-color: white;
-  box-shadow: var(--shadow-md);
-  padding: 1.5rem 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  transition: all var(--transition-normal);
-  border-bottom: 1px solid hsla(var(--border), 0.5);
-}
-
-.dark-mode .dashboard-header {
-  background-color: hsla(var(--card), 1);
-  border-bottom-color: hsla(var(--border), 0.8);
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.dashboard-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(to right, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-}
-
-.title-icon {
-  color: hsla(var(--primary), 1);
-  animation: gentle-pulse 4s ease-in-out infinite;
-}
-
-@keyframes gentle-pulse {
-  0% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-}
-
-.header-right-group {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all var(--transition-normal);
-  position: relative;
-  padding: 8px 12px;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.logo:hover {
-  transform: translateY(-2px);
-}
-
-.logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: hsla(var(--primary), 1);
-  position: relative;
-}
-
-.logo-highlight {
-  background: linear-gradient(to right, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-}
-
-/* כפתור תפריט */
-.menu-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: hsla(var(--primary), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 0.5) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-/* כפתור החלפת ערכת נושא */
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: hsla(var(--secondary-foreground), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 0.5) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-.theme-toggle svg {
-  transition: transform var(--transition-normal);
-}
-
-.theme-toggle:hover svg {
-  transform: rotate(15deg);
-}
-
-.add-meeting-button {
-  position: relative;
-  padding: 0.7rem 1.4rem;
-  background: linear-gradient(90deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1)) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: 0.95rem;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  z-index: 1;
-}
-
-.add-meeting-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: all 0.4s ease;
-}
-
-.add-meeting-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-}
-
-.add-meeting-button:hover::before {
-  left: 100%;
-  transition: 0.7s;
-}
-
-.add-meeting-button:hover .btn-icon {
-  transform: rotate(180deg);
-}
-
-.btn-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 2;
-}
-
-.btn-icon {
-  transition: transform 0.5s ease;
-}
-
-/* סגנונות תפריט צד */
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 40;
-  backdrop-filter: blur(4px);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 300px;
-  background-color: white;
-  box-shadow: var(--shadow-xl);
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform var(--transition-normal);
-  border-radius: 16px 0 0 16px;
-}
-
-.sidebar.open {
-  transform: translateX(0);
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: flex-start;
-  padding: 1rem;
-  border-bottom: 1px solid hsla(var(--border), 0.5);
-}
-
-/* כפתור סגירת תפריט */
-.close-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: hsla(var(--secondary-foreground), 1) !important;
-  transition: all var(--transition-fast);
-  background-color: hsla(var(--secondary), 1) !important;
-  border: none !important;
-  cursor: pointer;
-}
-
-.close-menu:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-  color: hsla(var(--foreground), 1) !important;
-  transform: rotate(90deg);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem 1rem;
-  border-bottom: 1px solid hsla(var(--border), 0.5);
-  background-color: hsla(var(--background), 0.5);
-}
-
-.avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, hsla(var(--primary), 1), hsla(var(--accent-4), 1));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: var(--shadow-md);
-}
-
-/* הגדלת ניגודיות בפרופיל משתמש */
-.user-info h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: hsla(var(--foreground), 1) !important;
-  margin-bottom: 4px;
-}
-
-/* הגדלת ניגודיות בפרופיל משתמש */
-.user-info p {
-  font-size: 0.875rem;
-  color: hsla(var(--foreground), 0.9) !important;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.sidebar-nav ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* כפתורים בתפריט הצד */
-/* הגדלת ניגודיות בכפתורי תפריט */
-.sidebar-nav li button {
-  color: hsla(var(--foreground), 0.9) !important; /* כהה יותר מקודם */
-  background: none !important;
-  border: none !important;
-}
-
-.sidebar-nav li button:hover {
-  background-color: hsla(var(--secondary), 1) !important;
-  color: hsla(var(--foreground), 1) !important;
-  transform: translateX(-4px);
-}
-
-.sidebar-nav li.active button {
-  background-color: hsla(var(--primary), 0.1) !important;
-  color: hsla(var(--primary), 1) !important;
-  box-shadow: var(--shadow-sm);
-}
-
-.sidebar-footer {
-  padding: 1rem;
-  border-top: 1px solid hsla(var(--border), 0.5);
-  text-align: center;
-  font-size: 0.75rem;
-  color: hsla(var(--secondary-foreground), 1);
-}
-
-/* מצב חושך לתפריט */
-.dark-mode .sidebar {
-  background-color: hsla(var(--card), 1);
-}
-
-.dark-mode .close-menu {
-  background-color: hsla(var(--secondary), 1);
-  color: hsla(var(--foreground), 0.7) !important;
-}
-
-.dark-mode .close-menu:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-  color: hsla(var(--foreground), 1) !important;
-}
-
-.dark-mode .user-profile {
-  background-color: hsla(var(--background), 0.2);
-  border-bottom-color: hsla(var(--border), 0.8);
-}
-
-/* מצב חושך לכפתורים בתפריט */
-.dark-mode .sidebar-nav li button:hover {
-  background-color: hsla(var(--secondary), 0.8) !important;
-}
-
-.dark-mode .sidebar-nav li.active button {
-  background-color: hsla(var(--primary), 0.2) !important;
-  color: hsla(var(--primary), 0.8) !important;
-}
-
-/* הגדלת ניגודיות בכותרת תחתונה במצב חושך */
-.dark-mode .sidebar-footer {
-  color: hsla(var(--foreground), 0.9) !important;
-}
-
-/* מניעת גלילה כשהתפריט פתוח */
-body.menu-open {
-  overflow: hidden;
-}
-
-/* אנימציית חגיגה */
-.celebration-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 100;
-  overflow: hidden;
-}
-
-.celebration-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.2));
-  opacity: 0;
-  animation: celebration-bg 3s ease-out forwards;
-}
-
-@keyframes celebration-bg {
-  0% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.3;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.celebration-container::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(circle at 20% 30%, hsla(var(--accent-1), 0.8) 2px, transparent 2px),
-    radial-gradient(circle at 40% 70%, hsla(var(--accent-2), 0.8) 3px, transparent 3px),
-    radial-gradient(circle at 60% 20%, hsla(var(--accent-3), 0.8) 4px, transparent 4px),
-    radial-gradient(circle at 80% 50%, hsla(var(--accent-4), 0.8) 2px, transparent 2px),
-    radial-gradient(circle at 30% 80%, hsla(var(--primary), 0.8) 3px, transparent 3px),
-    radial-gradient(circle at 70% 10%, hsla(var(--accent-5), 0.8) 2px, transparent 2px);
-  background-size: 20% 20%;
-  opacity: 0;
-  animation: confetti-appear 3s ease-out forwards;
-}
-
-@keyframes confetti-appear {
-  0% {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-/* אנימציית קונפטי */
-@keyframes confetti-fall-1 {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes confetti-fall-2 {
-  0% {
-    transform: translateY(-15vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(-360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes confetti-fall-3 {
-  0% {
-    transform: translateY(-5vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-.firework {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.3);
-  animation: firework 2s ease-out forwards;
-}
-
-.firework:nth-child(1) {
-  top: 20%;
-  left: 20%;
-  background-color: hsla(var(--accent-1), 1);
-  animation-delay: 0.2s;
-}
-
-.firework:nth-child(2) {
-  top: 40%;
-  left: 60%;
-  background-color: hsla(var(--accent-2), 1);
-  animation-delay: 0.5s;
-}
-
-.firework:nth-child(3) {
-  top: 70%;
-  left: 30%;
-  background-color: hsla(var(--accent-3), 1);
-  animation-delay: 0.8s;
-}
-
-.firework:nth-child(4) {
-  top: 30%;
-  left: 80%;
-  background-color: hsla(var(--accent-4), 1);
-  animation-delay: 1.1s;
-}
-
-.firework:nth-child(5) {
-  top: 60%;
-  left: 70%;
-  background-color: hsla(var(--primary), 1);
-  animation-delay: 1.4s;
-}
-
-@keyframes firework {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 255, 255, 0);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0), 0 0 0 40px rgba(255, 255, 255, 0), 0 0 0 60px rgba(255, 255, 255, 0);
-  }
-}
-
-/* אנימציית סיום עיבוד */
-.completion-animation {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.95);
-  z-index: 20;
-  border-radius: var(--radius-xl);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.dark-mode .completion-animation {
-  background-color: rgba(30, 30, 40, 0.95);
-}
-
-.completion-text {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  color: hsla(var(--primary), 1);
-  animation: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
-}
-
-@keyframes scale-in {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* אנימציית וי של הצלחה */
-.success-checkmark {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
-  position: relative;
-  animation: checkmark-circle 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.check-icon {
-  width: 80px;
-  height: 80px;
-  position: relative;
-  border-radius: 50%;
-  box-sizing: content-box;
-  border: 4px solid hsla(var(--accent-5), 1);
-}
-
-.check-icon::before {
-  top: 3px;
-  left: -2px;
-  width: 30px;
-  transform-origin: 100% 50%;
-  border-radius: 100px 0 0 100px;
-}
-
-.check-icon::after {
-  top: 0;
-  left: 30px;
-  width: 60px;
-  transform-origin: 0 50%;
-  border-radius: 0 100px 100px 0;
-  animation: rotate-circle 4.25s ease-in;
-}
-
-.check-icon::before,
-.check-icon::after {
-  content: "";
-  height: 100px;
-  position: absolute;
-  background: transparent;
-  transform: rotate(-45deg);
-}
-
-.check-icon .icon-line {
-  height: 5px;
-  background-color: hsla(var(--accent-5), 1);
-  display: block;
-  border-radius: 2px;
-  position: absolute;
-  z-index: 10;
-}
-
-.check-icon .icon-line.line-tip {
-  top: 46px;
-  left: 14px;
-  width: 25px;
-  transform: rotate(45deg);
-  animation: icon-line-tip 0.75s;
-}
-
-.check-icon .icon-line.line-long {
-  top: 38px;
-  right: 8px;
-  width: 47px;
-  transform: rotate(-45deg);
-  animation: icon-line-long 0.75s;
-}
-
-@keyframes checkmark-circle {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes icon-line-tip {
-  0% {
-    width: 0;
-    left: 1px;
-    top: 19px;
-  }
-  54% {
-    width: 0;
-    left: 1px;
-    top: 19px;
-  }
-  70% {
-    width: 50px;
-    left: -8px;
-    top: 37px;
-  }
-  84% {
-    width: 17px;
-    left: 21px;
-    top: 48px;
-  }
-  100% {
-    width: 25px;
-    left: 14px;
-    top: 46px;
-  }
-}
-
-@keyframes icon-line-long {
-  0% {
-    width: 0;
-    right: 46px;
-    top: 54px;
-  }
-  65% {
-    width: 0;
-    right: 46px;
-    top: 54px;
-  }
-  84% {
-    width: 55px;
-    right: 0px;
-    top: 35px;
-  }
-  100% {
-    width: 47px;
-    right: 8px;
-    top: 38px;
-  }
-}
-
-/* התאמות רספונסיביות */
-@media (max-width: 768px) {
-  .app-content {
-    padding: 1.5rem 1rem;
-  }
-
-  .upload-card {
-    padding: 2rem 1.5rem;
-  }
-
-  .upload-heading {
-    font-size: 1.5rem;
-  }
-
-  .file-name {
-    max-width: 200px;
-  }
-
-  .dashboard-header {
-    padding: 1rem 1.5rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.25rem;
-  }
-
-  .header-right-group {
-    gap: 1rem;
-  }
-
-  .logo-text {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .app-content {
-    padding: 1.5rem 1rem;
-  }
-
-  .upload-card {
-    padding: 2rem 1.5rem;
-  }
-
-  .upload-heading {
-    font-size: 1.5rem;
-  }
-
-  .file-name {
-    max-width: 200px;
-  }
-
-  .dashboard-header {
-    padding: 1rem 1.5rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.25rem;
-  }
-
-  .header-right-group {
-    gap: 1rem;
-  }
-
-  .logo-text {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .upload-illustration {
-    width: 100px;
-    height: 100px;
-  }
-
-  .upload-icon-wrapper {
-    width: 70px;
-    height: 70px;
-  }
-
-  .upload-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  .upload-heading {
-    font-size: 1.25rem;
-  }
-
-  .file-name {
-    max-width: 150px;
-  }
-
-  .card-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .action-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .dashboard-header {
-    padding: 0.75rem 1rem;
-  }
-
-  .header-content {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .dashboard-title {
-    order: 1;
-    width: 100%;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .header-controls {
-    order: 2;
-  }
-
-  .header-right-group {
-    order: 3;
-    margin-left: auto;
-  }
-
-  .add-meeting-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-.upload-button:focus-visible,
-.process-button:focus-visible,
-.new-document-button:focus-visible,
-.add-meeting-button:focus-visible,
-.action-button:focus-visible,
-.menu-button:focus-visible,
-.theme-toggle:focus-visible,
-.reset-button:focus-visible {
-  outline: 2px solid hsla(var(--primary), 1);
-  outline-offset: 2px;
 }

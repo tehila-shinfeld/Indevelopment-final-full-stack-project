@@ -1,16 +1,17 @@
-import { Card, CardContent, Typography } from "@mui/material";
-import FileUploadButton from "./FileUploadButton";
-import SummarizeFile from "./SummarizeFile";
+// import FileUploadButton from "./FileUploadButton";
 // import "../styleSheets/MainScreen.css";
-import { useState } from "react";
+// import { useState } from "react";
+
+import FileUploadButton from "./FileUploadButton";
 
 const MainScreen = () => {
-  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   return (
     <div id="main">
-      <FileUploadButton  onFileUpload={(url) => setUploadedFileUrl(url)} ></FileUploadButton>
+      {/* <FileUploadButton  onFileUpload={(url) => setUploadedFileUrl(url)} ></FileUploadButton> */}
       {/* <SummarizeFile fileUrl={uploadedFileUrl || ""}/> */}
+      <FileUploadButton></FileUploadButton>
     </div>
   );
 };

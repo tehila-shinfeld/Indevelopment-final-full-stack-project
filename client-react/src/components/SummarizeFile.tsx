@@ -4,274 +4,412 @@ import type React from "react"
 
 import { useEffect, useState, useRef } from "react"
 import axios from "axios"
+import { jsPDF } from "jspdf"
 import { useSummary } from "../context/SummaryContext"
 import UserPermissionDialog, { type User } from "./UserPermissionDialog"
-import { Save, Edit, CopyIcon as ContentCopy, CheckCircle, Sparkles, Loader, AlertCircle, Download, Share2 } from "lucide-react"
+import { Save, Edit, CopyIcon as ContentCopy, CheckCircle, Sparkles, Loader, AlertCircle, Download } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import "../styleSheets/SummarizeFile.css"
+// import "../styleSheets/canvas-editor.css"
+import dynamic from "next/dynamic"
+
+// Dynamically import the Canvas Editor component to avoid SSR issues
+const CanvasEditor = dynamic(() => import("./CanvasEditor"), { ssr: false })
+
 const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
-    const { summary } = useSummary()
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [openPermissionDialog, setOpenPermissionDialog] = useState(false)
-    const [selectedUsers, setSelectedUsers] = useState<User[]>([])
-    const [copied, setCopied] = useState(false)
-    const [typedSummary, setTypedSummary] = useState("")
-    const [isTyping, setIsTyping] = useState(true)
-    const [saveSuccess, setSaveSuccess] = useState(false)
-    const summaryRef = useRef<HTMLDivElement>(null)
-    const handleOpenPermissionDialog = () => setOpenPermissionDialog(true)
-    const handleClosePermissionDialog = () => setOpenPermissionDialog(false)
+  const { summary, setSummary } = useSummary()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [openPermissionDialog, setOpenPermissionDialog] = useState(false)
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
+  const [copied, setCopied] = useState(false)
+  const [typedSummary, setTypedSummary] = useState("")
+  const [isTyping, setIsTyping] = useState(true)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const summaryRef = useRef<HTMLDivElement>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [canvasImage, setCanvasImage] = useState<string | null>(null)
 
-    // Typing effect for summary text
-    useEffect(() => {
-        if (!summary) return
+  const handleOpenPermissionDialog = () => setOpenPermissionDialog(true)
+  const handleClosePermissionDialog = () => setOpenPermissionDialog(false)
 
-        setTypedSummary("")
-        setIsTyping(true)
+  useEffect(() => {
+    if (!summary) return
 
-        let currentIndex = 0
-        const typingSpeed = 15 // milliseconds per character
+    setTypedSummary("")
+    setIsTyping(true)
 
-        const typingInterval = setInterval(() => {
-            if (currentIndex < summary.length) {
-                setTypedSummary((prev) => prev + summary[currentIndex])
-                currentIndex++
+    let currentIndex = 0
+    const typingSpeed = 15 // milliseconds per character
 
-                // Auto-scroll to keep up with typing
-                if (summaryRef.current) {
-                    summaryRef.current.scrollTop = summaryRef.current.scrollHeight
-                }
-            } else {
-                clearInterval(typingInterval)
-                setIsTyping(false)
-            }
-        }, typingSpeed)
+    const typingInterval = setInterval(() => {
+      if (currentIndex < summary.length) {
+        setTypedSummary((prev) => prev + summary[currentIndex])
+        currentIndex++
 
-        return () => clearInterval(typingInterval)
-    }, [summary])
-
-    useEffect(() => {
-        console.log("📂 URL חדש התקבל:", fileUrl)
-    }, [fileUrl])
-
-    const handleSavePermissionsAndSummary = async (users: User[]) => {
-        setSelectedUsers(users);
-        console.log(users.map(user => user.id));
-        // 1️⃣ שמירת ההרשאות
-        try {
-            alert({ fileUrl } + "hashrmmm!")
-            await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
-                FileUrl: fileUrl,
-                UserIds: users.map(user => user.id) // ✅ נכון
-            });
-            console.log("הרשאות נשמרו בהצלחה!");
-            handleSaveSummary();
-        } catch {
-            setError("שגיאה בשמירת ההרשאות");
-            return;
+        // Auto-scroll to keep up with typing
+        if (summaryRef.current) {
+          summaryRef.current.scrollTop = summaryRef.current.scrollHeight
         }
-    };
+      } else {
+        clearInterval(typingInterval)
+        setIsTyping(false)
+      }
+    }, typingSpeed)
 
-    // שמירת הסיכום ב-DB
-    const handleSaveSummary = async () => {
-        if (!summary) {
-            alert("error")
-            return;
-        }
-        try {
-            console.log(fileUrl);
-            const summaryy = {
-                FileUrl: fileUrl,
-                summary: summary,
-            };
-            console.log("שולח נתונים:", summaryy);
-            const response = await axios.post('https://localhost:7136/api/files/save-summary', summaryy,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            if (response.data.success) {
-                console.log("הסיכום נשמר בהצלחה!");
-                // setMessage("הסיכום נשמר בהצלחה!");
-            } else {
-                console.error("שגיאה בשמירת הסיכום");
-                setError("שגיאה בשמירת הסיכום");
-            }
-        } catch (err) {
-            // console.error('שגיאה בשמירת הסיכום:', err.response?.data || err.message);
-            setError("שגיאה לא צפויה. אנא נסה שוב.");
-        }
-    };
-    const handleCopyToClipboard = () => {
-        if (!summary) return
+    return () => clearInterval(typingInterval)
+  }, [summary])
 
-        navigator.clipboard
-            .writeText(summary)
-            .then(() => {
-                setCopied(true)
-                setTimeout(() => setCopied(false), 2000)
-            })
-            .catch(() => {
-                setError("Failed to copy to clipboard")
-            })
+  const handleSavePermissionsAndSummary = async (users: User[]) => {
+    setSelectedUsers(users)
+    console.log(users.map((user) => user.id))
+    // 1️⃣ שמירת ההרשאות
+    try {
+      alert({ fileUrl } + "hashrmmm!")
+      await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
+        FileUrl: fileUrl,
+        UserIds: users.map((user) => user.id),
+      })
+      console.log("הרשאות נשמרו בהצלחה!")
+      handleSaveSummary()
+    } catch {
+      setError("שגיאה בשמירת ההרשאות")
+      return
     }
+  }
 
-    // const triggerSuccessAnimation = () => {
-    //     // Create success particles container if it doesn't exist
-    //     let particlesContainer = document.querySelector(".success-particles-container")
-
-    //     if (!particlesContainer) {
-    //         particlesContainer = document.createElement("div")
-    //         particlesContainer.className = "success-particles-container"
-    //         document.body.appendChild(particlesContainer)
-    //     } else {
-    //         // Clear existing particles
-    //         particlesContainer.innerHTML = ""
-    //     }
-
-    //     // Create particles
-    //     const colors = ["#10B981", "#5D3FD3", "#43B0F1", "#FFD166"]
-
-    //     for (let i = 0; i < 60; i++) {
-    //         const particle = document.createElement("div")
-    //         particle.className = "success-particle"
-    //         particle.style.setProperty("--particle-color", colors[Math.floor(Math.random() * colors.length)])
-    //         particle.style.setProperty("--particle-left", Math.random() * 100 + "vw")
-    //         particle.style.setProperty("--particle-delay", Math.random() * 1 + "s")
-    //         particle.style.setProperty("--particle-duration", Math.random() * 2 + 1 + "s")
-    //         particle.style.setProperty("--particle-size", Math.random() * 0.5 + 0.25 + "rem")
-    //         particle.style.setProperty("--particle-rotation", Math.random() * 360 + "deg")
-
-    //         particlesContainer.appendChild(particle)
-    //     }
-
-    //     // Remove particles after animation completes
-    //     setTimeout(() => {
-    //         if (particlesContainer) {
-    //             particlesContainer.classList.add("fade-out")
-    //             setTimeout(() => {
-    //                 if (document.body.contains(particlesContainer)) {
-    //                     document.body.removeChild(particlesContainer)
-    //                 }
-    //             }, 1000)
-    //         }
-    //     }, 3000)
-    // }
-
-    const handleDownload = () => {
-        const link = document.createElement("a")
-        link.href = fileUrl
-        link.download = "" // השם שיופיע למשתמש — אם ריק, הדפדפן ישתמש בשם המקורי מה-URL
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+  const handleSaveSummary = async () => {
+    if (!summary) {
+      alert("error")
+      return
     }
-    return (
-        <div className="summary-container">
-            <div className={`summary-card ${loading ? "loading" : ""} ${saveSuccess ? "saved" : ""}`}>
-                {loading && (
-                    <div className="summary-loading-overlay">
-                        <div className="loading-spinner-container">
-                            <Loader className="loading-spinner" />
-                            <p>Saving summary...</p>
-                        </div>
-                    </div>
-                )}
+    try {
+      console.log(fileUrl)
+      const summaryy = {
+        FileUrl: fileUrl,
+        summary: summary,
+      }
+      console.log("שולח נתונים:", summaryy)
+      const response = await axios.post("https://localhost:7136/api/files/save-summary", summaryy, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (response.data.success) {
+        console.log("הסיכום נשמר בהצלחה!")
+        // setMessage("הסיכום נשמר בהצלחה!");
+      } else {
+        console.error("שגיאה בשמירת הסיכום")
+        setError("שגיאה בשמירת הסיכום")
+      }
+    } catch (err) {
+      // console.error('שגיאה בשמירת הסיכום:', err.response?.data || err.message);
+      setError("שגיאה לא צפויה. אנא נסה שוב.")
+    }
+  }
 
-                <div className="card-content">
-                    <div className="card-header">
-                        <div className="title-container">
-                            <h2 className="card-title">Document Summary</h2>
-                            <div className="card-badge">
-                                <Sparkles size={14} />
-                                <span>AI Generated</span>
-                            </div>
-                        </div>
-                        <div className="card-info">
-                            <div className="info-pill">
-                                <span className="info-label">Words</span>
-                                <span className="info-value">{typedSummary.split(/\s+/).filter(Boolean).length}</span>
-                            </div>
-                            <div className="info-pill">
-                                <span className="info-label">Created</span>
-                                <span className="info-value">{new Date().toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                    </div>
+  const handleCopyToClipboard = () => {
+    if (!summary) return
 
-                    <div className="summary-content-wrapper">
-                        <div className="summary-content" ref={summaryRef}>
-                            <ReactMarkdown>{typedSummary}</ReactMarkdown>
-                            {isTyping && <span className="typing-cursor">|</span>}
-                        </div>
-                        {typedSummary.length > 0 && !isTyping && (
-                            <div className="scroll-indicator">
-                                <div className="scroll-dot"></div>
-                                <div className="scroll-dot"></div>
-                                <div className="scroll-dot"></div>
-                            </div>
-                        )}
-                    </div>
+    navigator.clipboard
+      .writeText(summary)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch(() => {
+        setError("Failed to copy to clipboard")
+      })
+  }
 
-                    {error && (
-                        <div className="error-message">
-                            <AlertCircle size={16} />
-                            <span>{error}</span>
-                        </div>
-                    )}
+  const handleDownloadPDF = () => {
+    try {
+      setLoading(true)
 
-                    <div className="card-actions">
-                        <button
-                            className={`action-button copy-button ${copied ? "copied" : ""}`}
-                            onClick={handleCopyToClipboard}
-                            title="Copy to clipboard"
-                            disabled={loading}
-                        >
-                            {copied ? <CheckCircle size={18} /> : <ContentCopy size={18} />}
-                            <span>{copied ? "Copied!" : "Copy"}</span>
-                        </button>
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
 
-                        <button className="action-button save-button" onClick={handleOpenPermissionDialog} disabled={loading}>
-                            <Save size={18} />
-                            <span>Save</span>
-                        </button>
+      const container = document.createElement("div")
+      container.style.position = "absolute"
+      container.style.left = "-9999px"
+      container.style.top = "-9999px"
+      container.style.direction = "rtl"
+      container.style.fontFamily = "Arial, sans-serif"
+      document.body.appendChild(container)
 
-                        <button className="action-button download-button" disabled={loading} onClick={handleDownload}>
-                            <Download size={18} />
-                            <span>Download</span>
-                        </button>
+      // Format date from the summary content (assuming first line contains date)
+      const formatDate = (content) => {
+        if (!content) return new Date().toLocaleDateString("he-IL")
+        // Extract date from first line or use current date
+        const firstLine = content.split("\n")[0]
+        return firstLine.includes("תאריך:")
+          ? firstLine.split("תאריך:")[1].trim()
+          : new Date().toLocaleDateString("he-IL")
+      }
 
-                        <button className="action-button edit-button" disabled={loading}>
-                            <Edit size={18} />
-                            <span>Edit</span>
-                        </button>
-                    </div>
+      // Get filename from the fileUrl
+      const getFileName = () => {
+        const urlParts = fileUrl.split("/")
+        const fileName = urlParts[urlParts.length - 1].split(".")[0] || "summary"
+        return fileName
+      }
+
+      // Add canvas image if available
+      const canvasHtml = canvasImage
+        ? `<div style="margin-bottom: 20px;"><img src="${canvasImage}" style="max-width: 100%; border: 1px solid #e5e7eb; border-radius: 4px;" /></div>`
+        : ""
+
+      container.innerHTML = `
+          <div style="width: 170mm; direction: rtl; text-align: right; font-family: Arial, sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div style="text-align: left;">
+                <div style="font-size: 12px; color: #6b7280;">תאריך: ${formatDate(summary)}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 28px; font-weight: bold; color: #0078c8;">
+                  <span style="color: #0078c8;">TalkToMe.AI</span>
                 </div>
-
-                <div className="card-decoration">
-                    <div className="decoration-circle circle-1"></div>
-                    <div className="decoration-circle circle-2"></div>
-                    <div className="decoration-circle circle-3"></div>
-                    <div className="decoration-line line-1"></div>
-                    <div className="decoration-line line-2"></div>
-                    <div className="decoration-dot dot-1"></div>
-                    <div className="decoration-dot dot-2"></div>
-                    <div className="decoration-dot dot-3"></div>
-                    <div className="decoration-dot dot-4"></div>
-                </div>
+              </div>
             </div>
+            
+            <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
+            
+            <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${getFileName()}</h1>
+            
+            ${canvasHtml}
+            
+            <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${summary}</div>
+            
+            <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
+              TalkToMe.AI © ${new Date().getFullYear()}
+            </div>
+          </div>
+        `
 
-            <UserPermissionDialog
-                open={openPermissionDialog}
-                onClose={handleClosePermissionDialog}
-                onSave={handleSavePermissionsAndSummary}
-            />
+      import("html2canvas")
+        .then((html2canvasModule) => {
+          const html2canvas = html2canvasModule.default
+
+          html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#ffffff",
+          }).then((canvas) => {
+            const imgData = canvas.toDataURL("image/jpeg", 1.0)
+
+            pdf.addImage(imgData, "JPEG", 10, 10, 190, 0)
+
+            pdf.save(`${getFileName()}.pdf`)
+
+            document.body.removeChild(container)
+
+            // Show success notification
+            setError(null)
+
+            // You can replace this with your notification system
+            // Example: addNotification({
+            //   type: "info",
+            //   title: "הורדת PDF",
+            //   message: "קובץ ה-PDF הורד בהצלחה.",
+            // })
+
+            setLoading(false)
+          })
+        })
+        .catch((error) => {
+          console.error("Failed to load html2canvas:", error)
+          document.body.removeChild(container)
+          setLoading(false)
+          handleError(error)
+        })
+    } catch (error) {
+      console.error("Failed to download PDF:", error)
+
+      // You can replace this with your error handling
+      // Example: handleError(error, "downloadPdf")
+
+      setError("שגיאה בהורדת PDF. אנא נסה שוב.")
+
+      // You can replace this with your notification system
+      // Example: addNotification({
+      //   type: "error",
+      //   title: "שגיאה בהורדת PDF",
+      //   message: "לא ניתן להוריד את קובץ ה-PDF. אנא נסה שוב.",
+      // })
+
+      setLoading(false)
+    }
+  }
+
+  // Helper function to handle errors
+  const handleError = (error) => {
+    console.error("Error:", error)
+    setError("שגיאה לא צפויה. אנא נסה שוב.")
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true)
+  }
+
+  const handleSaveCanvas = (imageData: string) => {
+    try {
+      setLoading(true)
+
+      // Save the canvas image data
+      setCanvasImage(imageData)
+
+      // Here you would typically send the canvas image to your backend
+      // Example API call:
+      // await axios.post("https://localhost:7136/api/files/save-canvas", {
+      //   FileUrl: fileUrl,
+      //   canvasImage: imageData,
+      // })
+
+      setIsEditing(false)
+      setLoading(false)
+
+      // Show success notification
+      setError(null)
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 2000)
+    } catch (error) {
+      console.error("Failed to save canvas:", error)
+      setError("שגיאה בשמירת הקנבס. אנא נסה שוב.")
+      setLoading(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    if (confirm("האם אתה בטוח שברצונך לבטל את העריכה? כל השינויים שלך יאבדו.")) {
+      setIsEditing(false)
+    }
+  }
+
+  return (
+    <div className="summary-container">
+      <div className={`summary-card ${loading ? "loading" : ""} ${saveSuccess ? "saved" : ""}`}>
+        {loading && (
+          <div className="summary-loading-overlay">
+            <div className="loading-spinner-container">
+              <Loader className="loading-spinner" />
+              <p>Saving summary...</p>
+            </div>
+          </div>
+        )}
+
+        <div className="card-content">
+          <div className="card-header">
+            <div className="title-container">
+              <h2 className="card-title">Document Summary</h2>
+              <div className="card-badge">
+                <Sparkles size={14} />
+                <span>AI Generated</span>
+              </div>
+            </div>
+            <div className="card-info">
+              <div className="info-pill">
+                <span className="info-label">Words</span>
+                <span className="info-value">{typedSummary.split(/\s+/).filter(Boolean).length}</span>
+              </div>
+              <div className="info-pill">
+                <span className="info-label">Created</span>
+                <span className="info-value">{new Date().toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="summary-content-wrapper">
+            {isEditing ? (
+              <CanvasEditor onSave={handleSaveCanvas} onCancel={handleCancelEdit} initialImage={canvasImage} />
+            ) : (
+              <>
+                {canvasImage && (
+                  <div className="canvas-image-container">
+                    <img src={canvasImage || "/placeholder.svg"} alt="Canvas drawing" className="canvas-image" />
+                  </div>
+                )}
+                <div className="summary-content" ref={summaryRef}>
+                  <ReactMarkdown>{typedSummary}</ReactMarkdown>
+                  {isTyping && <span className="typing-cursor">|</span>}
+                </div>
+              </>
+            )}
+            {typedSummary.length > 0 && !isTyping && !isEditing && (
+              <div className="scroll-indicator">
+                <div className="scroll-dot"></div>
+                <div className="scroll-dot"></div>
+                <div className="scroll-dot"></div>
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <div className="error-message">
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <div className="card-actions">
+            {isEditing ? (
+              <div className="canvas-actions-info">
+                <span>Use the tools above to edit the canvas</span>
+              </div>
+            ) : (
+              <>
+                <button
+                  className={`action-button copy-button ${copied ? "copied" : ""}`}
+                  onClick={handleCopyToClipboard}
+                  title="Copy to clipboard"
+                  disabled={loading}
+                >
+                  {copied ? <CheckCircle size={18} /> : <ContentCopy size={18} />}
+                  <span>{copied ? "Copied!" : "Copy"}</span>
+                </button>
+
+                <button className="action-button save-button" onClick={handleOpenPermissionDialog} disabled={loading}>
+                  <Save size={18} />
+                  <span>Save</span>
+                </button>
+
+                <button className="action-button download-button" disabled={loading} onClick={handleDownloadPDF}>
+                  <Download size={18} />
+                  <span>Download</span>
+                </button>
+
+                <button className="action-button edit-button" disabled={loading || isTyping} onClick={handleEdit}>
+                  <Edit size={18} />
+                  <span>Edit</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
-    )
+
+        <div className="card-decoration">
+          <div className="decoration-circle circle-1"></div>
+          <div className="decoration-circle circle-2"></div>
+          <div className="decoration-circle circle-3"></div>
+          <div className="decoration-line line-1"></div>
+          <div className="decoration-line line-2"></div>
+          <div className="decoration-dot dot-1"></div>
+          <div className="decoration-dot dot-2"></div>
+          <div className="decoration-dot dot-3"></div>
+          <div className="decoration-dot dot-4"></div>
+        </div>
+      </div>
+
+      <UserPermissionDialog
+        open={openPermissionDialog}
+        onClose={handleClosePermissionDialog}
+        onSave={handleSavePermissionsAndSummary}
+      />
+    </div>
+  )
 }
 
 export default SummaryFile
-

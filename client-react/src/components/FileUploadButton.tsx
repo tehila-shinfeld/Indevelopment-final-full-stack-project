@@ -1,30 +1,15 @@
 "use client"
-
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
-import {
-  FileText,
-  Upload,
-  X,
-  Check,
-  FileUp,
-  Sparkles,
-  Menu,
-  Moon,
-  Sun,
-  User,
-  Settings,
-  ArrowUp,
-  Loader2,
-} from "lucide-react"
+import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, User, ArrowUp, Loader2 } from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
 import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
-
+import { useNavigate } from "react-router-dom"
 const FileUploadButton = () => {
   // מצבי העלאת קובץ
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -36,6 +21,7 @@ const FileUploadButton = () => {
   const [fileTextContent, setFileTextContent] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [uploading, setUploading] = useState(false)
   const [celebrationActive, setCelebrationActive] = useState(false)
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false)
@@ -43,6 +29,7 @@ const FileUploadButton = () => {
   const [showDropSuccess, setShowDropSuccess] = useState(false)
   const [showDropError, setShowDropError] = useState(false)
   // מצבי מעבר תצוגה
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const [processingStep, setProcessingStep] = useState<"upload" | "summarize" | "complete">("upload")
@@ -54,6 +41,7 @@ const FileUploadButton = () => {
   const [isReadyToSummarize, setIsReadyToSummarize] = useState(false)
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [s3url, sets3url] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   // טיפול בלחיצה על כפתור בחירת קובץ
   const handleButtonClick = () => {
@@ -99,6 +87,7 @@ const FileUploadButton = () => {
     }
   }
 
+  // פונקציה לטיפול באירוע עזיבת הגרירה
   const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -114,6 +103,7 @@ const FileUploadButton = () => {
     }
   }
 
+  //פונקציה לטיפול בשחרור הקובץ
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -184,6 +174,7 @@ const FileUploadButton = () => {
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i)
           const content = await page.getTextContent()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const strings = content.items.map((item: any) => item.str)
           textContent += strings.join(" ") + "\n"
         }
@@ -340,7 +331,26 @@ const FileUploadButton = () => {
   useEffect(() => {
     // Set the worker source path for PDF.js
     if (!GlobalWorkerOptions.workerSrc) {
-      GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${getDocument.version}/pdf.worker.js`
+      // Replace '3.11.174' with your installed pdfjs-dist version if different
+      GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.js"
+    }
+  }, [])
+
+  // Add CSS for active menu item
+  useEffect(() => {
+    const style = document.createElement("style")
+    style.innerHTML = `
+    .active-menu-item {
+      background-color: rgba(var(--primary), 0.1);
+      color: hsl(var(--primary));
+      border-right: 3px solid hsl(var(--primary));
+      font-weight: 600;
+    }
+  `
+    document.head.appendChild(style)
+
+    return () => {
+      document.head.removeChild(style)
     }
   }, [])
 
@@ -382,23 +392,26 @@ const FileUploadButton = () => {
               </button>
             </li>
             <li>
-              <button onClick={() => console.log("העלאת מסמך נלחץ")}>
+              <button
+                onClick={() => console.log("העלאת מסמך נלחץ")}
+                className={activeStep === 0 ? "active-menu-item" : ""}
+              >
                 <FileUp size={20} />
                 <span>העלאת מסמך</span>
               </button>
             </li>
             <li>
-              <button onClick={() => console.log("הסיכומים שלי נלחץ")}>
+              <button onClick={() => navigate("/myMeetings")}>
                 <FileText size={20} />
                 <span>הסיכומים שלי</span>
               </button>
             </li>
-            <li>
+            {/* <li>
               <button onClick={() => console.log("הגדרות נלחצו")}>
                 <Settings size={20} />
                 <span>הגדרות</span>
               </button>
-            </li>
+            </li> */}
           </ul>
         </nav>
         <div className="sidebar-footer">
@@ -419,16 +432,16 @@ const FileUploadButton = () => {
           </div>
           <h1 className="dashboard-title">
             <FileText className="title-icon" size={24} />
-            <span>העלאת מסמך לסיכום</span>
+            <span>{activeStep === 0 ? "העלאת מסמך לסיכום" : `סיכום הקובץ ${file?.name || ""}`}</span>
           </h1>
           <div className="header-right-group">
-            <button className="add-meeting-button">
+            {/* <button className="add-meeting-button">
               <div className="btn-content">
                 <Sparkles size={18} className="btn-icon" />
                 <span className="button-text">סיכום חדש</span>
               </div>
-            </button>
-            <div className="logo" style={{ cursor: "pointer" }}>
+            </button> */}
+            <div className="logo" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
               <span className="logo-text">
                 TalkToMe.<span className="logo-highlight">AI</span>
               </span>
@@ -491,8 +504,8 @@ const FileUploadButton = () => {
                       <h3 className="processing-title">{processingStep === "upload" ? "מעלה מסמך" : "מייצר סיכום"}</h3>
                       <p className="processing-description">
                         {processingStep === "upload"
-                          ? `מעבד את הקובץ שלך... ${uploadProgress}%`
-                          : "ה-AI שלנו מנתח את המסמך שלך..."}
+                          ? `רק רגע.. ${uploadProgress}%`
+                          : "ה AI שלנו מכין לך סיכום מהיר ומדויק"}
                       </p>
                       <div className="processing-progress">
                         <div
@@ -602,7 +615,7 @@ const FileUploadButton = () => {
                           )}
                         </div>
 
-                        {uploadStatus === "uploading" && (
+                        {(uploadStatus === "uploading" || uploadStatus === "success" || uploadStatus === "error") && (
                           <div className="upload-progress-container">
                             <div
                               className={`upload-progress-bar ${uploadStatus === "success" ? "success" : ""} ${uploadStatus === "error" ? "error" : ""}`}
@@ -626,7 +639,7 @@ const FileUploadButton = () => {
                         {/* שלב 1: כפתור העלאה */}
                         {uploadStatus === "success" && !isReadyToSummarize && !loading && (
                           <button className="process-button" onClick={() => file && handleFileUpload(file)}>
-                            <span className="button-text">העלאת הקובץ</span>
+                            <span className="button-text">קדימה! להעלות את הקובץ</span>
                             <FileUp size={18} className="button-icon" />
                           </button>
                         )}
@@ -648,7 +661,7 @@ const FileUploadButton = () => {
             <div className="summary-section">
               {summary && (
                 <>
-                  <SummaryFile fileUrl={summary} />
+                  <SummaryFile fileUrl={s3url ?? ""} />
                   <button className="new-document-button" onClick={handleReset}>
                     <span className="button-text">העלאת מסמך נוסף</span>
                     <FileUp size={18} className="button-icon" />

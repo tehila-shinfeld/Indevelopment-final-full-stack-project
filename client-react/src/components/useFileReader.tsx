@@ -21,6 +21,7 @@ const useFileReader = () => {
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         text += content.items.map((item: any) => item.str).join(" ") + "\n";
       }
       setFileContent(text);

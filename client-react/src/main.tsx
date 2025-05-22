@@ -15,21 +15,22 @@ const routes = createBrowserRouter([
     path: '/', // דף הבית הראשי
     element: <Navigate to="/home" />, // הפניה אוטומטית ל-home
   },
+
   {
     path: '/home', // דף הבית
     element: <HomePage />, // קומפוננטת Home
   },
+
   {
     path: '/summary-up!', // דף הבית
     element: <MainScreen />, // קומפוננטת Dashboard
   },
+
   {
     path: '/myMeetings', // דף הבית
     element: <UserMeetings />, // קומפוננטת Dashboard
   },
   {path:'/oauth', element: <OAuthCallback />}, // דף הבית
-
-
   // UserMeetings
 ]);
 

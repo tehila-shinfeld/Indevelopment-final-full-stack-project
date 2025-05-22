@@ -399,6 +399,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
           onNavigate("/myMeetings")
         }
       }, 1500)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
 
@@ -467,6 +468,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate }: Auth
         onClose()
         onNavigate("/myMeetings")
       }, 1500)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Registration error:", err)
 

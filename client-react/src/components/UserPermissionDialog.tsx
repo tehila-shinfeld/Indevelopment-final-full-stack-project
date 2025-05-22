@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Autocomplete, TextField, CircularProgress, Avatar, Chip } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Autocomplete, TextField, CircularProgress, Avatar } from "@mui/material";
 import axios from "axios";
 
 export interface User {
@@ -33,6 +33,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
         return color;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decodeJwt = (token: any) => {
         if (!token) return null;
 

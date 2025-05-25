@@ -118,7 +118,7 @@ const FeaturesSection = ({ sectionRef, isVisible }: FeaturesSectionProps) => {
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">
-            יתרונות <span className="gradient-text">המערכת</span>
+            למה <span className="gradient-text">TalkToMe.Ai ?</span>
           </h2>
           <p className="section-description">
             המערכת שלנו מציעה מגוון כלים שיעזרו לך לנהל את הפגישות שלך ביעילות ולהפיק מהן את המרב

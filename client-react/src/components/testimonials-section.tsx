@@ -34,7 +34,7 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       role: "מנהלת פרויקטים, חברת טכנולוגיות מתקדמות",
       rating: 5,
       text: "המערכת חסכה לנו שעות רבות של עבודה. הסיכומים מדויקים, ברורים ומאפשרים לנו להתמקד בעיקר במקום לבזבז זמן על תיעוד פגישות.",
-      image: "/diverse-woman-profile.png",
+      image: "../images/professional-woman-smiling.png",
     },
     {
       id: 2,
@@ -42,15 +42,15 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       role: 'מנכ"ל, סטארטאפ חדשנות',
       rating: 5,
       text: "אחרי שהתחלנו להשתמש במערכת, הפגישות שלנו הפכו יעילות יותר. כולם יודעים שיהיה סיכום מדויק, וזה מאפשר לנו להתמקד בשיחה במקום ברישום.",
-      image: "/diverse-man-profile.png",
+      image: "../images/businessman-adjusting-his-sleeves.png",
     },
     {
       id: 3,
-      name: "מיכל אברהם",
+      name: "מוש אברהם",
       role: "ראש צוות פיתוח, חברת תוכנה גלובלית",
       rating: 5,
       text: "הבינה המלאכותית מזהה בצורה מדהימה את הנקודות החשובות. אפילו בדיונים טכניים מורכבים, הסיכומים תמיד מדויקים ומתמקדים בדיוק במה שחשוב.",
-      image: "/tech-woman-profile.png",
+      image: "../images/man-portrait-posing-loft-modern-space.png",
     },
   ]
 

@@ -3,7 +3,7 @@
 import { StrictMode, useState, useEffect } from "react"
 import { createRoot } from "react-dom/client"
 import "./index.css"
-import "./styleSheets/loading-screen.css" // ייבוא CSS של מסך הטעינה
+import "./styleSheets/loading-screen.css"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import MainScreen from "./components/MainScreen.tsx"
 import { SummaryProvider } from "./context/SummaryContext.tsx"
@@ -11,63 +11,60 @@ import { UserProvider } from "./context/UserContext.tsx"
 import UserMeetings from "./components/UserMeetings.tsx"
 import HomePage from "./components/home-page.tsx"
 import OAuthCallback from "./components/OAuthCallback.tsx"
+import UserProfile from "./components/user-profile.tsx"
 import LoadingScreen from "./components/loading-screen.tsx"
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
   {
-    path: "/", // דף הבית הראשי
-    element: <Navigate to="/home" />, // הפניה אוטומטית ל-home
+    path: "/",
+    element: <Navigate to="/home" />,
   },
   {
-    path: "/home", // דף הבית
-    element: <HomePage />, // קומפוננטת Home
+    path: "/home",
+    element: <HomePage />,
   },
   {
-    path: "/summary-up!", // דף הבית
-    element: <MainScreen />, // קומפוננטת Dashboard
+    path: "/summary-up!",
+    element: <MainScreen />,
   },
   {
-    path: "/myMeetings", // דף הבית
-    element: <UserMeetings />, // קומפוננטת Dashboard
+    path: "/myMeetings",
+    element: <UserMeetings />,
   },
-  // {
-  //   path: "/AiSummary", // דף הבית
-  //   element: <UserProvider  />,
-  // },
-  
-  { path: "/oauth", element: <OAuthCallback /> }, // דף הבית
+  {
+    path: "/my-profile",
+    element: <UserProfile />,
+  },
+  { path: "/oauth", element: <OAuthCallback /> },
 ])
 
 // קומפוננט ראשי עם לוגיקת מסך הטעינה
 const App = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
 
   useEffect(() => {
-    // בדיקה אם יש טוקן בסשן סטורג'
+    // בדיקה אם זו הטעינה הראשונה (אין טוקן בסשן סטורג')
     const token = sessionStorage.getItem("token")
 
-    if (!token) {
-      // אם אין טוקן - זה ביקור ראשון, הצג מסך טעינה למשך 5 שניות
-      const timer = setTimeout(() => {
-        setIsLoading(false)
-        // שמירת טוקן כדי שלא יוצג שוב
-        sessionStorage.setItem("token", "visited")
-      }, 5000)
-
-      return () => clearTimeout(timer)
-    } else {
-      // אם יש טוקן - הצג ישירות את התוכן
+    if (token) {
+      // אם יש טוקן או שהאפליקציה כבר נטענה, לא להציג מסך טעינה
       setIsLoading(false)
+      setIsFirstLoad(false)
     }
   }, [])
 
-  // אם עדיין בטעינה - הצג את מסך הטעינה
-  if (isLoading) {
-    return <LoadingScreen />
+  const handleLoadingComplete = () => {
+    setIsLoading(false)
+    setIsFirstLoad(false)
+    // שמירה שהטעינה הראשונה הושלמה
   }
 
-  // אחרי הטעינה - הצג את האפליקציה הרגילה
+  if (isLoading && isFirstLoad) {
+    return <LoadingScreen onLoadingComplete={handleLoadingComplete} />
+  }
+
   return (
     <SummaryProvider>
       <UserProvider>

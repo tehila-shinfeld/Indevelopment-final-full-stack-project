@@ -1,5 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
+import type React from "react"
+
 import "../styleSheets/home-page.css"
 import Navbar from "./navbar"
 import HeroSection from "./hero-section"
@@ -7,7 +9,6 @@ import HowItWorksSection from "./how-it-works-section"
 import FeaturesSection from "./features-section"
 import TestimonialsSection from "./testimonials-section"
 import CtaSection from "./cta-section"
-import FloatingThemeToggle from "./floating-theme-toggle"
 import Footer from "./footer"
 import EnhancedLoginModal from "./login-modal"
 import { useNavigate } from "react-router-dom"
@@ -25,8 +26,7 @@ const HomePage = () => {
     testimonials: false,
     cta: false,
   })
-  const navigate = useNavigate();
-
+  const navigate = useNavigate()
 
   const sectionsRef = {
     hero: useRef<HTMLElement>(null),
@@ -77,10 +77,15 @@ const HomePage = () => {
 
   // Update body class when dark mode changes
   useEffect(() => {
+    // הוסף קלאס גם ל-document.documentElement
     if (isDarkMode) {
       document.body.classList.add("dark-mode")
+      document.documentElement.classList.add("dark-mode")
+      document.documentElement.setAttribute("data-theme", "dark")
     } else {
       document.body.classList.remove("dark-mode")
+      document.documentElement.classList.remove("dark-mode")
+      document.documentElement.setAttribute("data-theme", "light")
     }
     localStorage.setItem("theme", isDarkMode ? "dark" : "light")
   }, [isDarkMode])
@@ -102,15 +107,15 @@ const HomePage = () => {
 
   // Handle navigation after login/register
   const handleNavigate = () => {
-    navigate('/myMeetings');
-    // In a real app with Next.js, you would use:
-    // router.push(path)
-    // For now, we'll just close the modal and log the navigation
+    navigate("/myMeetings")
     closeModal()
   }
 
   return (
-    <div className={`app-container ${isDarkMode ? "dark-mode" : "light-mode"}`}>
+    <div
+      className={`app-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      data-theme={isDarkMode ? "dark" : "light"}
+    >
       <div className="background-decorations">
         <div className="gradient-blob blob-1"></div>
         <div className="gradient-blob blob-2"></div>
@@ -127,28 +132,45 @@ const HomePage = () => {
       />
 
       <main>
-        <HeroSection sectionRef={sectionsRef.hero as React.RefObject<HTMLElement>} isVisible={visibleSections.hero} openModal={openModal} />
+        <HeroSection
+          sectionRef={sectionsRef.hero as React.RefObject<HTMLElement>}
+          isVisible={visibleSections.hero}
+          openModal={openModal}
+        />
 
- <HowItWorksSection sectionRef={sectionsRef.howItWorks as React.RefObject<HTMLElement>}
-        activeStep={activeStep}
-        isDarkMode={isDarkMode}
-      />
-        <FeaturesSection sectionRef={sectionsRef.features as React.RefObject<HTMLElement>} isVisible={visibleSections.features} />
+        <HowItWorksSection
+          sectionRef={sectionsRef.howItWorks as React.RefObject<HTMLElement>}
+          activeStep={activeStep}
+          isDarkMode={isDarkMode}
+        />
+        <FeaturesSection
+          sectionRef={sectionsRef.features as React.RefObject<HTMLElement>}
+          isVisible={visibleSections.features}
+        />
 
-        <TestimonialsSection sectionRef={sectionsRef.testimonials as React.RefObject<HTMLElement>} isVisible={visibleSections.testimonials} />
+        <TestimonialsSection
+          sectionRef={sectionsRef.testimonials as React.RefObject<HTMLElement>}
+          isVisible={visibleSections.testimonials}
+        />
 
-        <CtaSection sectionRef={sectionsRef.cta as React.RefObject<HTMLElement>} isVisible={visibleSections.cta} openModal={openModal} /> 
+        <CtaSection
+          sectionRef={sectionsRef.cta as React.RefObject<HTMLElement>}
+          isVisible={visibleSections.cta}
+          openModal={openModal}
+        />
       </main>
-      
+
       <Footer />
-      
+
       <EnhancedLoginModal
         isOpen={isModalOpen}
         onClose={closeModal}
         onNavigate={handleNavigate}
         isDarkMode={isDarkMode}
       />
-      <FloatingThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} /> 
+
+      {/* הסר את FloatingThemeToggle כדי למנוע קונפליקט */}
+      {/* <FloatingThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} /> */}
     </div>
   )
 }

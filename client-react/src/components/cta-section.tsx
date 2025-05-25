@@ -26,7 +26,6 @@ const CtaSection = ({ sectionRef, isVisible, openModal }: CtaSectionProps) => {
             <button className="btn btn-primary btn-lg" onClick={openModal}>
               התחל תקופת ניסיון בחינם
             </button>
-            <button className="btn btn-secondary btn-lg">תיאום הדגמה</button>
           </div>
         </div>
       </div>

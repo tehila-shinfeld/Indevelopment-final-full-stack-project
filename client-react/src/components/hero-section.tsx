@@ -21,11 +21,11 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
   // Toast state
   const [toast, setToast] = useState({ visible: false, message: "", type: "" })
 
-  // Handle counter animation
+  // Handle counter animation with enhanced easing
   useEffect(() => {
     if (isVisible && isLoaded) {
-      const duration = 2000 // 2 seconds for the animation
-      const steps = 60 // Number of steps (for smoother animation)
+      const duration = 2500 // Increased duration for smoother animation
+      const steps = 80 // More steps for ultra-smooth animation
       const interval = duration / steps
 
       const targetValues = {
@@ -40,9 +40,9 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
         step++
         const progress = step / steps
 
-        // Easing function for smoother animation
-        const easeOutQuad = (t: number) => t * (2 - t)
-        const easedProgress = easeOutQuad(progress)
+        // Enhanced easing function for more natural animation
+        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+        const easedProgress = easeOutCubic(progress)
 
         setActiveUsers(Math.round(easedProgress * targetValues.activeUsers))
         setSatisfactionRate(Math.round(easedProgress * targetValues.satisfactionRate))
@@ -189,7 +189,7 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
 
   return (
     <section ref={sectionRef} id="hero" className={`hero-section ${isVisible ? "visible" : ""}`}>
-      {/* Background elements with parallax effect */}
+      {/* Enhanced background elements with parallax effect */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-blob-1 rounded-full blur-3xl opacity-30 -translate-y-1/2 translate-x-1/3 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-blob-2 rounded-full blur-3xl opacity-30 translate-y-1/2 -translate-x-1/3 animate-pulse-slow"></div>
@@ -199,16 +199,16 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
         <div className="hero-content">
           <div className="hero-text">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={isLoaded ? { opacity: 1, y: 0, scale: 1 } : {}}
+              transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
               className="badge"
             >
               <span className="badge-text">חדש לגמרי</span>
               <svg
                 className="badge-icon"
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -221,9 +221,9 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.8, delay: 0.1, type: "spring", stiffness: 80 }}
               className="hero-title"
             >
               תנו ל־
@@ -231,9 +231,9 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 80 }}
               className="hero-description"
             >
               העלו תמלול – ותקבלו סיכום ברור, מקצועי ומוכן לשיתוף.
@@ -242,9 +242,9 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={isLoaded ? { opacity: 1, y: 0, scale: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.3, type: "spring", stiffness: 100 }}
             >
               <button className="hero-button" onClick={handleStartButtonClick}>
                 <span className="button-text">התחילו עכשיו</span>
@@ -268,40 +268,55 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.4, type: "spring", stiffness: 80 }}
               className="hero-stats"
             >
-              <div className="stat-item">
+              <motion.div
+                className="stat-item"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <div className="stat-value">+{activeUsers.toLocaleString()}</div>
                 <div className="stat-label">משתמשים פעילים</div>
-              </div>
+              </motion.div>
               <div className="stat-divider"></div>
-              <div className="stat-item">
+              <motion.div
+                className="stat-item"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <div className="stat-value">{satisfactionRate}%</div>
                 <div className="stat-label">שביעות רצון</div>
-              </div>
+              </motion.div>
               <div className="stat-divider"></div>
-              <div className="stat-item">
+              <motion.div
+                className="stat-item"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <div className="stat-value">{hoursSaved}+</div>
                 <div className="stat-label">שעות נחסכות בחודש</div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            initial={{ opacity: 0, scale: 0.8, rotateY: 15 }}
+            animate={isLoaded ? { opacity: 1, scale: 1, rotateY: 0 } : {}}
+            transition={{ duration: 1, delay: 0.4, type: "spring", stiffness: 60 }}
             className="hero-image"
           >
-            <div
+            <motion.div
               className="document-preview"
               onClick={toggleDocumentEnlarged}
               role="button"
               tabIndex={0}
               aria-label="לחץ להגדלת המסמך"
+              whileHover={{ scale: 1.03, rotateY: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300 }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   toggleDocumentEnlarged()
@@ -347,12 +362,12 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                   <line x1="8" y1="11" x2="14" y2="11"></line>
                 </svg>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
 
-      {/* Enlarged document overlay */}
+      {/* Enhanced enlarged document overlay */}
       <AnimatePresence>
         {isDocumentEnlarged && (
           <motion.div
@@ -360,14 +375,15 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={handleOverlayClick}
           >
             <motion.div
               className="document-enlarged"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              initial={{ scale: 0.7, opacity: 0, rotateX: 15 }}
+              animate={{ scale: 1, opacity: 1, rotateX: 0 }}
+              exit={{ scale: 0.7, opacity: 0, rotateX: 15 }}
+              transition={{ type: "spring", damping: 20, stiffness: 200 }}
             >
               <div className="document-header">
                 <div className="document-controls">
@@ -376,10 +392,13 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                   <div className="control-dot green"></div>
                 </div>
                 <div className="document-title">TalkToMe.AI</div>
-                <button
+                <motion.button
                   className="document-close-button"
                   onClick={() => setIsDocumentEnlarged(false)}
                   aria-label="סגור מסמך מוגדל"
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
                   <svg
                     width="24"
@@ -394,58 +413,89 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>
-                </button>
+                </motion.button>
               </div>
               <div className="document-content-enlarged">
-                <div className="content-header"></div>
-                <div className="content-section">
+                <motion.div
+                  className="content-header"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                ></motion.div>
+                <motion.div
+                  className="content-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   <h3 className="content-section-title">סיכום פגישה</h3>
                   <div className="content-section-date">12 במאי, 2025</div>
                   <div className="content-section-divider"></div>
-                </div>
-                <div className="content-section">
+                </motion.div>
+                <motion.div
+                  className="content-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
                   <h3 className="content-section-title">נושאים עיקריים</h3>
                   <div className="content-lines">
                     <div className="content-line"></div>
                     <div className="content-line"></div>
                     <div className="content-line short"></div>
                   </div>
-                </div>
-                <div className="content-section">
+                </motion.div>
+                <motion.div
+                  className="content-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
                   <h3 className="content-section-title">החלטות</h3>
                   <div className="content-lines">
                     <div className="content-line"></div>
                     <div className="content-line short"></div>
                   </div>
-                </div>
-                <div className="content-section">
+                </motion.div>
+                <motion.div
+                  className="content-section"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
                   <h3 className="content-section-title">משימות</h3>
                   <div className="content-lines">
                     <div className="content-line"></div>
                     <div className="content-line"></div>
                     <div className="content-line short"></div>
                   </div>
-                </div>
-                <div className="content-action">
+                </motion.div>
+                <motion.div
+                  className="content-action"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
                   <div className="action-button"></div>
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Toast notification */}
+      {/* Enhanced toast notification */}
       <AnimatePresence>
         {toast.visible && (
           <motion.div
             className="toast-container fixed top-4 left-1/2 transform -translate-x-1/2 z-50 rtl"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <div
-              className={`flex items-center p-4 mb-4 rounded-lg shadow-lg border ${
+            <motion.div
+              className={`flex items-center p-4 mb-4 rounded-lg shadow-lg border backdrop-blur-sm ${
                 toast.type === "success"
                   ? "bg-green-500 border-green-600"
                   : toast.type === "error"
@@ -453,16 +503,21 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                     : "bg-blue-500 border-blue-600"
               }`}
               role="alert"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 400 }}
             >
               <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg text-white">
                 {getToastIcon(toast.type)}
               </div>
               <div className="mr-3 text-sm font-normal text-white">{toast.message}</div>
-              <button
+              <motion.button
                 type="button"
                 className="mr-auto -mx-1.5 -my-1.5 text-white rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex h-8 w-8 hover:bg-white hover:bg-opacity-20"
                 onClick={() => setToast((prev) => ({ ...prev, visible: false }))}
                 aria-label="סגור"
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
                 <span className="sr-only">סגור</span>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -472,8 +527,8 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                     clipRule="evenodd"
                   ></path>
                 </svg>
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

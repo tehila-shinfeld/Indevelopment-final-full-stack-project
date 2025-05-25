@@ -2,7 +2,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
-import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, User, ArrowUp, Loader2 } from "lucide-react"
+import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, User, ArrowUp, Loader2, LogOut } from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
@@ -137,7 +137,10 @@ const FileUploadButton = () => {
       }
     }
   }
-
+const logOut = () => {
+    sessionStorage.removeItem("token") // הסרת הטוקן מהאחסון
+    navigate("/") // ניווט לעמוד הכניסה
+}
   // פונקציה 1: טיפול בהעלאת הקובץ בלבד
   const handleFileUpload = async (selectedFile: File) => {
     setUploading(true)
@@ -412,6 +415,12 @@ const FileUploadButton = () => {
               <button onClick={() => navigate("/myMeetings")}>
                 <FileText size={20} />
                 <span>הסיכומים שלי</span>
+              </button>
+            </li>
+            <li className="active">
+              <button onClick={() => logOut()}>
+                <FileText size={20} />
+                <span>התנתק</span>
               </button>
             </li>
             {/* <li>

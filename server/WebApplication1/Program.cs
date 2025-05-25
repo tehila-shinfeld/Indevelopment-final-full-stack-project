@@ -139,7 +139,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapGet("/",()=>"running");
 app.Run();
 
 #region first versiom

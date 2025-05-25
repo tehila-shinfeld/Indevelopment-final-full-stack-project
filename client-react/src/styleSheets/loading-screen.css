@@ -1,428 +1,383 @@
-.loading-container {
+/* צבעים נקיים */
+:root {
+  --brand-blue: #3b82f6;
+  --brand-purple: #d946ef;
+  --background-light: #f0f9ff;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --border-light: #e5e7eb;
+  --gradient-primary: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 100%);
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.loading-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--background-light);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.6s ease-out;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-/* רקע אנימציה */
-.animated-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+.loading-screen.fade-out {
+  opacity: 0;
 }
 
-.gradient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(40px);
-  opacity: 0.7;
-  animation: float 6s ease-in-out infinite;
-}
-
-.orb-1 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(45deg, #ff6b6b, #feca57);
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.orb-2 {
-  width: 200px;
-  height: 200px;
-  background: linear-gradient(45deg, #48cae4, #023e8a);
-  top: 60%;
-  right: 15%;
-  animation-delay: 2s;
-}
-
-.orb-3 {
-  width: 250px;
-  height: 250px;
-  background: linear-gradient(45deg, #f72585, #b5179e);
-  bottom: 20%;
-  left: 60%;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-30px) rotate(120deg);
-  }
-  66% {
-    transform: translateY(30px) rotate(240deg);
-  }
-}
-
-/* חלקיקים */
-.particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  animation: particleFloat 8s linear infinite;
-}
-
-.particle:nth-child(odd) {
-  background: rgba(255, 215, 0, 0.8);
-  animation-duration: 10s;
-}
-
-.particle:nth-child(3n) {
-  background: rgba(0, 255, 255, 0.8);
-  animation-duration: 12s;
-}
-
-@keyframes particleFloat {
-  0% {
-    transform: translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100px) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-/* מיקום חלקיקים */
-.particle-1 {
-  left: 10%;
-  animation-delay: 0s;
-}
-.particle-2 {
-  left: 20%;
-  animation-delay: 1s;
-}
-.particle-3 {
-  left: 30%;
-  animation-delay: 2s;
-}
-.particle-4 {
-  left: 40%;
-  animation-delay: 3s;
-}
-.particle-5 {
-  left: 50%;
-  animation-delay: 4s;
-}
-.particle-6 {
-  left: 60%;
-  animation-delay: 5s;
-}
-.particle-7 {
-  left: 70%;
-  animation-delay: 6s;
-}
-.particle-8 {
-  left: 80%;
-  animation-delay: 7s;
-}
-.particle-9 {
-  left: 90%;
-  animation-delay: 8s;
-}
-.particle-10 {
-  left: 15%;
-  animation-delay: 1.5s;
-}
-.particle-11 {
-  left: 25%;
-  animation-delay: 2.5s;
-}
-.particle-12 {
-  left: 35%;
-  animation-delay: 3.5s;
-}
-.particle-13 {
-  left: 45%;
-  animation-delay: 4.5s;
-}
-.particle-14 {
-  left: 55%;
-  animation-delay: 5.5s;
-}
-.particle-15 {
-  left: 65%;
-  animation-delay: 6.5s;
-}
-.particle-16 {
-  left: 75%;
-  animation-delay: 7.5s;
-}
-.particle-17 {
-  left: 85%;
-  animation-delay: 8.5s;
-}
-.particle-18 {
-  left: 95%;
-  animation-delay: 9s;
-}
-.particle-19 {
-  left: 5%;
-  animation-delay: 0.5s;
-}
-.particle-20 {
-  left: 95%;
-  animation-delay: 9.5s;
-}
-
-/* תוכן מרכזי */
-.loading-content {
-  position: relative;
+.loading-container {
   text-align: center;
-  z-index: 10;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
 }
 
 /* לוגו מרכזי */
-.logo-container {
-  position: relative;
-  margin-bottom: 40px;
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: fadeInScale 0.8s ease-out;
 }
 
-.logo-circle {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto;
-  position: relative;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-  border-radius: 50%;
+.logo-icon {
+  width: 100px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: logoRotate 3s linear infinite;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  margin-bottom: 0.5rem;
+  animation: fadeInScale 1s ease-out 0.2s both;
+  position: relative;
 }
 
-.logo-inner {
+.ai-core {
+  position: relative;
   width: 80px;
   height: 80px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(10px);
+  animation: coreBreathing 4s ease-in-out infinite;
 }
 
-.logo-spark {
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, #fff, transparent);
-  border-radius: 50%;
-  animation: sparkle 2s ease-in-out infinite;
-}
-
-@keyframes logoRotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes sparkle {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.2);
-  }
-}
-
-/* טבעות דופק */
-.pulse-ring {
+.core-ring {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid;
   border-radius: 50%;
-  animation: pulse 2s ease-out infinite;
+  animation: coreRotate 3s linear infinite, fadeInScale 0.8s ease-out both;
 }
 
 .ring-1 {
-  width: 140px;
-  height: 140px;
-  animation-delay: 0s;
+  width: 80px;
+  height: 80px;
+  border-color: var(--brand-blue);
+  animation: coreRotate 3s linear infinite, fadeInScale 0.8s ease-out 0.3s both, ringPulse 2s ease-in-out infinite;
+  animation-delay: 0s, 0.3s, 0.5s;
 }
 
 .ring-2 {
-  width: 180px;
-  height: 180px;
-  animation-delay: 0.7s;
+  width: 60px;
+  height: 60px;
+  border-color: var(--brand-purple);
+  animation: coreRotate 2s linear infinite reverse, fadeInScale 0.8s ease-out 0.4s both, ringPulse 2.5s ease-in-out
+    infinite;
+  animation-delay: 0s, 0.4s, 1s;
 }
 
 .ring-3 {
-  width: 220px;
-  height: 220px;
-  animation-delay: 1.4s;
+  width: 40px;
+  height: 40px;
+  border-color: var(--brand-blue);
+  animation: coreRotate 1.5s linear infinite, fadeInScale 0.8s ease-out 0.5s both, ringPulse 3s ease-in-out infinite;
+  animation-delay: 0s, 0.5s, 1.5s;
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.8);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.5);
-  }
+.core-center {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.5rem;
+  font-weight: 800;
+  z-index: 1;
+  animation: coreGlow 2s ease-in-out infinite, fadeInScale 0.6s ease-out 0.6s both, coreFloat 3s ease-in-out infinite;
 }
 
-/* ספינר מתקדם */
-.advanced-spinner {
-  position: relative;
+/* בועות יוצאות מהעיגול */
+.bubbles-container {
+  position: absolute;
   width: 200px;
   height: 200px;
-  margin: 30px auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: fadeInScale 1.2s ease-out 1s both;
 }
 
-.spinner-ring {
+.bubble {
   position: absolute;
   border-radius: 50%;
-  border: 3px solid transparent;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(217, 70, 239, 0.3));
+  animation: bubbleRise 3s ease-out infinite;
+  opacity: 0;
 }
 
-.ring-outer {
-  width: 200px;
-  height: 200px;
-  border-top: 3px solid #ff6b6b;
-  border-right: 3px solid #4ecdc4;
-  animation: spinClockwise 2s linear infinite;
+.bubble-1 {
+  width: 8px;
+  height: 8px;
+  top: 50%;
+  left: 50%;
+  animation-delay: 0s;
 }
 
-.ring-middle {
-  width: 150px;
-  height: 150px;
-  top: 25px;
-  left: 25px;
-  border-bottom: 3px solid #45b7d1;
-  border-left: 3px solid #96ceb4;
-  animation: spinCounterClockwise 1.5s linear infinite;
+.bubble-2 {
+  width: 6px;
+  height: 6px;
+  top: 45%;
+  left: 55%;
+  animation-delay: 0.5s;
 }
 
-.ring-inner {
-  width: 100px;
-  height: 100px;
-  top: 50px;
-  left: 50px;
-  border-top: 3px solid #feca57;
-  border-right: 3px solid #ff9ff3;
-  animation: spinClockwise 1s linear infinite;
+.bubble-3 {
+  width: 10px;
+  height: 10px;
+  top: 55%;
+  left: 45%;
+  animation-delay: 1s;
 }
 
-@keyframes spinClockwise {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.bubble-4 {
+  width: 7px;
+  height: 7px;
+  top: 50%;
+  left: 60%;
+  animation-delay: 1.5s;
 }
 
-@keyframes spinCounterClockwise {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
+.bubble-5 {
+  width: 9px;
+  height: 9px;
+  top: 40%;
+  left: 50%;
+  animation-delay: 2s;
 }
 
-/* טקסט */
-.loading-text {
-  margin: 30px 0;
+.bubble-6 {
+  width: 5px;
+  height: 5px;
+  top: 60%;
+  left: 40%;
+  animation-delay: 2.5s;
 }
 
-.main-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #fff;
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 800;
   margin: 0;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  animation: textGlow 2s ease-in-out infinite alternate;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
-@keyframes textGlow {
-  0% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
-  100% {
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.3);
-  }
+.brand-name {
+  color: var(--text-dark);
 }
 
-/* בר התקדמות */
+.brand-ai {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-subtitle {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* בר התקדמות מוגבר */
+.progress-section {
+  width: 100%;
+  animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+  animation: fadeInLeft 0.6s ease-out 1s both;
+}
+
+.progress-percentage-large {
+  font-size: 2rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInRight 0.6s ease-out 1s both, numberPulse 2s ease-in-out infinite;
+}
+
 .progress-container {
-  margin-top: 40px;
-  width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
 .progress-bar {
   width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  height: 20px;
+  background: var(--border-light);
+  border-radius: 15px;
   overflow: hidden;
+  margin-bottom: 1.5rem;
   position: relative;
-  backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  animation: slideInProgress 1s ease-out 1.2s both;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
-  border-radius: 10px;
-  transition: width 0.3s ease;
+  background: var(--gradient-primary);
+  border-radius: 15px;
+  transition: width 0.4s ease;
   position: relative;
+  animation: progressPulse 2s ease-in-out infinite;
 }
 
 .progress-glow {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: progressShine 1.5s ease-in-out infinite;
+}
+
+.progress-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressWave 2s ease-in-out infinite;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: progressShine 2s ease-in-out infinite;
+}
+
+.progress-text {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  animation: fadeInLeft 0.6s ease-out 1.4s both;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 0.3rem;
+  animation: fadeInRight 0.6s ease-out 1.4s both;
+}
+
+.loading-dot {
+  color: var(--brand-blue);
+  font-size: 1.2rem;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+/* אינדיקטור מצב */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--background-white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  animation: fadeInUp 0.8s ease-out 1.6s both;
+}
+
+.status-icon {
+  font-size: 1.2rem;
+  animation: iconSpin 2s linear infinite;
+}
+
+.status-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* אנימציות */
+@keyframes coreRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes coreGlow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes progressPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+  }
 }
 
 @keyframes progressShine {
@@ -434,365 +389,324 @@
   }
 }
 
-.progress-text {
-  text-align: center;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 10px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-/* גלים */
-.wave-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  overflow: hidden;
-}
-
-.wave {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 200%;
-  height: 100px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  border-radius: 50%;
-  animation: waveMove 4s ease-in-out infinite;
-}
-
-.wave-1 {
-  animation-delay: 0s;
-  opacity: 0.7;
-}
-
-.wave-2 {
-  animation-delay: 1s;
-  opacity: 0.5;
-}
-
-.wave-3 {
-  animation-delay: 2s;
-  opacity: 0.3;
-}
-
-@keyframes waveMove {
-  0%,
-  100% {
-    transform: translateX(-50%) translateY(0px);
+@keyframes progressWave {
+  0% {
+    transform: translateX(-100%) scaleX(0.5);
   }
   50% {
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(0%) scaleX(1);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.5);
   }
 }
 
-/* כוכבים */
-.stars {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: #fff;
-  border-radius: 50%;
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-.star:nth-child(even) {
-  animation-delay: 1s;
-}
-
-.star:nth-child(3n) {
-  animation-delay: 2s;
-}
-
-@keyframes twinkle {
+@keyframes numberPulse {
   0%,
   100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes iconSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* אנימציות כניסה חלקות */
+@keyframes fadeInUp {
+  0% {
     opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInProgress {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scaleX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scaleX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleX(1);
+  }
+}
+
+@keyframes coreBreathing {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(217, 70, 239, 0.4));
+  }
+}
+
+@keyframes coreFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  33% {
+    transform: translateY(-3px);
+  }
+  66% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes ringPulse {
+  0%,
+  100% {
+    opacity: 0.8;
     transform: scale(1);
   }
   50% {
     opacity: 1;
-    transform: scale(1.5);
+    transform: scale(1.02);
   }
 }
 
-/* מיקום כוכבים רנדומלי */
-.star-1 {
-  top: 10%;
-  left: 20%;
-}
-.star-2 {
-  top: 20%;
-  left: 80%;
-}
-.star-3 {
-  top: 30%;
-  left: 10%;
-}
-.star-4 {
-  top: 40%;
-  left: 90%;
-}
-.star-5 {
-  top: 50%;
-  left: 30%;
-}
-.star-6 {
-  top: 60%;
-  left: 70%;
-}
-.star-7 {
-  top: 70%;
-  left: 15%;
-}
-.star-8 {
-  top: 80%;
-  left: 85%;
-}
-.star-9 {
-  top: 15%;
-  left: 50%;
-}
-.star-10 {
-  top: 25%;
-  left: 60%;
-}
-.star-11 {
-  top: 35%;
-  left: 40%;
-}
-.star-12 {
-  top: 45%;
-  left: 25%;
-}
-.star-13 {
-  top: 55%;
-  left: 75%;
-}
-.star-14 {
-  top: 65%;
-  left: 45%;
-}
-.star-15 {
-  top: 75%;
-  left: 55%;
-}
-.star-16 {
-  top: 85%;
-  left: 35%;
-}
-.star-17 {
-  top: 5%;
-  left: 65%;
-}
-.star-18 {
-  top: 95%;
-  left: 25%;
-}
-.star-19 {
-  top: 12%;
-  left: 75%;
-}
-.star-20 {
-  top: 88%;
-  left: 65%;
-}
-.star-21 {
-  top: 22%;
-  left: 35%;
-}
-.star-22 {
-  top: 78%;
-  left: 85%;
-}
-.star-23 {
-  top: 32%;
-  left: 15%;
-}
-.star-24 {
-  top: 68%;
-  left: 95%;
-}
-.star-25 {
-  top: 42%;
-  left: 55%;
-}
-.star-26 {
-  top: 58%;
-  left: 5%;
-}
-.star-27 {
-  top: 18%;
-  left: 45%;
-}
-.star-28 {
-  top: 82%;
-  left: 75%;
-}
-.star-29 {
-  top: 28%;
-  left: 25%;
-}
-.star-30 {
-  top: 72%;
-  left: 65%;
-}
-.star-31 {
-  top: 38%;
-  left: 85%;
-}
-.star-32 {
-  top: 62%;
-  left: 15%;
-}
-.star-33 {
-  top: 48%;
-  left: 35%;
-}
-.star-34 {
-  top: 52%;
-  left: 95%;
-}
-.star-35 {
-  top: 8%;
-  left: 55%;
-}
-.star-36 {
-  top: 92%;
-  left: 45%;
-}
-.star-37 {
-  top: 14%;
-  left: 85%;
-}
-.star-38 {
-  top: 86%;
-  left: 15%;
-}
-.star-39 {
-  top: 24%;
-  left: 65%;
-}
-.star-40 {
-  top: 76%;
-  left: 35%;
-}
-.star-41 {
-  top: 34%;
-  left: 75%;
-}
-.star-42 {
-  top: 66%;
-  left: 25%;
-}
-.star-43 {
-  top: 44%;
-  left: 85%;
-}
-.star-44 {
-  top: 56%;
-  left: 55%;
-}
-.star-45 {
-  top: 16%;
-  left: 15%;
-}
-.star-46 {
-  top: 84%;
-  left: 95%;
-}
-.star-47 {
-  top: 26%;
-  left: 45%;
-}
-.star-48 {
-  top: 74%;
-  left: 75%;
-}
-.star-49 {
-  top: 36%;
-  left: 5%;
-}
-.star-50 {
-  top: 64%;
-  left: 85%;
+/* אנימציות בועות */
+@keyframes bubbleRise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.3);
+  }
 }
 
-/* רספונסיביות */
+/* רספונסיביות מלאה */
 @media (max-width: 768px) {
-  .main-title {
-    font-size: 24px;
+  .loading-container {
+    gap: 2.5rem;
+    padding: 0 1rem;
+    max-width: 500px;
   }
 
-  .logo-circle {
-    width: 100px;
-    height: 100px;
+  .progress-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
   }
 
-  .logo-inner {
-    width: 70px;
-    height: 70px;
+  .progress-title {
+    font-size: 1.1rem;
   }
 
-  .logo-spark {
-    width: 35px;
-    height: 35px;
+  .progress-percentage-large {
+    font-size: 1.8rem;
   }
 
-  .advanced-spinner {
+  .progress-text {
+    font-size: 1rem;
+  }
+
+  .bubbles-container {
     width: 150px;
     height: 150px;
   }
 
-  .ring-outer {
-    width: 150px;
-    height: 150px;
+  .logo-icon {
+    width: 80px;
+    height: 80px;
   }
 
-  .ring-middle {
-    width: 110px;
-    height: 110px;
-    top: 20px;
-    left: 20px;
+  .ai-core {
+    width: 60px;
+    height: 60px;
   }
 
-  .ring-inner {
-    width: 70px;
-    height: 70px;
-    top: 40px;
-    left: 40px;
+  .ring-1 {
+    width: 60px;
+    height: 60px;
   }
 
-  .progress-container {
-    width: 250px;
+  .ring-2 {
+    width: 45px;
+    height: 45px;
+  }
+
+  .ring-3 {
+    width: 30px;
+    height: 30px;
+  }
+
+  .core-center {
+    font-size: 1.2rem;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .main-title {
-    font-size: 20px;
+  .loading-container {
+    gap: 2rem;
+    padding: 0.5rem;
   }
 
-  .progress-container {
-    width: 200px;
+  .progress-title {
+    font-size: 1rem;
   }
 
-  .orb-1,
-  .orb-2,
-  .orb-3 {
-    width: 150px;
-    height: 150px;
+  .progress-percentage-large {
+    font-size: 1.5rem;
+  }
+
+  .progress-bar {
+    height: 16px;
+    border-radius: 12px;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .bubbles-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .status-indicator {
+    padding: 0.75rem 1rem;
+  }
+
+  .status-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .loading-container {
+    gap: 1.5rem;
+  }
+
+  .progress-title {
+    font-size: 0.9rem;
+  }
+
+  .progress-percentage-large {
+    font-size: 1.3rem;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* גובה מסך קטן */
+@media (max-height: 600px) {
+  .loading-container {
+    gap: 1.5rem;
+  }
+
+  .progress-title {
+    font-size: 1rem;
+  }
+
+  .progress-percentage-large {
+    font-size: 1.5rem;
+  }
+}
+
+/* מסכים גדולים */
+@media (min-width: 1200px) {
+  .loading-container {
+    max-width: 700px;
+    gap: 4rem;
+  }
+
+  .progress-title {
+    font-size: 1.5rem;
+  }
+
+  .progress-percentage-large {
+    font-size: 2.5rem;
+  }
+
+  .progress-text {
+    font-size: 1.2rem;
+  }
+
+  .bubbles-container {
+    width: 250px;
+    height: 250px;
   }
 }

@@ -1,4 +1,4 @@
-/* Navbar */
+/* Navbar - עדיפות גבוהה */
 .navbar {
   position: fixed;
   top: 0;
@@ -44,6 +44,12 @@
 
 .nav-links a {
   font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
 }
 
 .navbar-actions {
@@ -52,22 +58,78 @@
   gap: 1rem;
 }
 
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
+/* כפתור החלפת מצב - עדיפות מקסימלית */
+.navbar .theme-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  min-width: 2.75rem !important;
+  min-height: 2.75rem !important;
+  border-radius: 50% !important;
+  background-color: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  position: relative !important;
+  z-index: 1000 !important;
 }
 
-.theme-toggle:hover {
-  background-color: var(--muted);
+.navbar .theme-toggle:hover {
+  background-color: #f9fafb !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  border-color: #d1d5db !important;
+}
+
+.navbar .theme-toggle:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* SVG של האייקון */
+.navbar .theme-toggle svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #1f2937 !important;
+  stroke: #1f2937 !important;
+  fill: none !important;
+  stroke-width: 2.5 !important;
+  transition: all 0.2s ease !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* מצב כהה */
+[data-theme="dark"] .navbar .theme-toggle,
+.dark-mode .navbar .theme-toggle,
+.app-container.dark-mode .navbar .theme-toggle {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .navbar .theme-toggle svg,
+.dark-mode .navbar .theme-toggle svg,
+.app-container.dark-mode .navbar .theme-toggle svg {
+  color: #f9fafb !important;
+  stroke: #f9fafb !important;
+}
+
+[data-theme="dark"] .navbar .theme-toggle:hover,
+.dark-mode .navbar .theme-toggle:hover,
+.app-container.dark-mode .navbar .theme-toggle:hover {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+/* אנימציה */
+.navbar .theme-toggle:hover svg {
+  transform: rotate(15deg) !important;
 }
 
 .menu-toggle {
@@ -76,6 +138,217 @@
   border: none;
   color: var(--foreground);
   cursor: pointer;
+}
+
+/* Pricing Popup Styles */
+.pricing-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pricing-popup {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 0;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+}
+
+.pricing-popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.pricing-popup-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.pricing-popup-close svg {
+  color: white;
+  width: 20px;
+  height: 20px;
+}
+
+.pricing-popup-content {
+  padding: 50px 40px 40px;
+  text-align: center;
+  color: white;
+}
+
+.celebration-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+.pricing-popup-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #fff, #f0f8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pricing-popup-subtitle {
+  font-size: 1.4rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.free-offer {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 35px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.free-badge {
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.free-text {
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.free-text strong {
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.features-list {
+  margin-bottom: 40px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.feature-icon {
+  font-size: 1.3rem;
+}
+
+.start-free-btn {
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  color: white;
+  border: none;
+  padding: 18px 50px;
+  border-radius: 50px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-free-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
+}
+
+.limited-time {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 @media (max-width: 768px) {
@@ -110,4 +383,51 @@
   .menu-toggle {
     display: flex;
   }
+
+  .navbar .theme-toggle {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-width: 2.5rem !important;
+    min-height: 2.5rem !important;
+  }
+
+  .navbar .theme-toggle svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .pricing-popup {
+    width: 98%;
+    margin: 20px;
+  }
+
+  .pricing-popup-content {
+    padding: 30px 20px 20px;
+  }
+
+  .pricing-popup-title {
+    font-size: 2rem;
+  }
+
+  .pricing-popup-subtitle {
+    font-size: 1rem;
+  }
+
+  .start-free-btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Dark mode support for popup */
+[data-theme="dark"] .pricing-popup,
+.dark-mode .pricing-popup,
+.app-container.dark-mode .pricing-popup {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+[data-theme="dark"] .pricing-popup-overlay,
+.dark-mode .pricing-popup-overlay,
+.app-container.dark-mode .pricing-popup-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
 }

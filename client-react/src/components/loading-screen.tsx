@@ -1,100 +1,107 @@
 "use client"
+
 import { useEffect, useState } from "react"
 import "../styleSheets/loading-screen.css"
 
-const LoadingScreen = () => {
-  const [progress, setProgress] = useState(0)
-  const [currentText, setCurrentText] = useState(0)
+interface LoadingScreenProps {
+  onLoadingComplete: () => void
+}
 
-  const loadingTexts = ["מכין הכל בשבילך...", "טוען נתונים...", "כמעט מוכן...", "ברוך הבא!"]
+const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
+  const [progress, setProgress] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
+  const [currentStep, setCurrentStep] = useState(0)
+
+  const steps = ["מאתחל מערכת AI...", "טוען מודלי שפה...", "מכין את הממשק שלך...", "כמעט מוכן..."]
 
   useEffect(() => {
-    // אנימציית התקדמות
-    const progressTimer = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressTimer)
+        const newProgress = prev + Math.random() * 8 + 2
+
+        const stepIndex = Math.floor((newProgress / 100) * steps.length)
+        setCurrentStep(Math.min(stepIndex, steps.length - 1))
+
+        if (newProgress >= 100) {
+          clearInterval(interval)
+          setTimeout(() => {
+            setIsVisible(false)
+            setTimeout(onLoadingComplete, 600)
+          }, 400)
           return 100
         }
-        return prev + 2
+        return newProgress
       })
-    }, 100)
+    }, 200)
 
-    // החלפת טקסטים
-    const textTimer = setInterval(() => {
-      setCurrentText((prev) => (prev + 1) % loadingTexts.length)
-    }, 1200)
+    return () => clearInterval(interval)
+  }, [onLoadingComplete])
 
-    return () => {
-      clearInterval(progressTimer)
-      clearInterval(textTimer)
-    }
-  }, [])
+  if (!isVisible) return null
 
   return (
-    <div className="loading-container">
-      {/* רקע עם גרדיאנט דינמי */}
-      <div className="animated-background">
-        <div className="gradient-orb orb-1"></div>
-        <div className="gradient-orb orb-2"></div>
-        <div className="gradient-orb orb-3"></div>
-      </div>
+    <div className={`loading-screen ${!isVisible ? "fade-out" : ""}`}>
+      <div className="loading-container">
+        {/* לוגו מרכזי */}
+        <div className="logo-section">
+          <div className="logo-icon">
+            <div className="ai-core">
+              <div className="core-ring ring-1"></div>
+              <div className="core-ring ring-2"></div>
+              <div className="core-ring ring-3"></div>
+              <div className="core-center">AI</div>
 
-      {/* חלקיקים מרחפים */}
-      <div className="particles">
-        {[...Array(20)].map((_, i) => (
-          <div key={i} className={`particle particle-${i + 1}`}></div>
-        ))}
-      </div>
-
-      {/* תוכן מרכזי */}
-      <div className="loading-content">
-        {/* לוגו/אייקון מרכזי */}
-        <div className="logo-container">
-          <div className="logo-circle">
-            <div className="logo-inner">
-              <div className="logo-spark"></div>
+              {/* בועות יוצאות מהעיגול */}
+              <div className="bubbles-container">
+                <div className="bubble bubble-1"></div>
+                <div className="bubble bubble-2"></div>
+                <div className="bubble bubble-3"></div>
+                <div className="bubble bubble-4"></div>
+                <div className="bubble bubble-5"></div>
+                <div className="bubble bubble-6"></div>
+              </div>
             </div>
           </div>
-          <div className="pulse-ring ring-1"></div>
-          <div className="pulse-ring ring-2"></div>
-          <div className="pulse-ring ring-3"></div>
+          <h1 className="brand-title">
+            <span className="brand-name">TalkToMe</span>
+            <span className="brand-ai">.AI</span>
+          </h1>
+          <p className="brand-subtitle">מכין עבורך חוויית AI מתקדמת</p>
         </div>
 
-        {/* ספינר מתקדם */}
-        <div className="advanced-spinner">
-          <div className="spinner-ring ring-outer"></div>
-          <div className="spinner-ring ring-middle"></div>
-          <div className="spinner-ring ring-inner"></div>
-        </div>
-
-        {/* טקסט דינמי */}
-        <div className="loading-text">
-          <h2 className="main-title">{loadingTexts[currentText]}</h2>
-        </div>
-
-        {/* בר התקדמות */}
-        <div className="progress-container">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-            <div className="progress-glow"></div>
+        {/* בר התקדמות מרכזי - מוגבר */}
+        <div className="progress-section">
+          <div className="progress-header">
+            <h2 className="progress-title">טוען את המערכת...</h2>
+            <div className="progress-status">
+              <span className="progress-percentage-large">{Math.round(progress)}%</span>
+            </div>
           </div>
-          <div className="progress-text">{progress}%</div>
+
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${progress}%` }}>
+                <div className="progress-glow"></div>
+                <div className="progress-wave"></div>
+              </div>
+            </div>
+
+            <div className="progress-info">
+              <span className="progress-text">{steps[currentStep]}</span>
+              <div className="progress-dots">
+                <span className="loading-dot">●</span>
+                <span className="loading-dot">●</span>
+                <span className="loading-dot">●</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* גלים דקורטיביים */}
-        <div className="wave-container">
-          <div className="wave wave-1"></div>
-          <div className="wave wave-2"></div>
-          <div className="wave wave-3"></div>
+        {/* אינדיקטור מצב */}
+        <div className="status-indicator">
+          <div className="status-icon">⚡</div>
+          <span className="status-text">מעבד נתונים...</span>
         </div>
-      </div>
-
-      {/* אפקט כוכבים */}
-      <div className="stars">
-        {[...Array(50)].map((_, i) => (
-          <div key={i} className={`star star-${i + 1}`}></div>
-        ))}
       </div>
     </div>
   )

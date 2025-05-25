@@ -709,3 +709,135 @@
     width: 90%;
   }
 }
+/* Hero Section Styles */
+
+.hero-section {
+  padding: 4rem 0;
+  text-align: center;
+}
+/* Hero Section Styles */
+
+.hero-section {
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: "Heebo", sans-serif;
+  color: #334155;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #475569;
+  margin-bottom: 2rem;
+  font-family: "Heebo", sans-serif;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: "Heebo", sans-serif;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #1e293b; /* Changed from #64748b to a much darker color */
+  font-family: "Heebo", sans-serif;
+  font-weight: 500; /* Increased font weight for better visibility */
+}
+
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: "Heebo", sans-serif;
+  color: #334155;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #475569;
+  margin-bottom: 2rem;
+  font-family: "Heebo", sans-serif;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: "Heebo", sans-serif;
+}
+
+.stat-label {
+  font-size: 0.875rem !important;
+  color: #1850ab !important; /* Changed from #64748b to a much darker color */
+  font-family: "Heebo", sans-serif;
+  font-weight: 500; /* Increased font weight for better visibility */
+}
+
+/* Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+
+  .hero-title {
+    color: #cbd5e1;
+  }
+
+  .hero-description {
+    color: #94a3b8;
+  }
+
+  .stat-number {
+    color: #e2e8f0;
+  }
+
+  .stat-label {
+    color: #e2e8f0; /* Lighter color for dark mode */
+    font-weight: 500;
+  }
+}

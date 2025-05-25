@@ -734,7 +734,10 @@ const UserMeetings = () => {
       setDownloadingPdf(false)
     }
   }
-
+  const logOut = () => {
+    localStorage.removeItem("token")
+    window.location.href = "/"
+  }
   const handleSendToEmail = async (meeting: Meeting, event?: React.MouseEvent) => {
     if (event) {
       event.stopPropagation()
@@ -1279,7 +1282,8 @@ const UserMeetings = () => {
         <nav className="sidebar-nav">
           <ul>
             <li>
-              <button onClick={() => {}}>
+              {/* navigate("/my-profile") */}
+              <button  >
                 <User size={20} />
                 <span>פרופיל שלי</span>
               </button>
@@ -1296,9 +1300,15 @@ const UserMeetings = () => {
                 <span>כל הפגישות שלי</span>
               </button>
             </li>
+            <li className="active">
+              <button onClick={() => toggleDrawer(false)}>
+                <FileText size={20} />
+                <span>התנתק</span>
+              </button>
+            </li>
           </ul>
         </nav>
-        <div className="sidebar-footer">
+        <div className="sidebar-footer" onClick={() => logOut()}>
           <p>© {new Date().getFullYear()} סיכומי ישיבות</p>
         </div>
       </aside>
@@ -1371,6 +1381,9 @@ const UserMeetings = () => {
           </div>
         </div>
       )}
+      <div className="sidebar-footer">
+        <p>© {new Date().getFullYear()} TalkToMe.AI</p>
+      </div>
     </div>
   )
 }

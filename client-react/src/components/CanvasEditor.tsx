@@ -1,400 +1,478 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-// ...existing code...
-import React, { useEffect, useRef, useState } from "react"
-import * as fabric from "fabric"
-// ...existing code...
-import {
-  PenTool,
-  Eraser,
-  Square,
-  Circle,
-  Type,
-  ImageIcon,
-  Trash2,
-  Undo,
-  Redo,
-  Save,
-  X,
-  Minus,
-  Plus,
-  Palette,
-} from "lucide-react"
+
+import type React from "react"
+import { useRef, useEffect, useState, useCallback } from "react"
+import { Save, X, Type, Palette, Eraser, Undo, Redo, Download, Bold, Mouse } from "lucide-react"
 
 interface CanvasEditorProps {
-  onSave: (imageData: string) => void
+  onSave: (editedText: string) => void
   onCancel: () => void
-  initialImage?: string | null
+  initialText: string
 }
 
-const CanvasEditor: React.FC<CanvasEditorProps> = ({ onSave, onCancel, initialImage }) => {
+interface TextSelection {
+  start: number
+  end: number
+  text: string
+}
+
+interface TextFormat {
+  bold: boolean
+  fontSize: number
+  color: string
+}
+
+const CanvasEditor: React.FC<CanvasEditorProps> = ({ onSave, onCancel, initialText }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null)
-  const [activeColor, setActiveColor] = useState("#000000")
-  const [brushSize, setBrushSize] = useState(5)
-  const [activeTool, setActiveTool] = useState<string>("pen")
-  const [canvasHistory, setCanvasHistory] = useState<string[]>([])
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [currentTool, setCurrentTool] = useState<"pen" | "eraser" | "text" | "select">("text")
+  const [currentColor, setCurrentColor] = useState("#000000")
+  const [brushSize, setBrushSize] = useState(3)
+  const [editedText, setEditedText] = useState(initialText)
+  const [history, setHistory] = useState<ImageData[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
 
-  // Save current canvas state to history
-  const saveToHistory = () => {
-    if (fabricCanvasRef.current) {
-      const json = fabricCanvasRef.current.toJSON()
-      const newHistory = canvasHistory.slice(0, historyIndex + 1)
-      newHistory.push(JSON.stringify(json))
-      setCanvasHistory(newHistory)
-      setHistoryIndex(newHistory.length - 1)
-    }
-  }
+  // Text formatting states
+  const [fontSize, setFontSize] = useState(16)
+  const [isBold, setIsBold] = useState(false)
+  const [selectedText, setSelectedText] = useState<TextSelection | null>(null)
+  const [textFormats, setTextFormats] = useState<Map<string, TextFormat>>(new Map())
 
-  // Initialize the canvas
+  // Calculate responsive canvas size
   useEffect(() => {
-    if (canvasRef.current) {
-      const canvas = new fabric.Canvas(canvasRef.current, {
-        isDrawingMode: true,
-        width: canvasRef.current.parentElement?.clientWidth || 800,
-        height: 400,
-        backgroundColor: "#ffffff",
-      })
+    const updateCanvasSize = () => {
+      const container = document.querySelector(".canvas-container")
+      if (container) {
+        const containerWidth = container.clientWidth - 40
+        const containerHeight = Math.min(window.innerHeight * 0.7, 600)
 
-      if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.color = activeColor
-        canvas.freeDrawingBrush.width = brushSize
-      }
-
-      fabricCanvasRef.current = canvas
-
-      if (initialImage) {
-        fabric.Image.fromURL(initialImage, (img) => {
-          img.scaleToWidth(canvas.width!)
-          img.scaleToHeight(canvas.height!)
-          canvas.setBackgroundImage(img, canvas.requestRenderAll.bind(canvas))
+        setCanvasSize({
+          width: Math.min(containerWidth, 800),
+          height: containerHeight,
         })
       }
-
-      // Save initial state to history
-      saveToHistory()
-
-      // Set up event listeners
-      canvas.on("object:added", saveToHistory)
-      canvas.on("object:modified", saveToHistory)
-      canvas.on("object:removed", saveToHistory)
-
-      // Clean up on unmount
-      return () => {
-        canvas.off("object:added", saveToHistory)
-        canvas.off("object:modified", saveToHistory)
-        canvas.off("object:removed", saveToHistory)
-        canvas.dispose()
-      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    updateCanvasSize()
+    window.addEventListener("resize", updateCanvasSize)
+    return () => window.removeEventListener("resize", updateCanvasSize)
   }, [])
 
-  // Update brush when color or size changes
+  // Initialize canvas with formatted text content
   useEffect(() => {
-    if (fabricCanvasRef.current && fabricCanvasRef.current.freeDrawingBrush) {
-      fabricCanvasRef.current.freeDrawingBrush.color = activeColor
-      fabricCanvasRef.current.freeDrawingBrush.width = brushSize
-    }
-  }, [activeColor, brushSize])
-
-  // Undo action
-  const handleUndo = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1
-      setHistoryIndex(newIndex)
-      loadFromHistory(newIndex)
-    }
-  }
-
-  // Redo action
-  const handleRedo = () => {
-    if (historyIndex < canvasHistory.length - 1) {
-      const newIndex = historyIndex + 1
-      setHistoryIndex(newIndex)
-      loadFromHistory(newIndex)
-    }
-  }
-
-  // Load canvas state from history
-  const loadFromHistory = (index: number) => {
-    if (fabricCanvasRef.current && canvasHistory[index]) {
-      fabricCanvasRef.current.loadFromJSON(JSON.parse(canvasHistory[index]), () => {
-        fabricCanvasRef.current?.renderAll()
-      })
-    }
-  }
-
-  // Handle tool selection
-  const handleToolSelect = (tool: string) => {
-    setActiveTool(tool)
-    const canvas = fabricCanvasRef.current
-
+    const canvas = canvasRef.current
     if (!canvas) return
 
-    switch (tool) {
-      case "pen":
-        canvas.isDrawingMode = true
-        if (canvas.freeDrawingBrush) {
-          canvas.freeDrawingBrush.color = activeColor
-          canvas.freeDrawingBrush.width = brushSize
-        }
-        break
-      case "eraser":
-        canvas.isDrawingMode = true
-        if (canvas.freeDrawingBrush) {
-          canvas.freeDrawingBrush.color = "#ffffff"
-          canvas.freeDrawingBrush.width = brushSize * 2
-        }
-        break
-      case "square":
-      case "circle":
-      case "text":
-        canvas.isDrawingMode = false
-        break
-      default:
-        canvas.isDrawingMode = true
+    canvas.width = canvasSize.width
+    canvas.height = canvasSize.height
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // Clear canvas with white background
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Draw formatted text content
+    if (initialText) {
+      drawFormattedText(ctx, initialText)
     }
-  }
 
-  // Handle mouse down for shape creation
-  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!fabricCanvasRef.current || fabricCanvasRef.current.isDrawingMode) return
+    // Save initial state to history
+    saveToHistory()
+  }, [canvasSize, initialText])
 
-    const canvas = fabricCanvasRef.current
-    const pointer = canvas.getPointer(e.nativeEvent as MouseEvent)
+  const drawFormattedText = (ctx: CanvasRenderingContext2D, text: string) => {
+    const lines = text.split("\n")
+    const lineHeight = fontSize + 8
+    const padding = 20
+    let y = padding + fontSize
 
-    if (activeTool === "square") {
-      const rect = new fabric.Rect({
-        left: pointer.x,
-        top: pointer.y,
-        width: 100,
-        height: 100,
-        fill: "transparent",
-        stroke: activeColor,
-        strokeWidth: brushSize / 2,
-      })
-      canvas.add(rect)
-      canvas.setActiveObject(rect)
-      saveToHistory()
-    } else if (activeTool === "circle") {
-      const circle = new fabric.Circle({
-        left: pointer.x,
-        top: pointer.y,
-        radius: 50,
-        fill: "transparent",
-        stroke: activeColor,
-        strokeWidth: brushSize / 2,
-      })
-      canvas.add(circle)
-      canvas.setActiveObject(circle)
-      saveToHistory()
-    } else if (activeTool === "text") {
-      const text = new fabric.IText("הקלד טקסט כאן", {
-        left: pointer.x,
-        top: pointer.y,
-        fontFamily: "Arial",
-        fill: activeColor,
-        fontSize: brushSize * 3,
-        // direction: "rtl", // not supported directly
-        // textAlign: "right", // not supported directly
-      })
-      canvas.add(text)
-      canvas.setActiveObject(text)
-      text.enterEditing()
-      saveToHistory()
-    }
-  }
+    lines.forEach((line) => {
+      if (y < canvasSize.height - padding) {
+        // Apply current formatting
+        const fontWeight = isBold ? "bold" : "normal"
+        ctx.font = `${fontWeight} ${fontSize}px Arial, sans-serif`
+        ctx.fillStyle = currentColor
+        ctx.textAlign = "right"
+        ctx.direction = "rtl"
 
-  // Handle clear canvas
-  const handleClear = () => {
-    if (fabricCanvasRef.current) {
-      if (window.confirm("האם אתה בטוח שברצונך לנקות את הקנבס?")) {
-        fabricCanvasRef.current.clear()
-        fabricCanvasRef.current.setBackgroundColor("#ffffff", () => {})
-        fabricCanvasRef.current.renderAll()
-        saveToHistory()
-      }
-    }
-  }
+        // Handle long lines by wrapping
+        const words = line.split(" ")
+        let currentLine = ""
 
-  // Handle image upload
-  const handleImageUpload = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click()
-    }
-  }
+        words.forEach((word) => {
+          const testLine = currentLine + word + " "
+          const metrics = ctx.measureText(testLine)
 
-  // Process the selected image file
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file && fabricCanvasRef.current) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const imgData = event.target?.result as string
-        fabric.Image.fromURL(imgData, (img) => {
-          const canvas = fabricCanvasRef.current!
-          const canvasWidth = canvas.width!
-          const canvasHeight = canvas.height!
-
-          let scaleFactor = 1
-          if (img.width! > canvasWidth || img.height! > canvasHeight) {
-            const widthRatio = canvasWidth / img.width!
-            const heightRatio = canvasHeight / img.height!
-            scaleFactor = Math.min(widthRatio, heightRatio) * 0.8
+          if (metrics.width > canvasSize.width - padding * 2 && currentLine !== "") {
+            ctx.fillText(currentLine.trim(), canvasSize.width - padding, y)
+            currentLine = word + " "
+            y += lineHeight
+          } else {
+            currentLine = testLine
           }
-
-          img.scale(scaleFactor)
-          img.set({
-            left: canvasWidth / 2 - (img.width! * scaleFactor) / 2,
-            top: canvasHeight / 2 - (img.height! * scaleFactor) / 2,
-          })
-
-          fabricCanvasRef.current!.add(img)
-          saveToHistory()
         })
+
+        if (currentLine.trim() !== "") {
+          ctx.fillText(currentLine.trim(), canvasSize.width - padding, y)
+          y += lineHeight
+        }
       }
-      reader.readAsDataURL(file)
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+    })
+  }
+
+  const saveToHistory = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    const newHistory = history.slice(0, historyIndex + 1)
+    newHistory.push(imageData)
+
+    setHistory(newHistory)
+    setHistoryIndex(newHistory.length - 1)
+  }, [history, historyIndex])
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      const canvas = canvasRef.current
+      if (!canvas) return
+
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+
+      const newIndex = historyIndex - 1
+      ctx.putImageData(history[newIndex], 0, 0)
+      setHistoryIndex(newIndex)
     }
   }
 
-  // Handle save canvas
-  const handleSave = () => {
-    if (fabricCanvasRef.current) {
-      const dataURL = fabricCanvasRef.current.toDataURL({
-        format: "png",
-        quality: 1,
-      })
-      onSave(dataURL)
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const canvas = canvasRef.current
+      if (!canvas) return
+
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+
+      const newIndex = historyIndex + 1
+      ctx.putImageData(history[newIndex], 0, 0)
+      setHistoryIndex(newIndex)
     }
+  }
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (currentTool === "text" || currentTool === "select") return
+
+    setIsDrawing(true)
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
+
+  const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || currentTool === "text" || currentTool === "select") return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    ctx.lineWidth = brushSize
+    ctx.lineCap = "round"
+
+    if (currentTool === "pen") {
+      ctx.globalCompositeOperation = "source-over"
+      ctx.strokeStyle = currentColor
+    } else if (currentTool === "eraser") {
+      ctx.globalCompositeOperation = "destination-out"
+    }
+
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
+
+  const stopDrawing = () => {
+    if (isDrawing) {
+      setIsDrawing(false)
+      saveToHistory()
+    }
+  }
+
+  // Handle text selection in textarea
+  const handleTextSelection = () => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+
+    if (start !== end) {
+      const selectedTextContent = editedText.substring(start, end)
+      setSelectedText({
+        start,
+        end,
+        text: selectedTextContent,
+      })
+    } else {
+      setSelectedText(null)
+    }
+  }
+
+  // Apply formatting to selected text
+  const applyFormatting = (format: Partial<TextFormat>) => {
+    if (!selectedText || !textareaRef.current) return
+
+    const textarea = textareaRef.current
+    const { start, end } = selectedText
+
+    // Create format key for this text selection
+    const formatKey = `${start}-${end}`
+    const currentFormat = textFormats.get(formatKey) || { bold: false, fontSize: 16, color: "#000000" }
+
+    // Update format
+    const newFormat = { ...currentFormat, ...format }
+    setTextFormats((prev) => new Map(prev.set(formatKey, newFormat)))
+
+    // Update canvas with new formatting
+    redrawCanvas()
+
+    // Keep selection
+    setTimeout(() => {
+      textarea.setSelectionRange(start, end)
+      textarea.focus()
+    }, 0)
+  }
+
+  const redrawCanvas = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // Clear canvas
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Redraw with formatting
+    drawFormattedText(ctx, editedText)
+    saveToHistory()
+  }
+
+  const toggleBold = () => {
+    if (selectedText) {
+      applyFormatting({ bold: !isBold })
+    }
+    setIsBold(!isBold)
+  }
+
+  const changeFontSize = (newSize: number) => {
+    if (selectedText) {
+      applyFormatting({ fontSize: newSize })
+    }
+    setFontSize(newSize)
+  }
+
+  const handleSave = () => {
+    onSave(editedText)
+  }
+
+  const downloadCanvas = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const link = document.createElement("a")
+    link.download = "edited-summary.png"
+    link.href = canvas.toDataURL()
+    link.click()
   }
 
   return (
-    <div className="canvas-editor">
+    <div className="canvas-editor-container">
+      {/* Enhanced Toolbar */}
       <div className="canvas-toolbar">
         <div className="toolbar-section">
           <button
-            className={`toolbar-button ${activeTool === "pen" ? "active" : ""}`}
-            onClick={() => handleToolSelect("pen")}
+            className={`tool-button ${currentTool === "select" ? "active" : ""}`}
+            onClick={() => setCurrentTool("select")}
+            title="בחירת טקסט"
+          >
+            <Mouse size={18} />
+          </button>
+          <button
+            className={`tool-button ${currentTool === "text" ? "active" : ""}`}
+            onClick={() => setCurrentTool("text")}
+            title="עריכת טקסט"
+          >
+            <Type size={18} />
+          </button>
+          <button
+            className={`tool-button ${currentTool === "pen" ? "active" : ""}`}
+            onClick={() => setCurrentTool("pen")}
             title="עט"
           >
-            <PenTool size={20} />
+            <Palette size={18} />
           </button>
           <button
-            className={`toolbar-button ${activeTool === "eraser" ? "active" : ""}`}
-            onClick={() => handleToolSelect("eraser")}
+            className={`tool-button ${currentTool === "eraser" ? "active" : ""}`}
+            onClick={() => setCurrentTool("eraser")}
             title="מחק"
           >
-            <Eraser size={20} />
+            <Eraser size={18} />
           </button>
         </div>
 
-        <div className="toolbar-section">
+        {/* Text Formatting Section */}
+        <div className="toolbar-section text-formatting">
           <button
-            className={`toolbar-button ${activeTool === "square" ? "active" : ""}`}
-            onClick={() => handleToolSelect("square")}
-            title="ריבוע"
+            className={`format-button ${isBold ? "active" : ""}`}
+            onClick={toggleBold}
+            disabled={!selectedText}
+            title="הדגשה"
           >
-            <Square size={20} />
+            <Bold size={18} />
           </button>
-          <button
-            className={`toolbar-button ${activeTool === "circle" ? "active" : ""}`}
-            onClick={() => handleToolSelect("circle")}
-            title="עיגול"
+
+          <select
+            value={fontSize}
+            onChange={(e) => changeFontSize(Number(e.target.value))}
+            className="font-size-selector"
+            disabled={!selectedText && currentTool !== "text"}
+            title="גודל גופן"
           >
-            <Circle size={20} />
-          </button>
-          <button
-            className={`toolbar-button ${activeTool === "text" ? "active" : ""}`}
-            onClick={() => handleToolSelect("text")}
-            title="טקסט"
-          >
-            <Type size={20} />
-          </button>
+            <option value={12}>12</option>
+            <option value={14}>14</option>
+            <option value={16}>16</option>
+            <option value={18}>18</option>
+            <option value={20}>20</option>
+            <option value={24}>24</option>
+            <option value={28}>28</option>
+            <option value={32}>32</option>
+          </select>
         </div>
 
         <div className="toolbar-section">
-          <button className="toolbar-button" onClick={handleImageUpload} title="הוסף תמונה">
-            <ImageIcon size={20} />
-          </button>
           <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            accept="image/*"
-            onChange={handleFileChange}
+            type="color"
+            value={currentColor}
+            onChange={(e) => {
+              setCurrentColor(e.target.value)
+              if (selectedText) {
+                applyFormatting({ color: e.target.value })
+              }
+            }}
+            className="color-picker"
+            title="בחר צבע"
+          />
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={brushSize}
+            onChange={(e) => setBrushSize(Number(e.target.value))}
+            className="brush-size"
+            title="גודל מברשת"
           />
         </div>
 
         <div className="toolbar-section">
-          <button className="toolbar-button" onClick={handleUndo} disabled={historyIndex <= 0} title="בטל">
-            <Undo size={20} />
+          <button onClick={undo} disabled={historyIndex <= 0} className="tool-button" title="בטל">
+            <Undo size={18} />
           </button>
-          <button
-            className="toolbar-button"
-            onClick={handleRedo}
-            disabled={historyIndex >= canvasHistory.length - 1}
-            title="בצע שוב"
-          >
-            <Redo size={20} />
-          </button>
-          <button className="toolbar-button" onClick={handleClear} title="נקה הכל">
-            <Trash2 size={20} />
+          <button onClick={redo} disabled={historyIndex >= history.length - 1} className="tool-button" title="חזור">
+            <Redo size={18} />
           </button>
         </div>
 
         <div className="toolbar-section">
-          <div className="brush-size-control">
-            <button
-              className="toolbar-button size-button"
-              onClick={() => setBrushSize(Math.max(1, brushSize - 1))}
-              title="הקטן מברשת"
-            >
-              <Minus size={16} />
-            </button>
-            <span className="brush-size-value">{brushSize}</span>
-            <button
-              className="toolbar-button size-button"
-              onClick={() => setBrushSize(Math.min(50, brushSize + 1))}
-              title="הגדל מברשת"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
+          <button onClick={downloadCanvas} className="tool-button" title="הורד">
+            <Download size={18} />
+          </button>
         </div>
 
-        <div className="toolbar-section">
-          <div className="color-picker-wrapper">
-            <Palette size={20} className="color-picker-icon" />
-            <input
-              type="color"
-              value={activeColor}
-              onChange={(e) => setActiveColor(e.target.value)}
-              className="color-picker"
-              title="בחר צבע"
-            />
-          </div>
-        </div>
-
-        <div className="toolbar-section actions">
-          <button className="toolbar-button save-button" onClick={handleSave} title="שמור">
-            <Save size={20} />
+        <div className="toolbar-actions">
+          <button onClick={onCancel} className="cancel-button">
+            <X size={18} />
+            <span>ביטול</span>
+          </button>
+          <button onClick={handleSave} className="save-button">
+            <Save size={18} />
             <span>שמור</span>
-          </button>
-          <button className="toolbar-button cancel-button" onClick={onCancel} title="בטל">
-            <X size={20} />
-            <span>בטל</span>
           </button>
         </div>
       </div>
 
-      <div className="canvas-container" onMouseDown={handleCanvasMouseDown}>
-        <canvas ref={canvasRef} />
+      {/* Selection Info */}
+      {selectedText && (
+        <div className="selection-info">
+          <span>
+            נבחר: "{selectedText.text.substring(0, 30)}
+            {selectedText.text.length > 30 ? "..." : ""}"
+          </span>
+        </div>
+      )}
+
+      {/* Canvas Container */}
+      <div className="canvas-container">
+        <div className="canvas-wrapper">
+          <canvas
+            ref={canvasRef}
+            width={canvasSize.width}
+            height={canvasSize.height}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            className={`edit-canvas ${currentTool === "text" ? "text-mode" : ""}`}
+          />
+
+          {currentTool === "text" && (
+            <div className="text-editor-overlay">
+              <textarea
+                ref={textareaRef}
+                value={editedText}
+                onChange={(e) => {
+                  setEditedText(e.target.value)
+                  redrawCanvas()
+                }}
+                onSelect={handleTextSelection}
+                onMouseUp={handleTextSelection}
+                onKeyUp={handleTextSelection}
+                className="text-editor"
+                placeholder="ערוך את הטקסט כאן..."
+                dir="rtl"
+                style={{
+                  fontSize: `${fontSize}px`,
+                  fontWeight: isBold ? "bold" : "normal",
+                  color: currentColor,
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

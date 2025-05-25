@@ -1,0 +1,798 @@
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* רקע אנימציה */
+.animated-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.7;
+  animation: float 6s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, #48cae4, #023e8a);
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.orb-3 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(45deg, #f72585, #b5179e);
+  bottom: 20%;
+  left: 60%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-30px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(30px) rotate(240deg);
+  }
+}
+
+/* חלקיקים */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: particleFloat 8s linear infinite;
+}
+
+.particle:nth-child(odd) {
+  background: rgba(255, 215, 0, 0.8);
+  animation-duration: 10s;
+}
+
+.particle:nth-child(3n) {
+  background: rgba(0, 255, 255, 0.8);
+  animation-duration: 12s;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* מיקום חלקיקים */
+.particle-1 {
+  left: 10%;
+  animation-delay: 0s;
+}
+.particle-2 {
+  left: 20%;
+  animation-delay: 1s;
+}
+.particle-3 {
+  left: 30%;
+  animation-delay: 2s;
+}
+.particle-4 {
+  left: 40%;
+  animation-delay: 3s;
+}
+.particle-5 {
+  left: 50%;
+  animation-delay: 4s;
+}
+.particle-6 {
+  left: 60%;
+  animation-delay: 5s;
+}
+.particle-7 {
+  left: 70%;
+  animation-delay: 6s;
+}
+.particle-8 {
+  left: 80%;
+  animation-delay: 7s;
+}
+.particle-9 {
+  left: 90%;
+  animation-delay: 8s;
+}
+.particle-10 {
+  left: 15%;
+  animation-delay: 1.5s;
+}
+.particle-11 {
+  left: 25%;
+  animation-delay: 2.5s;
+}
+.particle-12 {
+  left: 35%;
+  animation-delay: 3.5s;
+}
+.particle-13 {
+  left: 45%;
+  animation-delay: 4.5s;
+}
+.particle-14 {
+  left: 55%;
+  animation-delay: 5.5s;
+}
+.particle-15 {
+  left: 65%;
+  animation-delay: 6.5s;
+}
+.particle-16 {
+  left: 75%;
+  animation-delay: 7.5s;
+}
+.particle-17 {
+  left: 85%;
+  animation-delay: 8.5s;
+}
+.particle-18 {
+  left: 95%;
+  animation-delay: 9s;
+}
+.particle-19 {
+  left: 5%;
+  animation-delay: 0.5s;
+}
+.particle-20 {
+  left: 95%;
+  animation-delay: 9.5s;
+}
+
+/* תוכן מרכזי */
+.loading-content {
+  position: relative;
+  text-align: center;
+  z-index: 10;
+}
+
+/* לוגו מרכזי */
+.logo-container {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.logo-circle {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: logoRotate 3s linear infinite;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.logo-inner {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+}
+
+.logo-spark {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #fff, transparent);
+  border-radius: 50%;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes logoRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* טבעות דופק */
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s ease-out infinite;
+}
+
+.ring-1 {
+  width: 140px;
+  height: 140px;
+  animation-delay: 0s;
+}
+
+.ring-2 {
+  width: 180px;
+  height: 180px;
+  animation-delay: 0.7s;
+}
+
+.ring-3 {
+  width: 220px;
+  height: 220px;
+  animation-delay: 1.4s;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+/* ספינר מתקדם */
+.advanced-spinner {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 30px auto;
+}
+
+.spinner-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.ring-outer {
+  width: 200px;
+  height: 200px;
+  border-top: 3px solid #ff6b6b;
+  border-right: 3px solid #4ecdc4;
+  animation: spinClockwise 2s linear infinite;
+}
+
+.ring-middle {
+  width: 150px;
+  height: 150px;
+  top: 25px;
+  left: 25px;
+  border-bottom: 3px solid #45b7d1;
+  border-left: 3px solid #96ceb4;
+  animation: spinCounterClockwise 1.5s linear infinite;
+}
+
+.ring-inner {
+  width: 100px;
+  height: 100px;
+  top: 50px;
+  left: 50px;
+  border-top: 3px solid #feca57;
+  border-right: 3px solid #ff9ff3;
+  animation: spinClockwise 1s linear infinite;
+}
+
+@keyframes spinClockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounterClockwise {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* טקסט */
+.loading-text {
+  margin: 30px 0;
+}
+
+.main-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: textGlow 2s ease-in-out infinite alternate;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* בר התקדמות */
+.progress-container {
+  margin-top: 40px;
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-text {
+  text-align: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* גלים */
+.wave-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 50%;
+  animation: waveMove 4s ease-in-out infinite;
+}
+
+.wave-1 {
+  animation-delay: 0s;
+  opacity: 0.7;
+}
+
+.wave-2 {
+  animation-delay: 1s;
+  opacity: 0.5;
+}
+
+.wave-3 {
+  animation-delay: 2s;
+  opacity: 0.3;
+}
+
+@keyframes waveMove {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+/* כוכבים */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.star:nth-child(even) {
+  animation-delay: 1s;
+}
+
+.star:nth-child(3n) {
+  animation-delay: 2s;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* מיקום כוכבים רנדומלי */
+.star-1 {
+  top: 10%;
+  left: 20%;
+}
+.star-2 {
+  top: 20%;
+  left: 80%;
+}
+.star-3 {
+  top: 30%;
+  left: 10%;
+}
+.star-4 {
+  top: 40%;
+  left: 90%;
+}
+.star-5 {
+  top: 50%;
+  left: 30%;
+}
+.star-6 {
+  top: 60%;
+  left: 70%;
+}
+.star-7 {
+  top: 70%;
+  left: 15%;
+}
+.star-8 {
+  top: 80%;
+  left: 85%;
+}
+.star-9 {
+  top: 15%;
+  left: 50%;
+}
+.star-10 {
+  top: 25%;
+  left: 60%;
+}
+.star-11 {
+  top: 35%;
+  left: 40%;
+}
+.star-12 {
+  top: 45%;
+  left: 25%;
+}
+.star-13 {
+  top: 55%;
+  left: 75%;
+}
+.star-14 {
+  top: 65%;
+  left: 45%;
+}
+.star-15 {
+  top: 75%;
+  left: 55%;
+}
+.star-16 {
+  top: 85%;
+  left: 35%;
+}
+.star-17 {
+  top: 5%;
+  left: 65%;
+}
+.star-18 {
+  top: 95%;
+  left: 25%;
+}
+.star-19 {
+  top: 12%;
+  left: 75%;
+}
+.star-20 {
+  top: 88%;
+  left: 65%;
+}
+.star-21 {
+  top: 22%;
+  left: 35%;
+}
+.star-22 {
+  top: 78%;
+  left: 85%;
+}
+.star-23 {
+  top: 32%;
+  left: 15%;
+}
+.star-24 {
+  top: 68%;
+  left: 95%;
+}
+.star-25 {
+  top: 42%;
+  left: 55%;
+}
+.star-26 {
+  top: 58%;
+  left: 5%;
+}
+.star-27 {
+  top: 18%;
+  left: 45%;
+}
+.star-28 {
+  top: 82%;
+  left: 75%;
+}
+.star-29 {
+  top: 28%;
+  left: 25%;
+}
+.star-30 {
+  top: 72%;
+  left: 65%;
+}
+.star-31 {
+  top: 38%;
+  left: 85%;
+}
+.star-32 {
+  top: 62%;
+  left: 15%;
+}
+.star-33 {
+  top: 48%;
+  left: 35%;
+}
+.star-34 {
+  top: 52%;
+  left: 95%;
+}
+.star-35 {
+  top: 8%;
+  left: 55%;
+}
+.star-36 {
+  top: 92%;
+  left: 45%;
+}
+.star-37 {
+  top: 14%;
+  left: 85%;
+}
+.star-38 {
+  top: 86%;
+  left: 15%;
+}
+.star-39 {
+  top: 24%;
+  left: 65%;
+}
+.star-40 {
+  top: 76%;
+  left: 35%;
+}
+.star-41 {
+  top: 34%;
+  left: 75%;
+}
+.star-42 {
+  top: 66%;
+  left: 25%;
+}
+.star-43 {
+  top: 44%;
+  left: 85%;
+}
+.star-44 {
+  top: 56%;
+  left: 55%;
+}
+.star-45 {
+  top: 16%;
+  left: 15%;
+}
+.star-46 {
+  top: 84%;
+  left: 95%;
+}
+.star-47 {
+  top: 26%;
+  left: 45%;
+}
+.star-48 {
+  top: 74%;
+  left: 75%;
+}
+.star-49 {
+  top: 36%;
+  left: 5%;
+}
+.star-50 {
+  top: 64%;
+  left: 85%;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 24px;
+  }
+
+  .logo-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-inner {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-spark {
+    width: 35px;
+    height: 35px;
+  }
+
+  .advanced-spinner {
+    width: 150px;
+    height: 150px;
+  }
+
+  .ring-outer {
+    width: 150px;
+    height: 150px;
+  }
+
+  .ring-middle {
+    width: 110px;
+    height: 110px;
+    top: 20px;
+    left: 20px;
+  }
+
+  .ring-inner {
+    width: 70px;
+    height: 70px;
+    top: 40px;
+    left: 40px;
+  }
+
+  .progress-container {
+    width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 20px;
+  }
+
+  .progress-container {
+    width: 200px;
+  }
+
+  .orb-1,
+  .orb-2,
+  .orb-3 {
+    width: 150px;
+    height: 150px;
+  }
+}

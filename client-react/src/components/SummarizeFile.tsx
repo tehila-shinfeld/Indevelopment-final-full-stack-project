@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState, useRef } from "react"
 import axios from "axios"
 import { jsPDF } from "jspdf"
@@ -9,12 +8,11 @@ import { useSummary } from "../context/SummaryContext"
 import UserPermissionDialog, { type User } from "./UserPermissionDialog"
 import { Save, Edit, CopyIcon as ContentCopy, CheckCircle, Sparkles, Loader, AlertCircle, Download } from "lucide-react"
 import ReactMarkdown from "react-markdown"
-import "../styleSheets/SummarizeFile.css"
-// import "../styleSheets/canvas-editor.css"
 import dynamic from "next/dynamic"
-
+import "../styleSheets/SummarizeFile.css"
+import "../styleSheets/canva-editor.css"
 // Dynamically import the Canvas Editor component to avoid SSR issues
-const CanvasEditor = dynamic(() => import("./CanvasEditor"), { ssr: false })
+const CanvasEditor = dynamic(() => import("../components/CanvasEditor"), { ssr: false })
 
 const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const { summary, setSummary } = useSummary()
@@ -28,7 +26,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const summaryRef = useRef<HTMLDivElement>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [canvasImage, setCanvasImage] = useState<string | null>(null)
 
   const handleOpenPermissionDialog = () => setOpenPermissionDialog(true)
   const handleClosePermissionDialog = () => setOpenPermissionDialog(false)
@@ -63,9 +60,8 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const handleSavePermissionsAndSummary = async (users: User[]) => {
     setSelectedUsers(users)
     console.log(users.map((user) => user.id))
-    // 1️⃣ שמירת ההרשאות
+
     try {
-      alert({ fileUrl } + "hashrmmm!")
       await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
         FileUrl: fileUrl,
         UserIds: users.map((user) => user.id),
@@ -97,13 +93,11 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
       })
       if (response.data.success) {
         console.log("הסיכום נשמר בהצלחה!")
-        // setMessage("הסיכום נשמר בהצלחה!");
       } else {
         console.error("שגיאה בשמירת הסיכום")
         setError("שגיאה בשמירת הסיכום")
       }
     } catch (err) {
-      // console.error('שגיאה בשמירת הסיכום:', err.response?.data || err.message);
       setError("שגיאה לא צפויה. אנא נסה שוב.")
     }
   }
@@ -140,27 +134,19 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
       container.style.fontFamily = "Arial, sans-serif"
       document.body.appendChild(container)
 
-      // Format date from the summary content (assuming first line contains date)
-      const formatDate = (content) => {
+      const formatDate = (content: string | null) => {
         if (!content) return new Date().toLocaleDateString("he-IL")
-        // Extract date from first line or use current date
         const firstLine = content.split("\n")[0]
         return firstLine.includes("תאריך:")
           ? firstLine.split("תאריך:")[1].trim()
           : new Date().toLocaleDateString("he-IL")
       }
 
-      // Get filename from the fileUrl
       const getFileName = () => {
         const urlParts = fileUrl.split("/")
         const fileName = urlParts[urlParts.length - 1].split(".")[0] || "summary"
         return fileName
       }
-
-      // Add canvas image if available
-      const canvasHtml = canvasImage
-        ? `<div style="margin-bottom: 20px;"><img src="${canvasImage}" style="max-width: 100%; border: 1px solid #e5e7eb; border-radius: 4px;" /></div>`
-        : ""
 
       container.innerHTML = `
           <div style="width: 170mm; direction: rtl; text-align: right; font-family: Arial, sans-serif;">
@@ -178,8 +164,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
             
             <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${getFileName()}</h1>
-            
-            ${canvasHtml}
             
             <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${summary}</div>
             
@@ -200,23 +184,10 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             backgroundColor: "#ffffff",
           }).then((canvas) => {
             const imgData = canvas.toDataURL("image/jpeg", 1.0)
-
             pdf.addImage(imgData, "JPEG", 10, 10, 190, 0)
-
             pdf.save(`${getFileName()}.pdf`)
-
             document.body.removeChild(container)
-
-            // Show success notification
             setError(null)
-
-            // You can replace this with your notification system
-            // Example: addNotification({
-            //   type: "info",
-            //   title: "הורדת PDF",
-            //   message: "קובץ ה-PDF הורד בהצלחה.",
-            // })
-
             setLoading(false)
           })
         })
@@ -224,50 +195,28 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
           console.error("Failed to load html2canvas:", error)
           document.body.removeChild(container)
           setLoading(false)
-          handleError(error)
+          setError("שגיאה בהורדת PDF. אנא נסה שוב.")
         })
     } catch (error) {
       console.error("Failed to download PDF:", error)
-
-      // You can replace this with your error handling
-      // Example: handleError(error, "downloadPdf")
-
       setError("שגיאה בהורדת PDF. אנא נסה שוב.")
-
-      // You can replace this with your notification system
-      // Example: addNotification({
-      //   type: "error",
-      //   title: "שגיאה בהורדת PDF",
-      //   message: "לא ניתן להוריד את קובץ ה-PDF. אנא נסה שוב.",
-      // })
-
       setLoading(false)
     }
-  }
-
-  // Helper function to handle errors
-  const handleError = (error) => {
-    console.error("Error:", error)
-    setError("שגיאה לא צפויה. אנא נסה שוב.")
   }
 
   const handleEdit = () => {
     setIsEditing(true)
   }
 
-  const handleSaveCanvas = (imageData: string) => {
+  const handleSaveCanvas = (editedText: string) => {
     try {
       setLoading(true)
 
-      // Save the canvas image data
-      setCanvasImage(imageData)
-
-      // Here you would typically send the canvas image to your backend
-      // Example API call:
-      // await axios.post("https://localhost:7136/api/files/save-canvas", {
-      //   FileUrl: fileUrl,
-      //   canvasImage: imageData,
-      // })
+      // Update the summary text
+      if (editedText) {
+        setSummary(editedText)
+        setTypedSummary(editedText)
+      }
 
       setIsEditing(false)
       setLoading(false)
@@ -277,8 +226,8 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 2000)
     } catch (error) {
-      console.error("Failed to save canvas:", error)
-      setError("שגיאה בשמירת הקנבס. אנא נסה שוב.")
+      console.error("Failed to save summary:", error)
+      setError("שגיאה בשמירת הסיכום. אנא נסה שוב.")
       setLoading(false)
     }
   }
@@ -287,6 +236,10 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     if (confirm("האם אתה בטוח שברצונך לבטל את העריכה? כל השינויים שלך יאבדו.")) {
       setIsEditing(false)
     }
+  }
+
+  const handleSavePermissionDialog = () => {
+    setOpenPermissionDialog(true)
   }
 
   return (
@@ -324,20 +277,16 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 
           <div className="summary-content-wrapper">
             {isEditing ? (
-              <CanvasEditor onSave={handleSaveCanvas} onCancel={handleCancelEdit} initialImage={canvasImage} />
+              <CanvasEditor onSave={handleSaveCanvas} onCancel={handleCancelEdit} initialText={summary || ""} />
             ) : (
               <>
-                {canvasImage && (
-                  <div className="canvas-image-container">
-                    <img src={canvasImage || "/placeholder.svg"} alt="Canvas drawing" className="canvas-image" />
-                  </div>
-                )}
                 <div className="summary-content" ref={summaryRef}>
                   <ReactMarkdown>{typedSummary}</ReactMarkdown>
                   {isTyping && <span className="typing-cursor">|</span>}
                 </div>
               </>
             )}
+
             {typedSummary.length > 0 && !isTyping && !isEditing && (
               <div className="scroll-indicator">
                 <div className="scroll-dot"></div>
@@ -354,15 +303,20 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             </div>
           )}
 
-          <div className="card-actions">
+          <div className="action-toolbar">
             {isEditing ? (
               <div className="canvas-actions-info">
-                <span>Use the tools above to edit the canvas</span>
+                <span>השתמש בכלים למעלה לעריכת הקנבס</span>
               </div>
             ) : (
               <>
+                <button className="toolbar-button" onClick={handleSavePermissionDialog} disabled={loading}>
+                  <Save size={18} />
+                  <span>Save</span>
+                </button>
+
                 <button
-                  className={`action-button copy-button ${copied ? "copied" : ""}`}
+                  className={`toolbar-button ${copied ? "active" : ""}`}
                   onClick={handleCopyToClipboard}
                   title="Copy to clipboard"
                   disabled={loading}
@@ -371,19 +325,14 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                   <span>{copied ? "Copied!" : "Copy"}</span>
                 </button>
 
-                <button className="action-button save-button" onClick={handleOpenPermissionDialog} disabled={loading}>
-                  <Save size={18} />
-                  <span>Save</span>
-                </button>
-
-                <button className="action-button download-button" disabled={loading} onClick={handleDownloadPDF}>
-                  <Download size={18} />
-                  <span>Download</span>
-                </button>
-
-                <button className="action-button edit-button" disabled={loading || isTyping} onClick={handleEdit}>
+                <button className="toolbar-button" disabled={loading || isTyping} onClick={handleEdit}>
                   <Edit size={18} />
                   <span>Edit</span>
+                </button>
+
+                <button className="toolbar-button" disabled={loading} onClick={handleDownloadPDF}>
+                  <Download size={18} />
+                  <span>Download</span>
                 </button>
               </>
             )}

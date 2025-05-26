@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -8,8 +7,6 @@ import { useNavigate } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
 import {
   Calendar,
-  X,
-  User,
   PlusCircle,
   FileText,
   Clock,
@@ -20,22 +17,19 @@ import {
   Copy,
   Printer,
   CheckCircle,
-  MessageSquareText,
   ArrowRight,
   AlertTriangle,
   ChevronUp,
   Star,
   StarOff,
-  Info,
   AlertCircle,
   RefreshCcw,
   FileDown,
 } from "lucide-react"
-import "../styleSheets/UserMeetings.css"
 import { useUser } from "../context/UserContext"
 import jsPDF from "jspdf"
 import { Header } from "./header"
-
+import "../styleSheets/UserMeetings.css"
 interface Meeting {
   id: number
   name: string
@@ -124,54 +118,6 @@ const ScrollToTopButton = () => {
     </button>
   )
 }
-const ErrorNotificationSystem: React.FC<{ notifications: ErrorNotification[]; onDismiss: (id: string) => void }> = ({
-  notifications,
-  onDismiss,
-}) => {
-  if (notifications.length === 0) return null
-
-  return (
-    <div className="error-notification-container">
-      {notifications.map((notification) => (
-        <div key={notification.id} className={`error-notification ${notification.type}`}>
-          <div className="error-icon-container">
-            {notification.type === "error" && <AlertCircle size={20} />}
-            {notification.type === "warning" && <AlertTriangle size={20} />}
-            {notification.type === "info" && <Info size={20} />}
-          </div>
-          <div className="error-content">
-            <div className="error-title">{notification.title}</div>
-            <div className="error-message">{notification.message}</div>
-
-            {notification.actions && notification.actions.length > 0 && (
-              <div className="error-actions">
-                {notification.actions.map((action, index) => (
-                  <button
-                    key={index}
-                    className={`error-action-button ${action.primary ? "primary" : "secondary"}`}
-                    onClick={() => {
-                      action.onClick()
-                      onDismiss(notification.id)
-                    }}
-                  >
-                    {action.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="error-progress">
-              <div className="error-progress-bar"></div>
-            </div>
-          </div>
-          <div className="error-close" onClick={() => onDismiss(notification.id)}>
-            <X size={16} />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
 
 const UserMeetings = () => {
   const [meetings, setMeetings] = useState<Meeting[]>([])
@@ -191,14 +137,12 @@ const UserMeetings = () => {
     meetingId: null as number | null,
     meetingName: "",
   })
-  const [scrollY, setScrollY] = useState(0)
   const [favorites, setFavorites] = useState<number[]>(() => {
     const savedFavorites = localStorage.getItem("userFavorites")
     return savedFavorites ? JSON.parse(savedFavorites) : []
   })
   const [darkMode, setDarkMode] = useState(false)
   const [downloadingPdf, setDownloadingPdf] = useState(false)
-  // 1. Add a new state for tracking email sending status
   const [sendingEmail, setSendingEmail] = useState(false)
   const [emailSentSuccess, setEmailSentSuccess] = useState(false)
 
@@ -242,8 +186,6 @@ const UserMeetings = () => {
   }, [setPrimaryColor])
 
   const handleScroll = useCallback(() => {
-    setScrollY(window.scrollY)
-
     const header = document.querySelector(".dashboard-header")
     if (window.scrollY > 50) {
       header?.classList.add("header-scrolled")
@@ -734,10 +676,19 @@ const UserMeetings = () => {
       setDownloadingPdf(false)
     }
   }
+
   const logOut = () => {
     localStorage.removeItem("token")
-    window.location.href = "/"
+    sessionStorage.removeItem("token")
+    localStorage.removeItem("userID")
+    navigate("/login")
   }
+
+  const navigateToProfile = () => {
+    toggleDrawer(false)
+    navigate("/my-profile")
+  }
+
   const handleSendToEmail = async (meeting: Meeting, event?: React.MouseEvent) => {
     if (event) {
       event.stopPropagation()
@@ -749,7 +700,6 @@ const UserMeetings = () => {
       const token = sessionStorage.getItem("token")
 
       if (!token) {
-        // טוקן לא קיים
         addNotification({
           type: "error",
           title: "לא מחובר",
@@ -774,8 +724,6 @@ const UserMeetings = () => {
           setSendingEmail(false)
           return
         }
-
-        // כאן אפשר להמשיך עם userEmail
       } catch (err) {
         console.error("שגיאה בפענוח הטוקן:", err)
         addNotification({
@@ -787,7 +735,6 @@ const UserMeetings = () => {
         return
       }
 
-      // Generate PDF
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -840,17 +787,14 @@ const UserMeetings = () => {
       const imgData = canvas.toDataURL("image/jpeg", 1.0)
       pdf.addImage(imgData, "JPEG", 10, 10, 190, 0)
 
-      // Convert PDF to blob
       const pdfBlob = pdf.output("blob")
 
-      // Create form data for API request
       const formData = new FormData()
       formData.append("email", userEmail)
       formData.append("subject", `סיכום פגישה: ${meeting.name}`)
       formData.append("message", `מצורף סיכום הפגישה "${meeting.name}" מתאריך ${formatDate(meeting.summaryContent)}.`)
       formData.append("attachment", pdfBlob, `${meeting.name.replace(/[^\w\s]/gi, "")}.pdf`)
 
-      // Send email via API
       await axios.post("https://localhost:7136/api/email/send-with-attachment", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -865,7 +809,6 @@ const UserMeetings = () => {
         message: `סיכום הפגישה נשלח לכתובת ${userEmail} בהצלחה.`,
       })
 
-      // Show success animation
       setEmailSentSuccess(true)
       setTimeout(() => {
         setEmailSentSuccess(false)
@@ -1091,14 +1034,6 @@ const UserMeetings = () => {
               <span>{downloadingPdf ? "מוריד..." : "הורד PDF"}</span>
             </button>
 
-            {/* 3. Replace the Share button with Send to Email in the meeting details view */}
-            {/* Find this section in the meeting details actions and replace: */}
-            {/* <button className="details-action details-action-fixed">
-              <Share2 size={18} />
-              <span>שתף</span>
-            </button> */}
-
-            {/* With: */}
             <button
               className={`details-action details-action-fixed ${sendingEmail ? "downloading" : ""}`}
               onClick={() => handleSendToEmail(selectedMeeting)}
@@ -1116,7 +1051,7 @@ const UserMeetings = () => {
   const renderMeetingsList = () => {
     if (loading) {
       return (
-        <div className="loading-container">
+        <div className="loading-container-centered">
           <div className="loader">
             <svg viewBox="0 0 50 50" className="spinner">
               <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>
@@ -1163,12 +1098,6 @@ const UserMeetings = () => {
               <div className="btn-glow"></div>
             </button>
           )}
-          <div className="logo">
-            <MessageSquareText size={24} className="logo-icon" />
-            <span className="logo-text">
-              AI.<span className="logo-highlight">TalkToMe</span>
-            </span>
-          </div>
         </div>
       )
     }
@@ -1208,13 +1137,6 @@ const UserMeetings = () => {
               >
                 <FileDown size={16} />
               </button>
-              {/* 4. Replace the Share button with Send to Email in the meeting card actions */}
-              {/* Find this section in the card actions and replace: */}
-              {/* <button className="card-action" title="שתף" onClick={(e) => e.stopPropagation()}>
-                <Share2 size={16} />
-              </button> */}
-
-              {/* With: */}
               <button
                 className="card-action"
                 title="שלח לאימייל"
@@ -1261,57 +1183,10 @@ const UserMeetings = () => {
         toggleDarkMode={toggleDarkMode}
         darkMode={darkMode}
         selectedMeeting={selectedMeeting}
+        menuOpen={menuOpen}
+        user={user}
+        onLogout={logOut}
       />
-
-      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          <button className="close-menu" onClick={() => toggleDrawer(false)}>
-            <X size={24} />
-          </button>
-        </div>
-        <div className="user-profile">
-          <div className="avatar">
-            <User size={24} />
-          </div>
-          <div className="user-info">
-            <h3>שלום, {user?.username || "משתמש"}</h3>
-            <p>ברוך הבא לדשבורד</p>
-          </div>
-        </div>
-
-        <nav className="sidebar-nav">
-          <ul>
-            <li>
-              {/* navigate("/my-profile") */}
-              <button  >
-                <User size={20} />
-                <span>פרופיל שלי</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate("/summary-up!")}>
-                <PlusCircle size={20} />
-                <span>הוספת פגישה</span>
-              </button>
-            </li>
-            <li className="active">
-              <button onClick={() => toggleDrawer(false)}>
-                <FileText size={20} />
-                <span>כל הפגישות שלי</span>
-              </button>
-            </li>
-            <li className="active">
-              <button onClick={() => toggleDrawer(false)}>
-                <FileText size={20} />
-                <span>התנתק</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-        <div className="sidebar-footer" onClick={() => logOut()}>
-          <p>© {new Date().getFullYear()} סיכומי ישיבות</p>
-        </div>
-      </aside>
 
       <main className="dashboard-content">
         {!selectedMeeting && (
@@ -1381,10 +1256,62 @@ const UserMeetings = () => {
           </div>
         </div>
       )}
-      <div className="sidebar-footer">
-        <p>© {new Date().getFullYear()} TalkToMe.AI</p>
+      <div className="footer-bottom">
+        <p className="copyright">© 2025 TalkToMe.AI. כל הזכויות שמורות.</p>
+        <div className="social-links">
+          <a href="mailto:talktome.ai2025@gmail.com" aria-label="Email">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+          <a href="https://github.com/tehila-shinfeld" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+              <path d="M9 18c-4.51 2-5-2-7-2"></path>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   )
 }
+
 export default UserMeetings

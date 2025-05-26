@@ -45,7 +45,7 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
 
   return (
     <>
-      <header className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+      <header  style={{ marginBottom: "40px" }} className={`navbar ${isScrolled ? "scrolled" : ""} `}>
         <div className="container navbar-container">
           <div className="logo">
             <span className="logo-text">

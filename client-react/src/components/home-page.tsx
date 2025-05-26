@@ -12,6 +12,7 @@ import CtaSection from "./cta-section"
 import Footer from "./footer"
 import EnhancedLoginModal from "./login-modal"
 import { useNavigate } from "react-router-dom"
+import { m } from "framer-motion"
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -136,6 +137,7 @@ const HomePage = () => {
           sectionRef={sectionsRef.hero as React.RefObject<HTMLElement>}
           isVisible={visibleSections.hero}
           openModal={openModal}
+          
         />
 
         <HowItWorksSection

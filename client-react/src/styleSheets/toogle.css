@@ -1,0 +1,116 @@
+/* תיקון לכפתור יום/לילה */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 50% !important;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  background-color: var(--bg-tertiary);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-50);
+  color: var(--primary-700);
+  box-shadow: 0 2px 8px rgba(54, 174, 245, 0.2);
+}
+
+.dark-mode .theme-toggle {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f0abfc;
+}
+
+.dark-mode .theme-toggle:hover {
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f5d0fe;
+  box-shadow: 0 2px 8px rgba(217, 70, 239, 0.3);
+}
+
+.theme-toggle svg {
+  transition: transform var(--transition-normal);
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* וידוא שהכפתור נשאר עיגול גם במובייל */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* תיקון לכפתור התפריט גם כן */
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50% !important;
+  color: var(--primary-600);
+  transition: all var(--transition-fast);
+  background-color: var(--primary-50);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.menu-button:hover {
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  transform: scale(1.05);
+}
+
+.dark-mode .menu-button {
+  background-color: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
+}
+
+.dark-mode .menu-button:hover {
+  background-color: rgba(217, 70, 239, 0.3);
+  color: #f5d0fe;
+}
+
+@media (max-width: 768px) {
+  .menu-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px;
+    min-height: 36px;
+  }
+}
+
+/* וידוא שהקונטיינר של הכפתורים מסודר כראוי */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-shrink: 0;
+}

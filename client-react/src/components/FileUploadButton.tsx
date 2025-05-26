@@ -2,7 +2,21 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
-import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, User, ArrowUp, Loader2, LogOut } from "lucide-react"
+import {
+  FileText,
+  Upload,
+  X,
+  Check,
+  FileUp,
+  Sparkles,
+  Menu,
+  Moon,
+  Sun,
+  User,
+  ArrowUp,
+  Loader2,
+  LogOut,
+} from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
@@ -10,35 +24,37 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
 import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
 import { useNavigate } from "react-router-dom"
+
+// הגדרת מצבי התהליך הראשיים
+type ProcessState =
+  | "idle" // מצב התחלתי - אין קובץ
+  | "file-selected" // קובץ נבחר אבל לא הועלה
+  | "uploading" // מעלה קובץ לשרת
+  | "processing" // מעבד את תוכן הקובץ
+  | "ready-to-summarize" // מוכן ליצירת סיכום
+  | "summarizing" // יוצר סיכום
+  | "completed" // הסיכום מוכן
+
 const FileUploadButton = () => {
   // מצבי העלאת קובץ
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
   const { summary, setSummary } = useSummary()
   const [fileTextContent, setFileTextContent] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [uploading, setUploading] = useState(false)
   const [celebrationActive, setCelebrationActive] = useState(false)
-  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false)
   const [dragFileValid, setDragFileValid] = useState<boolean | null>(null)
   const [showDropSuccess, setShowDropSuccess] = useState(false)
   const [showDropError, setShowDropError] = useState(false)
-  // מצבי מעבר תצוגה
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [activeStep, setActiveStep] = useState(0)
-  const [processingStep, setProcessingStep] = useState<"upload" | "summarize" | "complete">("upload")
-  const [showUploadAnimation, setShowUploadAnimation] = useState(false)
+
+  // מצב התהליך הראשי - זה המצב המרכזי שקובע מה מוצג
+  const [processState, setProcessState] = useState<ProcessState>("idle")
+
   // מצבי ממשק
   const [darkMode, setDarkMode] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  // מצב חדש לבקרת תהליך העבודה
-  const [isReadyToSummarize, setIsReadyToSummarize] = useState(false)
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [s3url, sets3url] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -53,9 +69,8 @@ const FileUploadButton = () => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFile = event.target.files[0]
       setFile(selectedFile)
-      setUploadStatus("success") // הגדרת סטטוס להצלחה מיידית להצגת מידע על הקובץ
-      setShowUploadAnimation(true)
-      setTimeout(() => setShowUploadAnimation(false), 2000)
+      setProcessState("file-selected")
+      setError(null)
     }
   }
 
@@ -119,9 +134,8 @@ const FileUploadButton = () => {
 
       if (isValidType) {
         setFile(selectedFile)
-        setUploadStatus("success")
-        setShowUploadAnimation(true)
-        setTimeout(() => setShowUploadAnimation(false), 2000)
+        setProcessState("file-selected")
+        setError(null)
 
         // הפעלת אנימציית הצלחת שחרור
         setShowDropSuccess(true)
@@ -129,7 +143,7 @@ const FileUploadButton = () => {
       } else {
         // הצגת שגיאה אם הקובץ אינו מסוג מתאים
         setError("סוג קובץ לא נתמך. אנא השתמש בקבצי PDF, TXT, או DOCX.")
-        setUploadStatus("error")
+        setProcessState("idle")
 
         // הפעלת אנימציית שגיאת שחרור
         setShowDropError(true)
@@ -137,16 +151,16 @@ const FileUploadButton = () => {
       }
     }
   }
-const logOut = () => {
+
+  const logOut = () => {
     sessionStorage.removeItem("token") // הסרת הטוקן מהאחסון
     navigate("/") // ניווט לעמוד הכניסה
-}
-  // פונקציה 1: טיפול בהעלאת הקובץ בלבד
-  const handleFileUpload = async (selectedFile: File) => {
-    setUploading(true)
-    setFile(selectedFile)
-    setLoading(true)
-    setProcessingStep("upload")
+  }
+
+  // פונקציה מאוחדת להעלאה ועיבוד הקובץ
+  const handleFileUploadAndProcess = async (selectedFile: File) => {
+    setProcessState("uploading")
+    setUploadProgress(0)
 
     // Simulate upload progress
     const progressInterval = setInterval(() => {
@@ -160,6 +174,8 @@ const logOut = () => {
     }, 200)
 
     try {
+      // שלב 1: עיבוד תוכן הקובץ
+      setProcessState("processing")
       let textContent = ""
 
       if (selectedFile.type === "text/plain") {
@@ -212,7 +228,7 @@ const logOut = () => {
       setFileTextContent(textContent) // שומר את התוכן
       console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
-      // ⬇️ המשך התהליך הרגיל של ההעלאה לשרת
+      // שלב 2: העלאה לשרת
       const response1 = await axios.post("https://localhost:7136/api/files/upload", {
         fileName: selectedFile.name,
       })
@@ -231,31 +247,26 @@ const logOut = () => {
       setUploadProgress(100)
       clearInterval(progressInterval)
 
-      // Show completion animation
-      setShowCompletionAnimation(true)
+      // מעבר למצב מוכן לסיכום
       setTimeout(() => {
-        setShowCompletionAnimation(false)
-        setIsReadyToSummarize(true)
-      }, 1500)
+        setProcessState("ready-to-summarize")
+      }, 1000)
     } catch (error) {
       console.error("❌ שגיאה:", error)
       setError("שגיאה בהעלאה או בקריאה, נסי שוב.")
-      setUploadStatus("error")
+      setProcessState("file-selected")
       clearInterval(progressInterval)
-    } finally {
-      setUploading(false)
-      setLoading(false)
     }
   }
 
-  // פונקציה 2: טיפול בסיכום הקובץ בלבד
+  // פונקציה ליצירת סיכום
   const handleSummarize = async () => {
-    if (!fileUrl) {
-      alert("No file URL provided!")
+    if (!fileUrl || !fileTextContent) {
+      setError("אין תוכן קובץ זמין לסיכום")
       return
     }
-    setLoading(true)
-    setProcessingStep("summarize")
+
+    setProcessState("summarizing")
 
     try {
       const response = await axios.post("https://localhost:7136/api/files/summarize", {
@@ -267,28 +278,25 @@ const logOut = () => {
       setCelebrationActive(true)
       setTimeout(() => {
         setCelebrationActive(false)
-        setActiveStep(1)
+        setProcessState("completed")
       }, 2000)
     } catch (error) {
       console.error("שגיאה בשליחת הבקשה:", error)
-      setError("אירעה שגיאה בשליחת הבקשה")
-      setUploadStatus("error")
-    } finally {
-      setLoading(false)
+      setError("אירעה שגיאה ביצירת הסיכום")
+      setProcessState("ready-to-summarize")
     }
   }
 
   // Reset function
   const handleReset = () => {
     setFile(null)
-    setUploadStatus("idle")
     setError(null)
     setUploadProgress(0)
-    setIsReadyToSummarize(false)
-    setActiveStep(0)
+    setProcessState("idle")
     setFileUrl(null)
     sets3url(null)
     setFileTextContent(null)
+    setSummary(null)
   }
 
   // קבלת אייקון מתאים לסוג הקובץ
@@ -349,7 +357,6 @@ const logOut = () => {
   }, [])
 
   // Add this useEffect to set up PDF.js worker
-  // Add it right after the existing useEffect hooks
   useEffect(() => {
     // Set the worker source path for PDF.js
     if (!GlobalWorkerOptions.workerSrc) {
@@ -361,10 +368,42 @@ const logOut = () => {
 
   // קביעת כותרת הדף בהתאם לשלב הנוכחי
   const getHeaderTitle = () => {
-    if (activeStep === 0) {
-      return "1 העלאת הסיכום"
-    } else {
-      return file ? `סיכום הקובץ ${file.name}` : "סיכום הקובץ"
+    switch (processState) {
+      case "idle":
+        return "העלאת מסמך לסיכום"
+      case "file-selected":
+        return `קובץ נבחר: ${file?.name}`
+      case "uploading":
+      case "processing":
+        return "מעבד את הקובץ..."
+      case "ready-to-summarize":
+        return "מוכן ליצירת סיכום"
+      case "summarizing":
+        return "יוצר סיכום..."
+      case "completed":
+        return `סיכום הקובץ ${file?.name}`
+      default:
+        return "העלאת מסמך לסיכום"
+    }
+  }
+
+  // קביעת תוכן הודעת המצב
+  const getStatusMessage = () => {
+    switch (processState) {
+      case "file-selected":
+        return "הקובץ מוכן להעלאה ועיבוד"
+      case "uploading":
+        return `מעלה קובץ... ${uploadProgress}%`
+      case "processing":
+        return "מעבד את תוכן הקובץ..."
+      case "ready-to-summarize":
+        return "הקובץ עובד בהצלחה! כעת ניתן ליצור סיכום"
+      case "summarizing":
+        return "יוצר סיכום חכם של התוכן..."
+      case "completed":
+        return "הסיכום מוכן!"
+      default:
+        return ""
     }
   }
 
@@ -417,18 +456,12 @@ const logOut = () => {
                 <span>הסיכומים שלי</span>
               </button>
             </li>
-            <li className="active">
+            <li>
               <button onClick={() => logOut()}>
-                <FileText size={20} />
+                <LogOut size={20} />
                 <span>התנתק</span>
               </button>
             </li>
-            {/* <li>
-              <button onClick={() => console.log("הגדרות נלחצו")}>
-                <Settings size={20} />
-                <span>הגדרות</span>
-              </button>
-            </li> */}
           </ul>
         </nav>
         <div className="sidebar-footer">
@@ -452,12 +485,6 @@ const logOut = () => {
             <span>{getHeaderTitle()}</span>
           </h1>
           <div className="header-right-group">
-            {/* <button className="add-meeting-button">
-              <div className="btn-content">
-                <Sparkles size={18} className="btn-icon" />
-                <span className="button-text">סיכום חדש</span>
-              </div>
-            </button> */}
             <div className="logo" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
               <span className="logo-text">
                 TalkToMe.<span className="logo-highlight">AI</span>
@@ -468,7 +495,6 @@ const logOut = () => {
       </header>
 
       {/* אנימציות */}
-      {showUploadAnimation && <div className="upload-animation-container"></div>}
       {celebrationActive && (
         <div className="celebration-container">
           <div className="firework"></div>
@@ -480,15 +506,63 @@ const logOut = () => {
       )}
 
       <main className="app-content">
-        <div className={`content-container ${isTransitioning ? "transitioning" : ""}`}>
-          {activeStep === 0 ? (
+        <div className="content-container">
+          {/* אינדיקטור התקדמות */}
+          <div className="process-indicator">
+            <div className="steps">
+              <div className={`step ${processState !== "idle" ? "completed" : "current"}`}>
+                <div className="step-number">1</div>
+                <div className="step-label">בחירת קובץ</div>
+              </div>
+              <div
+                className={`step ${["uploading", "processing", "ready-to-summarize", "summarizing", "completed"].includes(processState) ? "completed" : ["uploading", "processing"].includes(processState) ? "current" : ""}`}
+              >
+                <div className="step-number">2</div>
+                <div className="step-label">עיבוד הקובץ</div>
+              </div>
+              <div
+                className={`step ${["summarizing", "completed"].includes(processState) ? "completed" : processState === "ready-to-summarize" ? "current" : ""}`}
+              >
+                <div className="step-number">3</div>
+                <div className="step-label">יצירת סיכום</div>
+              </div>
+            </div>
+          </div>
+
+          {processState === "completed" ? (
+            <div className="summary-section">
+              {summary && (
+                <>
+                  <SummaryFile fileUrl={s3url ?? ""} />
+                  <button className="new-document-button" onClick={handleReset}>
+                    <span className="button-text">העלאת מסמך נוסף</span>
+                    <FileUp size={18} className="button-icon" />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
             <div className="upload-section">
               <div className="upload-container">
-                {loading ? (
+                {/* הודעת מצב */}
+                {getStatusMessage() && (
+                  <div className="status-message">
+                    <div className="status-content">
+                      {(processState === "uploading" ||
+                        processState === "processing" ||
+                        processState === "summarizing") && <Loader2 size={20} className="status-spinner" />}
+                      {processState === "ready-to-summarize" && <Check size={20} className="status-check" />}
+                      <span>{getStatusMessage()}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* שכבת עיבוד */}
+                {(processState === "uploading" || processState === "processing" || processState === "summarizing") && (
                   <div className="processing-overlay">
                     <div className="processing-content">
                       <div className="processing-spinner">
-                        {processingStep === "upload" ? (
+                        {processState === "uploading" ? (
                           <div className="upload-animation">
                             <div className="file-icon-animated">
                               <FileText size={40} />
@@ -518,180 +592,147 @@ const logOut = () => {
                           </div>
                         )}
                       </div>
-                      <h3 className="processing-title">{processingStep === "upload" ? "מעלה מסמך" : "מייצר סיכום"}</h3>
+                      <h3 className="processing-title">
+                        {processState === "uploading" && "מעלה מסמך"}
+                        {processState === "processing" && "מעבד תוכן"}
+                        {processState === "summarizing" && "יוצר סיכום"}
+                      </h3>
                       <p className="processing-description">
-                        {processingStep === "upload"
-                          ? `רק רגע.. ${uploadProgress}%`
-                          : "ה AI שלנו מכין לך סיכום מהיר ומדויק"}
+                        {processState === "uploading" && `רק רגע.. ${uploadProgress}%`}
+                        {processState === "processing" && "קורא ומעבד את תוכן הקובץ"}
+                        {processState === "summarizing" && "ה AI שלנו מכין לך סיכום מהיר ומדויק"}
                       </p>
                       <div className="processing-progress">
                         <div
                           className="progress-bar"
                           style={{
-                            width: processingStep === "upload" ? `${uploadProgress}%` : "90%",
+                            width: processState === "uploading" ? `${uploadProgress}%` : "90%",
                           }}
                         >
                           <div className="progress-glow"></div>
                         </div>
                       </div>
-
-                      {showCompletionAnimation && (
-                        <div className="completion-animation">
-                          <div className="success-checkmark">
-                            <div className="check-icon">
-                              <span className="icon-line line-tip"></span>
-                              <span className="icon-line line-long"></span>
-                            </div>
-                          </div>
-                          <div className="completion-text">העיבוד הושלם בהצלחה!</div>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ) : (
-                  <div
-                    className={`upload-card ${dragging ? "dragging" : ""} ${uploadStatus !== "idle" ? "has-file" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
-                    onDragEnter={handleDragEnter}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                  >
-                    <div className="card-decoration">
-                      <div className="decoration-line line1"></div>
-                      <div className="decoration-line line2"></div>
-                      <div className="decoration-line line3"></div>
-                      <div className="decoration-dot dot1"></div>
-                      <div className="decoration-dot dot2"></div>
-                      <div className="decoration-dot dot3"></div>
-                    </div>
-
-                    {/* Drag overlay */}
-                    {dragging && (
-                      <div
-                        className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${dragFileValid === true ? "valid" : ""}`}
-                      >
-                        <div className="drag-icon">
-                          {dragFileValid === true && <FileUp size={48} />}
-                          {dragFileValid === false && <X size={48} />}
-                          {dragFileValid === null && <FileUp size={48} />}
-                        </div>
-                        <h3 className="drag-message">
-                          {dragFileValid === true && "שחרר כדי להעלות את הקובץ"}
-                          {dragFileValid === false && "סוג קובץ לא נתמך"}
-                          {dragFileValid === null && "שחרר כאן את הקובץ"}
-                        </h3>
-                        <p className="drag-submessage">
-                          {dragFileValid === true && "הקובץ מוכן להעלאה"}
-                          {dragFileValid === false && "אנא השתמש בקבצי PDF, TXT, או DOCX"}
-                          {dragFileValid === null && "אנו תומכים בקבצי PDF, TXT, ו-DOCX"}
-                        </p>
-                      </div>
-                    )}
-
-                    {uploadStatus === "idle" ? (
-                      <>
-                        <div className="upload-illustration">
-                          <div className="upload-icon-wrapper">
-                            <FileUp className="upload-icon" />
-                            <div className="icon-pulse"></div>
-                          </div>
-                        </div>
-                        <h2 className="upload-heading">העלאת המסמך שלך</h2>
-                        <div className="upload-instructions">
-                          <p>בחר קובץ PDF, TXT, או DOCX ליצירת סיכום</p>
-                          <p>גרור ושחרר כאן או השתמש בכפתור למטה</p>
-                        </div>
-                        <button className="upload-button" onClick={handleButtonClick}>
-                          <span className="button-text">בחר קובץ</span>
-                          <FileUp size={18} className="button-icon" />
-                        </button>
-                        <div className="upload-info">
-                          <span className="info-badge">מקסימום 5MB</span>
-                          <span className="info-badge">העלאה מאובטחת</span>
-                        </div>
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          className="file-input"
-                          onChange={handleFileChange}
-                          accept=".pdf,.txt,.docx"
-                        />
-                      </>
-                    ) : (
-                      <div className="file-status">
-                        <div className="file-preview">
-                          <div className="file-icon-container">{getFileIcon()}</div>
-                          <div className="file-info">
-                            <p className="file-name">{file?.name}</p>
-                            <p className="file-size">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ""}</p>
-                          </div>
-                          {uploadStatus !== "uploading" && (
-                            <button className="reset-button" onClick={handleReset} aria-label="הסר קובץ">
-                              <X size={18} />
-                            </button>
-                          )}
-                        </div>
-
-                        {(uploadStatus === "uploading" || uploadStatus === "success" || uploadStatus === "error") && (
-                          <div className="upload-progress-container">
-                            <div
-                              className={`upload-progress-bar ${uploadStatus === "success" ? "success" : ""} ${uploadStatus === "error" ? "error" : ""}`}
-                              style={{ width: `${uploadProgress}%` }}
-                            >
-                              <div className="progress-pulse"></div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="upload-status">
-                          {uploadStatus === "uploading" && <p>מעלה... {uploadProgress}%</p>}
-                          {uploadStatus === "success" && !loading && (
-                            <p className="success-message">
-                              <Check size={16} /> הקובץ מוכן לעיבוד
-                            </p>
-                          )}
-                          {uploadStatus === "error" && <p className="error-message">{error}</p>}
-                        </div>
-
-                        {/* שלב 1: כפתור העלאה */}
-                        {uploadStatus === "success" && !isReadyToSummarize && !loading && (
-                          <button className="process-button" onClick={() => file && handleFileUpload(file)}>
-                            <span className="button-text">קדימה! להעלות את הקובץ</span>
-                            <FileUp size={18} className="button-icon" />
-                          </button>
-                        )}
-
-                        {/* שלב 2: כפתור סיכום (מופיע רק לאחר העלאה מוצלחת) */}
-                        {isReadyToSummarize && !loading && (
-                          <button className="process-button summarize-button" onClick={handleSummarize}>
-                            <span className="button-text">יצירת סיכום</span>
-                            <Sparkles size={18} className="button-icon" />
-                          </button>
-                        )}
-                      </div>
-                    )}
                   </div>
                 )}
+
+                {/* כרטיס העלאה */}
+                <div
+                  className={`upload-card ${dragging ? "dragging" : ""} ${processState !== "idle" ? "has-file" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="card-decoration">
+                    <div className="decoration-line line1"></div>
+                    <div className="decoration-line line2"></div>
+                    <div className="decoration-line line3"></div>
+                    <div className="decoration-dot dot1"></div>
+                    <div className="decoration-dot dot2"></div>
+                    <div className="decoration-dot dot3"></div>
+                  </div>
+
+                  {/* Drag overlay */}
+                  {dragging && (
+                    <div
+                      className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${dragFileValid === true ? "valid" : ""}`}
+                    >
+                      <div className="drag-icon">
+                        {dragFileValid === true && <FileUp size={48} />}
+                        {dragFileValid === false && <X size={48} />}
+                        {dragFileValid === null && <FileUp size={48} />}
+                      </div>
+                      <h3 className="drag-message">
+                        {dragFileValid === true && "שחרר כדי להעלות את הקובץ"}
+                        {dragFileValid === false && "סוג קובץ לא נתמך"}
+                        {dragFileValid === null && "שחרר כאן את הקובץ"}
+                      </h3>
+                      <p className="drag-submessage">
+                        {dragFileValid === true && "הקובץ מוכן להעלאה"}
+                        {dragFileValid === false && "אנא השתמש בקבצי PDF, TXT, או DOCX"}
+                        {dragFileValid === null && "אנו תומכים בקבצי PDF, TXT, ו-DOCX"}
+                      </p>
+                    </div>
+                  )}
+
+                  {processState === "idle" ? (
+                    <>
+                      <div className="upload-illustration">
+                        <div className="upload-icon-wrapper">
+                          <FileUp className="upload-icon" />
+                          <div className="icon-pulse"></div>
+                        </div>
+                      </div>
+                      <h2 className="upload-heading">העלאת המסמך שלך</h2>
+                      <div className="upload-instructions">
+                        <p>בחר קובץ PDF, TXT, או DOCX ליצירת סיכום</p>
+                        <p>גרור ושחרר כאן או השתמש בכפתור למטה</p>
+                      </div>
+                      <button className="upload-button" onClick={handleButtonClick}>
+                        <span className="button-text">בחר קובץ</span>
+                        <FileUp size={18} className="button-icon" />
+                      </button>
+                      <div className="upload-info">
+                        <span className="info-badge">מקסימום 5MB</span>
+                        <span className="info-badge">העלאה מאובטחת</span>
+                      </div>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="file-input"
+                        onChange={handleFileChange}
+                        accept=".pdf,.txt,.docx"
+                      />
+                    </>
+                  ) : (
+                    <div className="file-status">
+                      <div className="file-preview">
+                        <div className="file-icon-container">{getFileIcon()}</div>
+                        <div className="file-info">
+                          <p className="file-name">{file?.name}</p>
+                          <p className="file-size">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ""}</p>
+                        </div>
+                        {processState === "file-selected" && (
+                          <button className="reset-button" onClick={handleReset} aria-label="הסר קובץ">
+                            <X size={18} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* הצגת שגיאה */}
+                      {error && (
+                        <div className="error-message">
+                          <X size={16} />
+                          <span>{error}</span>
+                        </div>
+                      )}
+
+                      {/* כפתורי פעולה בהתאם למצב */}
+                      {processState === "file-selected" && (
+                        <button className="process-button" onClick={() => file && handleFileUploadAndProcess(file)}>
+                          <span className="button-text">התחל עיבוד</span>
+                          <FileUp size={18} className="button-icon" />
+                        </button>
+                      )}
+
+                      {processState === "ready-to-summarize" && (
+                        <button className="process-button summarize-button" onClick={handleSummarize}>
+                          <span className="button-text">יצירת סיכום</span>
+                          <Sparkles size={18} className="button-icon" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="summary-section">
-              {summary && (
-                <>
-                  <SummaryFile fileUrl={s3url ?? ""} />
-                  <button className="new-document-button" onClick={handleReset}>
-                    <span className="button-text">העלאת מסמך נוסף</span>
-                    <FileUp size={18} className="button-icon" />
-                  </button>
-                </>
-              )}
             </div>
           )}
         </div>
       </main>
 
       <footer className="app-footer">
-        <p>© {new Date().getFullYear()} TalkToMe.Ai - מאת תהילה שינפלד • </p>
+        <p>© {new Date().getFullYear()} TalkToMe.Ai - מאת תהילה שינפלד</p>
       </footer>
     </div>
   )

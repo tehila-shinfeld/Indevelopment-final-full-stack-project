@@ -2,21 +2,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
-import {
-  FileText,
-  Upload,
-  X,
-  Check,
-  FileUp,
-  Sparkles,
-  Menu,
-  Moon,
-  Sun,
-  User,
-  ArrowUp,
-  Loader2,
-  LogOut,
-} from "lucide-react"
+import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, ArrowUp, Loader2 } from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
@@ -24,6 +10,7 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
 import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
 import { useNavigate } from "react-router-dom"
+import MySidebar from "../components/my-sidbar"
 
 // הגדרת מצבי התהליך הראשיים
 type ProcessState =
@@ -201,7 +188,14 @@ const FileUploadButton = () => {
             console.log(`Processing page ${i}/${pdf.numPages}...`)
             const page = await pdf.getPage(i)
             const content = await page.getTextContent()
-            const pageText = content.items.map((item) => item.str).join(" ")
+            const pageText = content.items
+              .map((item) => {
+                if ("str" in item) {
+                  return (item as { str: string }).str
+                }
+                return ""
+              })
+              .join(" ")
             console.log(`Page ${i} text length: ${pageText.length} characters`)
             textContent += pageText + "\n"
           }
@@ -214,7 +208,11 @@ const FileUploadButton = () => {
           }
         } catch (error) {
           console.error("Error processing PDF:", error)
-          throw new Error("Failed to extract text from PDF: " + error.message)
+          let errorMessage = "Unknown error"
+          if (error instanceof Error) {
+            errorMessage = error.message
+          }
+          throw new Error("Failed to extract text from PDF: " + errorMessage)
         }
       } else if (selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
         // DOCX
@@ -420,54 +418,24 @@ const FileUploadButton = () => {
       </div>
 
       {/* תפריט צד */}
-      {menuOpen && <div className="sidebar-overlay" onClick={toggleMenu} />}
-      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          <button className="close-menu" onClick={toggleMenu} aria-label="סגור תפריט">
-            <X size={24} />
-          </button>
-        </div>
-        <div className="user-profile">
-          <div className="avatar">
-            <User size={24} />
-          </div>
-          <div className="user-info">
-            <h3>שלום, משתמש</h3>
-            <p>ברוך הבא למערכת</p>
-          </div>
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>
-              <button onClick={() => console.log("פרופיל נלחץ")}>
-                <User size={20} />
-                <span>פרופיל שלי</span>
-              </button>
-            </li>
-            <li className="active">
-              <button onClick={() => console.log("העלאת מסמך נלחץ")}>
-                <FileUp size={20} />
-                <span>העלאת מסמך</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate("/myMeetings")}>
-                <FileText size={20} />
-                <span>הסיכומים שלי</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => logOut()}>
-                <LogOut size={20} />
-                <span>התנתק</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-        <div className="sidebar-footer">
-          <p>© {new Date().getFullYear()} TalkToMe.AI</p>
-        </div>
-      </aside>
+      <MySidebar
+        isOpen={menuOpen}
+        onClose={() => {
+          setMenuOpen(false)
+          document.body.classList.remove("menu-open")
+        }}
+        user={{
+          username: "משתמש",
+          email: "user@example.com",
+        }}
+        onNavigate={(path) => {
+          navigate(path)
+          setMenuOpen(false)
+          document.body.classList.remove("menu-open")
+        }}
+        onLogout={logOut}
+        currentPath={window.location.pathname}
+      />
 
       {/* הדר (Header) */}
       <header className="dashboard-header">

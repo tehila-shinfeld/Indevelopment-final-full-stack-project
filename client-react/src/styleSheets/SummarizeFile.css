@@ -1314,3 +1314,214 @@
     );
   }
 }
+/* Success Notification Styles */
+.success-notification {
+  position: relative;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.9));
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  color: white;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  animation: successSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  backdrop-filter: blur(10px);
+}
+
+.success-notification::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.success-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.success-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  animation: successIconPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.success-icon svg {
+  animation: successIconRotate 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+.success-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.success-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  animation: successTextSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  direction: rtl;
+  text-align: right;
+}
+
+.success-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  animation: successTextSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+  direction: rtl;
+  text-align: right;
+}
+
+.success-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0 0 12px 12px;
+  animation: successProgress 3s linear forwards;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Success Notification Animations */
+@keyframes successSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes successIconPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes successIconRotate {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes successTextSlide {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes successProgress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive adjustments for success notification */
+@media (max-width: 768px) {
+  .success-notification {
+    padding: 0.875rem 1rem;
+  }
+  
+  .success-content {
+    gap: 0.5rem;
+  }
+  
+  .success-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .success-title {
+    font-size: 0.875rem;
+  }
+  
+  .success-subtitle {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-notification {
+    padding: 0.75rem;
+  }
+  
+  .success-title {
+    font-size: 0.8rem;
+  }
+  
+  .success-subtitle {
+    font-size: 0.7rem;
+  }
+}
+.summary-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+  padding: 2.5rem;
+}
+
+.summary-content {
+  background-color: hsla(var(--secondary), 1);
+  border-radius: var(--radius);
+  padding: 2rem;
+  line-height: 1.6;
+  font-size: 1rem;
+  color: hsla(var(--foreground), 0.9);
+  height: 350px;
+  max-height: 350px;
+  overflow-y: auto;
+  position: relative;
+  white-space: pre-wrap;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  scroll-behavior: smooth;
+  animation: contentFadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}

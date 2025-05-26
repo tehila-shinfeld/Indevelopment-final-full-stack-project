@@ -31,10 +31,50 @@ const MySidebar: React.FC<SidebarProps> = ({
   currentPath = "/meetings",
 }) => {
   const [mounted, setMounted] = useState(false)
+  const [userName, setUserName] = useState<string>("")
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // פונקציה לפענוח טוקן JWT
+  const decodeToken = (token: string) => {
+    try {
+      const base64Url = token.split(".")[1]
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      )
+      return JSON.parse(jsonPayload)
+    } catch (error) {
+      console.error("Error decoding token:", error)
+      return null
+    }
+  }
+
+  // פונקציה לקריאת שם המשתמש מהטוקן
+  const getUserNameFromToken = () => {
+    try {
+      const token = sessionStorage.getItem("token")
+      if (token) {
+        const decodedToken = decodeToken(token)
+        if (decodedToken && decodedToken.name) {
+          setUserName(decodedToken.name)
+        }
+      }
+    } catch (error) {
+      console.error("Error reading token from sessionStorage:", error)
+    }
+  }
+
+  useEffect(() => {
+    if (mounted) {
+      getUserNameFromToken()
+    }
+  }, [mounted])
 
   // אייקונים מינימליסטיים עם קו מתאר דק
   const HomeIcon = () => (
@@ -58,16 +98,16 @@ const MySidebar: React.FC<SidebarProps> = ({
       <line x1="8" y1="12" x2="16" y2="12" />
     </svg>
   )
-
-  const UploadIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14,2 14,8 20,8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10,9 9,9 8,9" />
-    </svg>
-  )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const UploadIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+  //     <polyline points="14,2 14,8 20,8" />
+  //     <line x1="16" y1="13" x2="8" y2="13" />
+  //     <line x1="16" y1="17" x2="8" y2="17" />
+  //     <polyline points="10,9 9,9 8,9" />
+  //   </svg>
+  // )
 
   const ClipboardIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -75,42 +115,43 @@ const MySidebar: React.FC<SidebarProps> = ({
       <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
     </svg>
   )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const StarIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+  //   </svg>
+  // )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const DownloadIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+  //     <polyline points="7,10 12,15 17,10" />
+  //     <line x1="12" y1="15" x2="12" y2="3" />
+  //   </svg>
+  // )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const MessageIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+  //     <polyline points="22,6 12,13 2,6" />
+  //   </svg>
+  // )
 
-  const StarIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-    </svg>
-  )
-
-  const DownloadIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7,10 12,15 17,10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-  )
-
-  const MessageIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  )
-
-  const SettingsIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  )
-
-  const HelpIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-      <point x="12" y="17" />
-    </svg>
-  )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const SettingsIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <circle cx="12" cy="12" r="3" />
+  //     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  //   </svg>
+  // )
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const HelpIcon = () => (
+  //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  //     <circle cx="12" cy="12" r="10" />
+  //     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+  //     <circle cx="12" cy="17" r="1" />
+  //   </svg>
+  // )
 
   const LogoutIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -132,7 +173,7 @@ const MySidebar: React.FC<SidebarProps> = ({
       id: "home",
       label: "דף הבית",
       icon: <HomeIcon />,
-      path: "/dashboard",
+      path: "/",
     },
     {
       id: "profile",
@@ -147,47 +188,17 @@ const MySidebar: React.FC<SidebarProps> = ({
       path: "/summary-up!",
     },
     {
-      id: "upload",
-      label: "העלאת קובץ",
-      icon: <UploadIcon />,
-      path: "/upload",
-    },
-    {
       id: "meetings",
       label: "כל הפגישות שלי",
       icon: <ClipboardIcon />,
-      path: "/meetings",
+      path: "/myMeetings",
     },
-    {
-      id: "favorites",
-      label: "פגישות מועדפות",
-      icon: <StarIcon />,
-      path: "/favorites",
-    },
-    {
-      id: "downloads",
-      label: "הורדות",
-      icon: <DownloadIcon />,
-      path: "/downloads",
-    },
-    {
-      id: "messages",
-      label: "הודעות",
-      icon: <MessageIcon />,
-      path: "/messages",
-    },
-    {
-      id: "settings",
-      label: "הגדרות",
-      icon: <SettingsIcon />,
-      path: "/settings",
-    },
-    {
-      id: "help",
-      label: "עזרה ותמיכה",
-      icon: <HelpIcon />,
-      path: "/help",
-    },
+    // {
+    //   id: "help",
+    //   label: "עזרה ותמיכה",
+    //   icon: <HelpIcon />,
+    //   path: "/help",
+    // },
   ]
 
   const handleItemClick = (path: string) => {
@@ -439,7 +450,23 @@ const MySidebar: React.FC<SidebarProps> = ({
               <UserIcon />
             </div>
             <div style={{ flex: 1 }}>
-              <h3 style={userNameStyle}>{user?.username || "משתמש"}</h3>
+              {userName && (
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#059669",
+                    fontWeight: "500",
+                    marginBottom: "4px",
+                    lineHeight: "1.3",
+                    textAlign: "right",
+                  }}
+                >
+                  הי - {userName}...
+                  <br />
+                  טוב לראות אותך!
+                </div>
+              )}
+              <h3 style={userNameStyle}>{user?.username || userName || "משתמש"}</h3>
               <p style={userEmailStyle}>{user?.email || "ברוך הבא למערכת"}</p>
             </div>
           </div>

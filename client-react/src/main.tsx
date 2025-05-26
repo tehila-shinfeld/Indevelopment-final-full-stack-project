@@ -5,7 +5,6 @@ import { createRoot } from "react-dom/client"
 import "./index.css"
 import "./styleSheets/loading-screen.css"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
-import MainScreen from "./components/MainScreen.tsx"
 import { SummaryProvider } from "./context/SummaryContext.tsx"
 import { UserProvider } from "./context/UserContext.tsx"
 import UserMeetings from "./components/UserMeetings.tsx"
@@ -13,6 +12,7 @@ import HomePage from "./components/home-page.tsx"
 import OAuthCallback from "./components/OAuthCallback.tsx"
 import UserProfile from "./components/user-profile.tsx"
 import LoadingScreen from "./components/loading-screen.tsx"
+import FileUploadButton from "./components/FileUploadButton.tsx"
 
 // הגדרת הנתיבים
 const routes = createBrowserRouter([
@@ -26,7 +26,7 @@ const routes = createBrowserRouter([
   },
   {
     path: "/summary-up!",
-    element: <MainScreen />,
+    element: <FileUploadButton />,
   },
   {
     path: "/myMeetings",

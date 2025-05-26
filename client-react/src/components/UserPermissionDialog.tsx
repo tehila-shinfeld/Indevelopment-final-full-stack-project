@@ -23,7 +23,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true) // Always show the dropdown
+  // Dropdown is always open, so no need for isDropdownOpen state
   const [isDarkMode, setIsDarkMode] = useState(false)
 
   const stringToColor = (string: string) => {
@@ -39,8 +39,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
     return color
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const decodeJwt = (token: any) => {
+  const decodeJwt = (token: string) => {
     if (!token) return null
 
     const parts = token.split(".")
@@ -300,7 +299,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                 ))}
               </div>
 
-              {isDropdownOpen && (
+              {/* Dropdown is always open */}
                 <div className="users-list">
                   <div className="select-all-option" onClick={selectAllUsers}>
                     <div className={`select-all-checkbox ${areAllSelected ? "selected" : ""}`}>
@@ -360,7 +359,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                     <div className="no-results">לא נמצאו משתמשים</div>
                   )}
                 </div>
-              )}
+              
             </div>
           )}
         </div>

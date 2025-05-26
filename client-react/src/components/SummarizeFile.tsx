@@ -19,15 +19,14 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [openPermissionDialog, setOpenPermissionDialog] = useState(false)
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const [copied, setCopied] = useState(false)
   const [typedSummary, setTypedSummary] = useState("")
   const [isTyping, setIsTyping] = useState(true)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const summaryRef = useRef<HTMLDivElement>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [permissionsSaved, setPermissionsSaved] = useState(false)
 
-  const handleOpenPermissionDialog = () => setOpenPermissionDialog(true)
   const handleClosePermissionDialog = () => setOpenPermissionDialog(false)
 
   useEffect(() => {
@@ -58,15 +57,17 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   }, [summary])
 
   const handleSavePermissionsAndSummary = async (users: User[]) => {
-    setSelectedUsers(users)
     console.log(users.map((user) => user.id))
-
     try {
       await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
         FileUrl: fileUrl,
         UserIds: users.map((user) => user.id),
       })
-      console.log("הרשאות נשמרו בהצלחה!")
+
+      // Show success notification
+      setPermissionsSaved(true)
+      setTimeout(() => setPermissionsSaved(false), 3000)
+
       handleSaveSummary()
     } catch {
       setError("שגיאה בשמירת ההרשאות")
@@ -97,6 +98,7 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
         console.error("שגיאה בשמירת הסיכום")
         setError("שגיאה בשמירת הסיכום")
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("שגיאה לא צפויה. אנא נסה שוב.")
     }
@@ -303,6 +305,21 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             </div>
           )}
 
+          {permissionsSaved && (
+            <div className="success-notification">
+              <div className="success-content">
+                <div className="success-icon">
+                  <CheckCircle size={20} />
+                </div>
+                <div className="success-text">
+                  <span className="success-title">הרשאות נשמרו בהצלחה!</span>
+                  <span className="success-subtitle">המשתמשים יוכלו לגשת לקובץ</span>
+                </div>
+              </div>
+              <div className="success-progress"></div>
+            </div>
+          )}
+
           <div className="action-toolbar">
             {isEditing ? (
               <div className="canvas-actions-info">
@@ -362,3 +379,5 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 }
 
 export default SummaryFile
+
+

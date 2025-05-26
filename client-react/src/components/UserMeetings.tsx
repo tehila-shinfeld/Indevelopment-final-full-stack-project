@@ -223,6 +223,7 @@ const UserMeetings = () => {
   }, [])
 
   const handleError = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (error: any, context: string) => {
       console.error(`Error in ${context}:`, error)
 
@@ -238,7 +239,7 @@ const UserMeetings = () => {
         if (status === 401) {
           console.error("Authentication error")
           setError("פג תוקף החיבור שלך. אנא התחבר מחדש.")
-          navigate("/login")
+          navigate("/")
           return
         }
 
@@ -681,13 +682,10 @@ const UserMeetings = () => {
     localStorage.removeItem("token")
     sessionStorage.removeItem("token")
     localStorage.removeItem("userID")
-    navigate("/login")
+    navigate("/")
   }
 
-  const navigateToProfile = () => {
-    toggleDrawer(false)
-    navigate("/my-profile")
-  }
+
 
   const handleSendToEmail = async (meeting: Meeting, event?: React.MouseEvent) => {
     if (event) {
@@ -710,6 +708,7 @@ const UserMeetings = () => {
       }
       let userEmail = ""
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const decodedToken: any = jwtDecode(token)
 
         userEmail = decodedToken.email
@@ -1184,7 +1183,7 @@ const UserMeetings = () => {
         darkMode={darkMode}
         selectedMeeting={selectedMeeting}
         menuOpen={menuOpen}
-        user={user}
+        user={user ?? undefined}
         onLogout={logOut}
       />
 

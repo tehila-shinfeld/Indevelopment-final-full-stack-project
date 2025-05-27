@@ -131,8 +131,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-app.UseRouting();
 app.UseCors("AllowClientApp");
+app.UseRouting();
 //Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -147,7 +147,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.MapGet("/", () => "running");
 app.Run();

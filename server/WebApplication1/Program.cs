@@ -1,3 +1,5 @@
+using Amazon.Extensions.NETCore.Setup;
+using Amazon;
 using Amazon.S3;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,11 +68,22 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddHttpClient<IFileService, FileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+var configuration = builder.Configuration;
+
+
+var awsAccessKey = configuration["AWS:AccessKey"];
+var awsSecretKey = configuration["AWS:SecretKey"];
+var bucketName = configuration["AWS:BucketName"];
+var region = configuration["AWS:Region"];
 
 // הגדרת AWS S3
+builder.Services.AddDefaultAWSOptions(new AWSOptions
+{
+    Region = RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
+});
 builder.Services.AddAWSService<IAmazonS3>();
-//mapp
 builder.Services.AddAutoMapper(typeof(Mapping));
+
 //jwt
 // הוספת JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -116,20 +129,12 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowCredentials());
 });
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-    .Build();
 
-var awsAccessKey = configuration["AWS:AccessKey"];
-var awsSecretKey = configuration["AWS:SecretKey"];
-var bucketName = configuration["AWS:BucketName"];
-var region = configuration["AWS:Region"];
 var app = builder.Build();
 app.UseRouting();
 app.UseCors("AllowClientApp");
 //Configure the HTTP request pipeline.
-if (true)
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>

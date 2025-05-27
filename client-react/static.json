@@ -1,5 +1,9 @@
+
 {
-    "routes": {
-        "/**": "index.html"
-    }
+  "root": "dist",
+  "routes": {
+    "/api/*": "/api/",
+    "/static/*": "/static/",
+    "/*": "/index.html"
+  }
 }

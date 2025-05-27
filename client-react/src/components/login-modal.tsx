@@ -384,6 +384,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
         Username: loginForm.username,
         Password: loginForm.password,
       })
+console.log("Login response:", response.data);
 
       const token = response.data.token
       const userId = response.data.userId

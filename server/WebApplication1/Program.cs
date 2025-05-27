@@ -112,7 +112,6 @@ builder.Services.AddCors(options =>
             "https://localhost:5174",
             "http://localhost:7136",
             "https://talktome-ai-client.onrender.com") // הכתובת של הקליינט שלך ברנדר
-        .AllowAnyOrigin() // זמני - לבדיקה
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

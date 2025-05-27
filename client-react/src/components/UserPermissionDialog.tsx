@@ -85,7 +85,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
     }
 
     axios
-      .get("https://localhost:7136/api/User/ByComp", {
+      .get(`https://${import.meta.env.VITE_API_BASE_URL}/api/User/ByComp`, {
         params: { company: company },
       })
       .then((response) => {

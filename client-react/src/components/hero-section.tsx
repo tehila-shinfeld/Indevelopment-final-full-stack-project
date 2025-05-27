@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import "../styleSheets/hero-section.css"
 import { AnimatePresence, motion } from "framer-motion"
+import "../styleSheets/hero-section.css"
 
 interface HeroSectionProps {
   sectionRef: React.RefObject<HTMLElement>
@@ -18,14 +18,13 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
   const [satisfactionRate, setSatisfactionRate] = useState(0)
   const [hoursSaved, setHoursSaved] = useState(0)
   const [isDocumentEnlarged, setIsDocumentEnlarged] = useState(false)
-  // Toast state
   const [toast, setToast] = useState({ visible: false, message: "", type: "" })
 
   // Handle counter animation with enhanced easing
   useEffect(() => {
     if (isVisible && isLoaded) {
-      const duration = 2500 // Increased duration for smoother animation
-      const steps = 80 // More steps for ultra-smooth animation
+      const duration = 2500
+      const steps = 80
       const interval = duration / steps
 
       const targetValues = {
@@ -40,7 +39,6 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
         step++
         const progress = step / steps
 
-        // Enhanced easing function for more natural animation
         const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
         const easedProgress = easeOutCubic(progress)
 
@@ -64,7 +62,6 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
     setIsLoaded(true)
   }, [])
 
-  // Auto-hide toast after duration
   useEffect(() => {
     if (toast.visible) {
       const timer = setTimeout(() => {
@@ -75,71 +72,54 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
     }
   }, [toast.visible])
 
-  // Show toast notification
   const showToast = (message: string, type: "success" | "error" | "info" = "info") => {
     setToast({ visible: true, message, type })
   }
 
-  // Handle document click to toggle enlarged view
   const toggleDocumentEnlarged = () => {
     setIsDocumentEnlarged(!isDocumentEnlarged)
   }
 
-  // Close enlarged view when clicking outside
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setIsDocumentEnlarged(false)
     }
   }
 
-  // Handle start button click - check for token in session storage
   const handleStartButtonClick = () => {
-    // Check if there's a valid token in session storage
     const token = sessionStorage.getItem("token")
 
     if (!token) {
-      // If no token exists, open the login modal
       openModal()
       return
     }
 
     try {
-      // Basic validation for JWT tokens
       const tokenParts = token.split(".")
 
-      // Check if token has the correct format (header.payload.signature)
       if (tokenParts.length !== 3) {
         throw new Error("פורמט טוקן לא תקין")
       }
 
-      // Decode the payload
       const payload = JSON.parse(atob(tokenParts[1]))
 
-      // Check if token is expired
       if (payload.exp && payload.exp < Date.now() / 1000) {
         throw new Error("הטוקן פג תוקף, אנא התחבר מחדש")
       }
 
-      // If we got here, token is valid - redirect to next page
-      window.location.href = "/myMeetings" // Replace with your actual next page URL
+      window.location.href = "/myMeetings"
     } catch (error) {
-      // Show error message to user
       const errorMessage = error instanceof Error ? error.message : "טוקן לא תקין, אנא התחבר מחדש"
 
-      // Display toast notification
       showToast(errorMessage, "error")
-
-      // Clear the invalid token
       sessionStorage.removeItem("token")
 
-      // Open the login modal
       setTimeout(() => {
         openModal()
-      }, 1500) // Give user time to read the error message
+      }, 1500)
     }
   }
 
-  // Get toast icon based on type
   const getToastIcon = (type: string) => {
     switch (type) {
       case "success":
@@ -191,8 +171,37 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
     <section ref={sectionRef} id="hero" className={`hero-section ${isVisible ? "visible" : ""}`}>
       {/* Enhanced background elements with parallax effect */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-blob-1 rounded-full blur-3xl opacity-30 -translate-y-1/2 translate-x-1/3 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-blob-2 rounded-full blur-3xl opacity-30 translate-y-1/2 -translate-x-1/3 animate-pulse-slow"></div>
+        <motion.div
+          className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-blob-1 rounded-full blur-3xl opacity-30"
+          style={{
+            transform: "translateY(-50%) translateX(33.333333%)",
+          }}
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.15, 0.3],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-blob-2 rounded-full blur-3xl opacity-30"
+          style={{
+            transform: "translateY(50%) translateX(-33.333333%)",
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.15, 0.3],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
       </div>
 
       <div className="container">
@@ -246,7 +255,13 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
               animate={isLoaded ? { opacity: 1, y: 0, scale: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.3, type: "spring", stiffness: 100 }}
             >
-              <button className="hero-button" onClick={handleStartButtonClick}>
+              <motion.button
+                className="hero-button"
+                onClick={handleStartButtonClick}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
                 <span className="button-text">התחילו עכשיו</span>
                 <svg
                   className="button-icon"
@@ -264,7 +279,7 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                   <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
                   <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
                 </svg>
-              </button>
+              </motion.button>
             </motion.div>
 
             <motion.div
@@ -303,8 +318,8 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
           </div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotateY: 15 }}
-            animate={isLoaded ? { opacity: 1, scale: 1, rotateY: 0 } : {}}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1, delay: 0.4, type: "spring", stiffness: 60 }}
             className="hero-image"
           >
@@ -314,7 +329,7 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
               role="button"
               tabIndex={0}
               aria-label="לחץ להגדלת המסמך"
-              whileHover={{ scale: 1.03, rotateY: -2 }}
+              whileHover={{ scale: 1.03, y: -5 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300 }}
               onKeyDown={(e) => {
@@ -380,9 +395,9 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
           >
             <motion.div
               className="document-enlarged"
-              initial={{ scale: 0.7, opacity: 0, rotateX: 15 }}
-              animate={{ scale: 1, opacity: 1, rotateX: 0 }}
-              exit={{ scale: 0.7, opacity: 0, rotateX: 15 }}
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.7, opacity: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 200 }}
             >
               <div className="document-header">

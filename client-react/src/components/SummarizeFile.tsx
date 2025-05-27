@@ -59,7 +59,7 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const handleSavePermissionsAndSummary = async (users: User[]) => {
     console.log(users.map((user) => user.id))
     try {
-      await axios.post("https://localhost:7136/api/files/assign-file-to-customers", {
+      await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/assign-file-to-customers`, {
         FileUrl: fileUrl,
         UserIds: users.map((user) => user.id),
       })
@@ -87,7 +87,7 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
         summary: summary,
       }
       console.log("שולח נתונים:", summaryy)
-      const response = await axios.post("https://localhost:7136/api/files/save-summary", summaryy, {
+      const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/save-summary`, summaryy, {
         headers: {
           "Content-Type": "application/json",
         },

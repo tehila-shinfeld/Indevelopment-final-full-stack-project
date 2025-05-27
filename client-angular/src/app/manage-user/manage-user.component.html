@@ -1,0 +1,229 @@
+<div class="manage-users-container" [@slideInUp]>
+  <!-- Header Section -->
+  <div class="header-section">
+    <app-navigation></app-navigation>
+
+    <div class="title-container">
+      <h1 class="main-title">
+        <span class="gradient-text">נהל</span> משתמשים
+      </h1>
+      <p class="subtitle">ניהול כל המשתמשים במערכת בצורה פשוטה ויעילה</p>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-primary btn-email" (click)="openEmailModal()">
+        <i class="icon-mail"></i>
+        שלח מייל לכולם
+      </button>
+      <button class="btn-secondary btn-add" (click)="openAddUserModal()">
+        <i class="icon-plus"></i>
+        הוסף משתמש
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-filters-section">
+    <div class="search-container">
+      <i class="icon-search"></i>
+      <input type="text" placeholder="חפש משתמש לפי שם או אימייל..." [(ngModel)]="searchTerm" class="search-input">
+    </div>
+
+    <div class="filter-container">
+      <select [(ngModel)]="selectedRole" class="role-filter">
+        <option value="">כל התפקידים</option>
+        @for (role of roles; track role) {
+        <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Users Grid -->
+  <div class="users-grid" [@fadeInStagger]="filteredUsers.length">
+    @for (user of filteredUsers; track user.id) {
+    <div class="user-card" [@scaleIn]>
+      <div class="card-header">
+        <div class="user-avatar">
+          <img [src]="user.avatar" [alt]="user.name" />
+          <div class="status-indicator" [style.background-color]="getStatusColor(user.status)"></div>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn edit-btn" (click)="openEditUserModal(user)">
+            <i class="icon-edit"></i>
+          </button>
+          <button class="action-btn delete-btn" (click)="deleteUser(user.id)">
+            <i class="icon-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h3 class="user-name">{{ user.name }}</h3>
+        <p class="user-email">{{ user.email }}</p>
+
+        <div class="user-details">
+          <span class="role-badge" [style.background-color]="getRoleColor(user.role)">
+            {{ user.role }}
+          </span>
+          <span class="join-date">
+            הצטרף: {{ user.joinDate | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+
+        <div class="status-row">
+          <span class="status-label">סטטוס:</span>
+          <span class="status-value" [style.color]="getStatusColor(user.status)">
+            {{ user.status === 'active' ? 'פעיל' : 'לא פעיל' }}
+          </span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (filteredUsers.length === 0) {
+  <div class="no-results">
+    <i class="icon-users"></i>
+    <h3>לא נמצאו משתמשים</h3>
+    <p>נסה לשנות את מילות החיפוש או הסנן</p>
+  </div>
+  }
+</div>
+
+<!-- Add User Modal -->
+@if (showAddUserModal) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()" [@slideModal]>
+    <div class="modal-header">
+      <h2>הוסף משתמש חדש</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>שם מלא</label>
+        <input type="text" [(ngModel)]="newUser.name" placeholder="הכנס שם מלא" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>כתובת אימייל</label>
+        <input type="email" [(ngModel)]="newUser.email" placeholder="הכנס כתובת אימייל" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>תפקיד</label>
+        <select [(ngModel)]="newUser.role" class="form-select">
+          <option value="">בחר תפקיד</option>
+          @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>סטטוס</label>
+        <select [(ngModel)]="newUser.status" class="form-select">
+          <option value="active">פעיל</option>
+          <option value="inactive">לא פעיל</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">ביטול</button>
+      <button class="btn-primary" (click)="addUser()">הוסף משתמש</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Edit User Modal -->
+@if (showEditUserModal && selectedUser) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()" [@slideModal]>
+    <div class="modal-header">
+      <h2>ערוך משתמש</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>שם מלא</label>
+        <input type="text" [(ngModel)]="selectedUser.name" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>כתובת אימייל</label>
+        <input type="email" [(ngModel)]="selectedUser.email" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>תפקיד</label>
+        <select [(ngModel)]="selectedUser.role" class="form-select">
+          @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>סטטוס</label>
+        <select [(ngModel)]="selectedUser.status" class="form-select">
+          <option value="active">פעיל</option>
+          <option value="inactive">לא פעיל</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">ביטול</button>
+      <button class="btn-primary" (click)="updateUser()">עדכן</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Email Modal -->
+@if (showEmailModal) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content email-modal" (click)="$event.stopPropagation()" [@slideModal]>
+    <div class="modal-header">
+      <h2>שלח מייל לכל המשתמשים</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="recipients-info">
+        <i class="icon-users"></i>
+        <span>המייל יישלח ל-{{ users.length }} משתמשים</span>
+      </div>
+
+      <div class="form-group">
+        <label>נושא המייל</label>
+        <input type="text" [(ngModel)]="emailSubject" placeholder="הכנס נושא המייל" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>תוכן המייל</label>
+        <textarea [(ngModel)]="emailMessage" placeholder="הכנס את תוכן המייל..." class="form-textarea"
+          rows="6"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">ביטול</button>
+      <button class="btn-primary btn-send" (click)="sendEmailToAll()">
+        <i class="icon-send"></i>
+        שלח מייל
+      </button>
+    </div>
+  </div>
+</div>
+}

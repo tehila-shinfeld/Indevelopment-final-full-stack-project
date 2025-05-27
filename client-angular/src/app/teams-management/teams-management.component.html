@@ -1,0 +1,203 @@
+<div class="teams-management-container" [@fadeIn]>
+  <!-- Header Section -->
+  <div class="header-section" [@slideInUp]>
+       <app-navigation></app-navigation>
+
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-wrapper">
+          <lucide-icon [img]="UsersIcon" class="header-icon"></lucide-icon>
+        </div>
+        <div>
+          <h1 class="main-title">ניהול צוותים</h1>
+          <p class="subtitle">ניהול וצפיה בכל החברות והמשתמשים במערכת</p>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon companies">
+            <lucide-icon [img]="BuildingIcon"></lucide-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">{{ companies.length }}</span>
+            <span class="stat-label">חברות פעילות</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon users">
+            <lucide-icon [img]="UsersIcon"></lucide-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">{{ getTotalUsers() }}</span>
+            <span class="stat-label">סה"כ משתמשים</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon active">
+            <lucide-icon [img]="EyeIcon"></lucide-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">{{ getTotalActiveUsers() }}</span>
+            <span class="stat-label">משתמשים פעילים</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="search-filter-section" [@slideInUp]>
+    <div class="search-wrapper">
+      <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
+      <input 
+        type="text" 
+        placeholder="חיפוש חברה או מנהל..."
+        class="search-input"
+        [value]="searchQuery"
+        (input)="onSearchChange($event)"
+      />
+    </div>
+    
+    <div class="filter-tabs">
+      <button 
+        class="filter-tab"
+        [class.active]="selectedFilter === 'all'"
+        (click)="onFilterChange('all')"
+      >
+        הכל
+      </button>
+      <button 
+        class="filter-tab"
+        [class.active]="selectedFilter === 'enterprise'"
+        (click)="onFilterChange('enterprise')"
+      >
+        ארגוני
+      </button>
+      <button 
+        class="filter-tab"
+        [class.active]="selectedFilter === 'premium'"
+        (click)="onFilterChange('premium')"
+      >
+        פרימיום
+      </button>
+      <button 
+        class="filter-tab"
+        [class.active]="selectedFilter === 'basic'"
+        (click)="onFilterChange('basic')"
+      >
+        בסיסי
+      </button>
+      <button 
+        class="filter-tab"
+        [class.active]="selectedFilter === 'high-growth'"
+        (click)="onFilterChange('high-growth')"
+      >
+        צמיחה גבוהה
+      </button>
+    </div>
+  </div>
+
+  <!-- Companies Grid -->
+  <div class="companies-grid" [@staggerAnimation]="filteredCompanies.length">
+    @for (company of filteredCompanies; track company.id) {
+      <div class="company-card" [@slideInUp]>
+        <div class="card-header">
+          <div class="company-info">
+            <div class="company-logo">{{ company.logo }}</div>
+            <div>
+              <h3 class="company-name">{{ company.name }}</h3>
+              <div class="plan-badge" [ngClass]="getPlanColor(company.plan)">
+                {{ getPlanText(company.plan) }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-actions">
+            <button class="action-btn" (click)="viewCompanyMembers(company)">
+              <lucide-icon [img]="EyeIcon"></lucide-icon>
+            </button>
+            <button class="action-btn">
+              <lucide-icon [img]="SettingsIcon"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="users-stats">
+          <div class="stat-item">
+            <span class="stat-label">סה"כ משתמשים</span>
+            <span class="stat-value">{{ company.totalUsers }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">פעילים</span>
+            <span class="stat-value active">{{ company.activeUsers }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">צמיחה</span>
+            <span class="stat-value" [ngClass]="getGrowthColor(company.growth)">
+              +{{ company.growth }}%
+            </span>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="(company.activeUsers / company.totalUsers) * 100"></div>
+        </div>
+
+        <div class="manager-info">
+          <img [src]="company.manager.avatar" [alt]="company.manager.name" class="manager-avatar">
+          <div class="manager-details">
+            <span class="manager-name">{{ company.manager.name }}</span>
+            <span class="manager-role">מנהל החברה</span>
+          </div>
+          <lucide-icon [img]="CrownIcon" class="crown-icon"></lucide-icon>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Members Modal -->
+  @if (showMembersModal && selectedCompany) {
+    <div class="modal-overlay" [@fadeIn] (click)="closeMembersModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" [@slideInUp]>
+        <div class="modal-header">
+          <div class="modal-title-section">
+            <div class="company-logo large">{{ selectedCompany.logo }}</div>
+            <div>
+              <h2>{{ selectedCompany.name }}</h2>
+              <p>{{ selectedCompany.members.length }} חברי צוות</p>
+            </div>
+          </div>
+          <button class="close-btn" (click)="closeMembersModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          @if (selectedCompany.members.length > 0) {
+            @for (member of selectedCompany.members; track member.id) {
+              <div class="member-card">
+                <img [src]="member.avatar" [alt]="member.name" class="member-avatar">
+                <div class="member-info">
+                  <h4>{{ member.name }}</h4>
+                  <p class="member-role">{{ member.role }}</p>
+                  <p class="member-email">{{ member.email }}</p>
+                </div>
+                <div class="member-status">
+                  <div class="status-dot" [class.active]="member.status === 'active'"></div>
+                  <span class="last-seen">פעיל לפני {{ member.lastSeen }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="empty-state">
+              <lucide-icon [img]="UsersIcon" class="empty-icon"></lucide-icon>
+              <p>אין חברי צוות רשומים</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

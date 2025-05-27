@@ -121,7 +121,6 @@ var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
-app.UseCors("AllowLocalhost5174");
 
 // Configure the HTTP request pipeline.
 if (true)

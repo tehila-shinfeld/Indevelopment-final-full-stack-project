@@ -1,0 +1,35 @@
+<nav class="nav-container" [@slideIn]>
+  <div class="nav-header">
+    <h2 class="nav-title">ניווט</h2>
+    <button class="nav-toggle" (click)="toggleNav()" [class.active]="isExpanded">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+  
+  <div class="nav-content" [class.expanded]="isExpanded">
+    <ul class="nav-list">
+      @for (item of navigationItems; track item.path) {
+        <li class="nav-item">
+          <a 
+            [routerLink]="item.path" 
+            class="nav-link"
+            [class.active]="isActiveRoute(item.path)"
+            (click)="navigateAndClose(item.path)"
+            [@itemSlide]>
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+    
+    <div class="nav-footer">
+      <button class="logout-btn" (click)="logout()" [@itemSlide]>
+        <span class="nav-icon">🚪</span>
+        <span class="nav-label">התנתק</span>
+      </button>
+    </div>
+  </div>
+</nav>

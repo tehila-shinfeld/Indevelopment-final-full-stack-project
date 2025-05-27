@@ -227,7 +227,7 @@ const FileUploadButton = () => {
       console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
       // שלב 2: העלאה לשרת
-      const response1 = await axios.post("https://localhost:7136/api/files/upload", {
+      const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
         fileName: selectedFile.name,
       })
 
@@ -267,7 +267,7 @@ const FileUploadButton = () => {
     setProcessState("summarizing")
 
     try {
-      const response = await axios.post("https://localhost:7136/api/files/summarize", {
+      const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/summarize`, {
         text: fileTextContent,
       })
       setSummary(response.data.summary)

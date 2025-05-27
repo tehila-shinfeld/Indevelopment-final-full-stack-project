@@ -1,0 +1,141 @@
+<div class="dashboard-container" [@fadeInUp]>
+  
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p>טוען נתונים...</p>
+    </div>
+  }
+
+  <!-- Main Dashboard Content -->
+  @if (!isLoading) {
+    <!-- Header Section -->
+    <header class="header-section">
+      <div class="header-content">
+        <h1 class="main-title">
+          <span class="gradient-text">לוח בקרה</span>
+          <div class="title-glow"></div>
+        </h1>
+        <button class="logout-btn" (click)="logout()" [@pulseAnimation]>
+          <i class="logout-icon">🚪</i>
+          התנתק
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Cards Grid -->
+    <div class="stats-grid">
+      <!-- Active Users Card -->
+      <div class="stat-card primary-card" [@slideInLeft]>
+        <div class="card-header">
+          <div class="icon-container primary-icon">
+            <i class="icon">👥</i>
+          </div>
+          <h3>משתמשים פעילים</h3>
+        </div>
+        <div class="counter-container">
+          <span class="counter-number">{{ displayActiveUsers }}</span>
+          <div class="counter-animation"></div>
+        </div>
+        <div class="card-footer">
+          <span class="trend positive">↗ +12% מהחודש הקודם</span>
+        </div>
+      </div>
+
+      <!-- Monthly New Users Card -->
+      <div class="stat-card secondary-card" [@slideInUp]>
+        <div class="card-header">
+          <div class="icon-container secondary-icon">
+            <i class="icon">📈</i>
+          </div>
+          <h3>משתמשים חדשים החודש</h3>
+        </div>
+        <div class="counter-container">
+          <span class="counter-number">{{ displayMonthlyUsers }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="monthlyProgress"></div>
+        </div>
+      </div>
+
+      <!-- Weekly Meetings Card -->
+      <div class="stat-card tertiary-card" [@slideInRight]>
+        <div class="card-header">
+          <div class="icon-container tertiary-icon">
+            <i class="icon">📅</i>
+          </div>
+          <h3>פגישות השבוע</h3>
+        </div>
+        <div class="counter-container">
+          <span class="counter-number">{{ displayWeeklyMeetings }}</span>
+        </div>
+        @if (meetingsTrend !== 0) {
+          <div class="comparison">
+            <span class="trend" [class]="getTrendClass(meetingsTrend)">
+              {{ getTrendIcon(meetingsTrend) }} {{ Math.abs(meetingsTrend) }}% מהשבוע הקודם
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section" [@fadeInUp]>
+      <div class="chart-card">
+        <h3>סטטיסטיקות חודשיות</h3>
+        <div class="chart-container">
+          <div class="bar-chart">
+            @for (bar of chartData; track bar.label; let i = $index) {
+              <div class="bar" 
+                   [style.height.%]="bar.value" 
+                   [style.animation-delay.ms]="i * 100"
+                   [@barAnimation]>
+                <span class="bar-label">{{ bar.label }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" [@fadeInUp]>
+      <h3 class="section-title">פעולות מהירות</h3>
+      <div class="actions-grid">
+        <button class="action-btn manage-users" 
+                (click)="navigateTo('/manage-users')" 
+                [@hoverScale]>
+          <div class="action-icon">👤</div>
+          <span>נהל משתמשים</span>
+          <div class="action-arrow">→</div>
+        </button>
+        
+        <button class="action-btn manage-teams" 
+                (click)="navigateTo('/teams-management')" 
+                [@hoverScale]>
+          <div class="action-icon">👥</div>
+          <span>ניהול צוותים</span>
+          <div class="action-arrow">→</div>
+        </button>
+        
+        <button class="action-btn meetings" 
+                (click)="navigateTo('/all-meetings')" 
+                [@hoverScale]>
+          <div class="action-icon">📋</div>
+          <span>פגישות</span>
+          <div class="action-arrow">→</div>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Background Effects -->
+  <div class="bg-effects">
+    <div class="floating-shapes">
+      <div class="shape shape-1" [@floatingAnimation]></div>
+      <div class="shape shape-2" [@floatingAnimation]></div>
+      <div class="shape shape-3" [@floatingAnimation]></div>
+    </div>
+  </div>
+</div>

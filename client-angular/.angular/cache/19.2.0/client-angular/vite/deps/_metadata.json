@@ -1,34 +1,70 @@
 {
-  "hash": "ec858a1d",
-  "configHash": "f7914341",
-  "lockfileHash": "36a15201",
-  "browserHash": "da65cfdd",
+  "hash": "39734c7f",
+  "configHash": "387c2061",
+  "lockfileHash": "c945c7ff",
+  "browserHash": "53722268",
   "optimized": {
+    "@angular/animations": {
+      "src": "../../../../../../node_modules/@angular/animations/fesm2022/animations.mjs",
+      "file": "@angular_animations.js",
+      "fileHash": "6d6e91fd",
+      "needsInterop": false
+    },
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "7f1e29cc",
+      "needsInterop": false
+    },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "ca44023a",
+      "fileHash": "d2050104",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "bea95e72",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "647dd332",
+      "fileHash": "25c27b3a",
+      "needsInterop": false
+    },
+    "@angular/platform-browser/animations": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/animations.mjs",
+      "file": "@angular_platform-browser_animations.js",
+      "fileHash": "1dfa5682",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "250accf3",
+      "fileHash": "91a4eb93",
+      "needsInterop": false
+    },
+    "lucide-angular": {
+      "src": "../../../../../../node_modules/lucide-angular/fesm2020/lucide-angular.mjs",
+      "file": "lucide-angular.js",
+      "fileHash": "75dd0302",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-PWVNXA7C": {
-      "file": "chunk-PWVNXA7C.js"
+    "chunk-J2ONP3AZ": {
+      "file": "chunk-J2ONP3AZ.js"
     },
-    "chunk-MLSFSH6F": {
-      "file": "chunk-MLSFSH6F.js"
+    "chunk-36WLOQKV": {
+      "file": "chunk-36WLOQKV.js"
+    },
+    "chunk-U3FJ3BT6": {
+      "file": "chunk-U3FJ3BT6.js"
+    },
+    "chunk-TXZMGFPN": {
+      "file": "chunk-TXZMGFPN.js"
     }
   }
 }

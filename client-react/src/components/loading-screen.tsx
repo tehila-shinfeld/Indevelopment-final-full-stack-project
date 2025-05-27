@@ -45,62 +45,29 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
         {/* לוגו מרכזי */}
         <div className="logo-section">
           <div className="logo-icon">
-            <div className="ai-core">
-              <div className="core-ring ring-1"></div>
-              <div className="core-ring ring-2"></div>
-              <div className="core-ring ring-3"></div>
-              <div className="core-center">AI</div>
-
-              {/* בועות יוצאות מהעיגול */}
-              <div className="bubbles-container">
-                <div className="bubble bubble-1"></div>
-                <div className="bubble bubble-2"></div>
-                <div className="bubble bubble-3"></div>
-                <div className="bubble bubble-4"></div>
-                <div className="bubble bubble-5"></div>
-                <div className="bubble bubble-6"></div>
-              </div>
-            </div>
+            <div className="ai-symbol">AI</div>
           </div>
-          <h1 className="brand-title">
-            <span className="brand-name">TalkToMe</span>
-            <span className="brand-ai">.AI</span>
-          </h1>
+          <h1 className="brand-title">TalkToMe.AI</h1>
           <p className="brand-subtitle">מכין עבורך חוויית AI מתקדמת</p>
         </div>
 
-        {/* בר התקדמות מרכזי - מוגבר */}
+        {/* בר התקדמות */}
         <div className="progress-section">
-          <div className="progress-header">
-            <h2 className="progress-title">טוען את המערכת...</h2>
-            <div className="progress-status">
-              <span className="progress-percentage-large">{Math.round(progress)}%</span>
-            </div>
+          <div className="progress-info">
+            <span className="progress-text">{steps[currentStep]}</span>
+            <span className="progress-percentage">{Math.round(progress)}%</span>
           </div>
 
-          <div className="progress-container">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress}%` }}>
-                <div className="progress-glow"></div>
-                <div className="progress-wave"></div>
-              </div>
-            </div>
-
-            <div className="progress-info">
-              <span className="progress-text">{steps[currentStep]}</span>
-              <div className="progress-dots">
-                <span className="loading-dot">●</span>
-                <span className="loading-dot">●</span>
-                <span className="loading-dot">●</span>
-              </div>
-            </div>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
 
-        {/* אינדיקטור מצב */}
-        <div className="status-indicator">
-          <div className="status-icon">⚡</div>
-          <span className="status-text">מעבד נתונים...</span>
+        {/* נקודות טעינה */}
+        <div className="loading-dots">
+          <div className="dot"></div>
+          <div className="dot"></div>
+          <div className="dot"></div>
         </div>
       </div>
     </div>

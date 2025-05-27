@@ -69,6 +69,24 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
     }
   }, [registerForm.password, activeTab])
 
+  // Add this useEffect after the existing useEffects, around line 60
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-open")
+      // Prevent scrolling on the background
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.classList.remove("modal-open")
+      document.body.style.overflow = ""
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.classList.remove("modal-open")
+      document.body.style.overflow = ""
+    }
+  }, [isOpen])
+
   // Calculate password strength
   const calculatePasswordStrength = (password: string): PasswordStrength => {
     if (!password) return "empty"
@@ -362,7 +380,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
 
       setIsLoading(true)
 
-      const response = await axios.post(`https://localhost:7136/api/Auth/login`, {
+      const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/Auth/login`, {
         Username: loginForm.username,
         Password: loginForm.password,
       })
@@ -432,7 +450,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
       setIsLoading(true)
 
       // Make sure we're sending the data in the format the API expects
-      const response = await axios.post(`https://localhost:7136/api/Auth/register`, {
+      const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/Auth/register`, {
         Username: registerForm.username,
         PasswordHash: registerForm.password,
         Company: registerForm.company || "",
@@ -563,8 +581,9 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
     }, 3000)
   }
 
-  // Handle overlay click (close if clicking outside the modal)
-  const handleOverlayClick = (e: React.MouseEvent) => {
+  // Update the handleOverlayClick function around line 580
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only close if clicking directly on the overlay, not on the modal content
     if (e.target === e.currentTarget) {
       onClose()
     }
@@ -572,14 +591,30 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
 
   if (!isOpen) return null
 
+  // Update the return statement at the end of the component
   return (
-    <div className={`auth-modal-overlay ${isDarkMode ? "dark-mode" : ""}`} onClick={handleOverlayClick}>
+    <div
+      className={`auth-modal-overlay ${isDarkMode ? "dark-mode" : ""}`}
+      onClick={handleOverlayClick}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <motion.div
         className={`auth-modal ${isDarkMode ? "dark-mode" : ""}`}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className={`auth-modal-header ${isDarkMode ? "dark-mode" : ""}`}>
           <div className="auth-modal-tabs">

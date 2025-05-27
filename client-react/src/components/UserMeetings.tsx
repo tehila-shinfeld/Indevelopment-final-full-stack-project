@@ -429,7 +429,7 @@ const UserMeetings = () => {
     }
 
     try {
-      await axios.delete(`https://localhost:7136/api/Meeting/${confirmDialog.meetingId}/User/${userId}`)
+      await axios.delete(`https://${import.meta.env.VITE_API_BASE_URL}/api/Meeting/${confirmDialog.meetingId}/User/${userId}`)
 
       setTimeout(() => {
         setMeetings((prevMeetings) => prevMeetings.filter((meeting) => meeting.id !== confirmDialog.meetingId))
@@ -794,7 +794,7 @@ const UserMeetings = () => {
       formData.append("message", `מצורף סיכום הפגישה "${meeting.name}" מתאריך ${formatDate(meeting.summaryContent)}.`)
       formData.append("attachment", pdfBlob, `${meeting.name.replace(/[^\w\s]/gi, "")}.pdf`)
 
-      await axios.post("https://localhost:7136/api/email/send-with-attachment", formData, {
+      await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/email/send-with-attachment`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -849,7 +849,7 @@ const UserMeetings = () => {
       }
 
       try {
-        const response = await axios.get<Meeting[]>(`https://localhost:7136/api/files/get-user-meetings/${userId}`)
+        const response = await axios.get<Meeting[]>(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/get-user-meetings/${userId}`)
         const meetingsData = response.data
 
         if (meetingsData.length === 0) {

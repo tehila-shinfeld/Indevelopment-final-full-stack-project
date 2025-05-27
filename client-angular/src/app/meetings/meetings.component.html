@@ -1,0 +1,165 @@
+<div class="meetings-container" [@fadeInUp]>
+  <!-- Header Section -->
+  <div class="header-section">
+       <app-navigation></app-navigation>
+
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="main-title">
+          <i class="icon-meetings"></i>
+          ישיבות
+          <span class="title-accent">המערכת</span>
+        </h1>
+        <p class="subtitle">
+          ניהול וצפייה בכל הישיבות והסיכומים שלך במקום אחד
+        </p>
+      </div>
+      
+      <!-- Search and Filters -->
+      <div class="controls-section">
+        <div class="search-container">
+          <i class="search-icon"></i>
+          <input 
+            type="text" 
+            placeholder="חפש ישיבות, נושאים או משתתפים..."
+            class="search-input"
+            (input)="searchMeetings($any($event.target).value)"
+            [value]="searchQuery">
+        </div>
+        
+        <div class="filter-tabs">
+          <button 
+            class="filter-tab"
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterMeetings('all')">
+            <span class="tab-text">הכל</span>
+            <span class="tab-count">{{meetings.length}}</span>
+          </button>
+          <button 
+            class="filter-tab"
+            [class.active]="selectedFilter === 'completed'"
+            (click)="filterMeetings('completed')">
+            <span class="tab-text">הושלמו</span>
+            <span class="tab-count">{{getCompletedCount()}}</span>
+          </button>
+          <button 
+            class="filter-tab"
+            [class.active]="selectedFilter === 'pending'"
+            (click)="filterMeetings('pending')">
+            <span class="tab-text">מתוכננות</span>
+            <span class="tab-count">{{getPendingCount()}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">טוען ישיבות...</p>
+    </div>
+  }
+
+  <!-- Meetings Grid -->
+  @if (!isLoading) {
+    <div class="meetings-grid" [@staggerAnimation]>
+      @for (meeting of filteredMeetings; track meeting.id) {
+        <div class="meeting-card" [@cardHover]>
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="meeting-info">
+              <h3 class="meeting-title">{{meeting.title}}</h3>
+              <div class="meeting-meta">
+                <span class="meeting-date">
+                  <i class="date-icon"></i>
+                  {{formatDate(meeting.date)}}
+                </span>
+                <span class="meeting-duration">
+                  <i class="time-icon"></i>
+                  {{meeting.duration}}
+                </span>
+              </div>
+            </div>
+            
+            <div class="status-badges">
+              <span class="status-badge" [ngClass]="'status-' + meeting.status">
+                {{getStatusText(meeting.status)}}
+              </span>
+              <span class="priority-badge" [ngClass]="'priority-' + meeting.priority">
+                {{getPriorityText(meeting.priority)}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Participants -->
+          <div class="participants-section">
+            <h4 class="section-title">משתתפים</h4>
+            <div class="participants-list">
+              @for (participant of meeting.participants; track participant) {
+                <span class="participant-tag">{{participant}}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Topics -->
+          <div class="topics-section">
+            <h4 class="section-title">נושאים</h4>
+            <div class="topics-list">
+              @for (topic of meeting.topics; track topic) {
+                <span class="topic-tag">{{topic}}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="summary-section">
+            <h4 class="section-title">סיכום</h4>
+            <p class="summary-text">{{meeting.summary}}</p>
+          </div>
+
+          <!-- Card Actions -->
+          <div class="card-actions">
+            <button class="action-btn primary">
+              <i class="view-icon"></i>
+              צפה בפרטים
+            </button>
+            <button class="action-btn secondary">
+              <i class="edit-icon"></i>
+              ערוך
+            </button>
+            <button class="action-btn tertiary">
+              <i class="share-icon"></i>
+              שתף
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && filteredMeetings.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon"></div>
+      <h3 class="empty-title">לא נמצאו ישיבות</h3>
+      <p class="empty-text">
+        @if (searchQuery) {
+          לא נמצאו תוצאות עבור "{{searchQuery}}"
+        } @else {
+          עדיין לא נוספו ישיבות למערכת
+        }
+      </p>
+      <button class="add-meeting-btn">
+        <i class="plus-icon"></i>
+        הוסף ישיבה חדשה
+      </button>
+    </div>
+  }
+
+  <!-- Floating Action Button -->
+  <button class="fab">
+    <i class="plus-icon"></i>
+  </button>
+</div>

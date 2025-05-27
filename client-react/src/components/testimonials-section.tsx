@@ -246,7 +246,7 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
                   <div className="testimonial-card">
                     <div className="testimonial-header">
                       <div className="testimonial-avatar">
-                        <img src={testimonial.image || "/placeholder.svg"} alt="" aria-hidden="true" />
+                        <img src={testimonial.image } alt="" aria-hidden="true" />
                       </div>
                       <div className="testimonial-meta">
                         <h3 className="testimonial-name">{testimonial.name}</h3>

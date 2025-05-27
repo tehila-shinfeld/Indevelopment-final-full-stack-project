@@ -53,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
-    ServiceLifetime.Scoped 
+    ServiceLifetime.Scoped
 );
 
 builder.Services.AddScoped<IMeetingService, MeetingService>();
@@ -103,6 +103,7 @@ builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 104857600; // מגביל את גודל הקובץ ל-100MB
 });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientApp", policy =>
@@ -111,6 +112,7 @@ builder.Services.AddCors(options =>
             "https://localhost:5174",
             "http://localhost:7136",
             "https://talktome-ai-client.onrender.com") // הכתובת של הקליינט שלך ברנדר
+        .AllowAnyOrigin() // זמני - לבדיקה
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());
@@ -125,9 +127,9 @@ var awsSecretKey = configuration["AWS:SecretKey"];
 var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 var app = builder.Build();
+app.UseRouting();
 app.UseCors("AllowClientApp");
-
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (true)
 {
     app.UseSwagger();
@@ -143,74 +145,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/",()=>"running");
+app.MapGet("/", () => "running");
 app.Run();
 
-#region first versiom
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
-//using Microsoft.AspNetCore.Http.Features;
-//using Microsoft.IdentityModel.Tokens;
-//using summary.Core;
-//using summary.Core.IRepositories;
-//using summary.Core.IServices;
-//using summary.Data;
-//using summary.Data.Repositories;
-//using summary.Service;
-//using System.Text;
-
-//var builder = WebApplication.CreateBuilder(args);
-
-//builder.Services.AddControllers();
-
-//// DI
-//builder.Services.AddDbContext<DataContext>();
-//builder.Services.AddScoped<IMeetingService, MeetingService>();
-//builder.Services.AddScoped<IUserService, UserService>();
-//builder.Services.AddScoped<IAuthService, AuthService>();
-//builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-//builder.Services.AddScoped<IUserRepository, UserRepository>();
-//builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
-//builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-
-//builder.Services.AddAutoMapper(typeof(Mapping));
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidIssuer = builder.Configuration["JWT:Issuer"],
-//            ValidAudience = builder.Configuration["JWT:Audience"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
-//        };
-//    });
-
-//builder.Services.Configure<FormOptions>(options =>
-//{
-//    options.MultipartBodyLengthLimit = 104857600; // מגביל את גודל הקובץ ל-100MB
-//});
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowLocalhost",
-//        policy => policy.WithOrigins("http://localhost:5173") // כתובת הלקוח שלך
-//                        .AllowAnyMethod()
-//                        .AllowAnyHeader());
-//});
-
-//var app = builder.Build();
-//app.UseCors("AllowLocalhost");
-
-//app.UseHttpsRedirection();
-//app.UseAuthentication();
-//app.UseAuthorization();
-
-//app.MapControllers();
-//app.Run();
-
-
-#endregion
 

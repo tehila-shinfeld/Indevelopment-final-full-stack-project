@@ -1,4 +1,4 @@
-using Amazon.Extensions.NETCore.Setup;
+ο»Ώusing Amazon.Extensions.NETCore.Setup;
 using Amazon;
 using Amazon.S3;
 using DotNetEnv;
@@ -23,11 +23,11 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // δερτϊ ΰτωψεϊ μΰιξεϊ ςν JWT
+    // Χ”Χ•Χ΅Χ¤Χª ΧΧ¤Χ©Χ¨Χ•Χª ΧΧΧ™ΧΧ•Χª ΧΆΧ JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "ΰπΰ δλπρ ΰϊ δ-JWT Token ατεψξθ: Bearer {token}",
+        Description = "ΧΧ Χ Χ”Χ›Χ Χ΅ ΧΧª Χ”-JWT Token Χ‘Χ¤Χ•Χ¨ΧΧ: Bearer {token}",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer"
@@ -50,7 +50,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.OperationFilter<SwaggerFileOperationFilter>();
 
-});//ιγιγιπε δρεεβψ-----
+});//Χ™Χ“Χ™Χ“Χ™Χ Χ• Χ”Χ΅Χ•Χ•Χ’Χ¨-----
 //DI
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DataContext>(options =>
@@ -76,7 +76,7 @@ var awsSecretKey = configuration["AWS:SecretKey"];
 var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 
-// δβγψϊ AWS S3
+// Χ”Χ’Χ“Χ¨Χª AWS S3
 builder.Services.AddDefaultAWSOptions(new AWSOptions
 {
     Region = RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
@@ -85,7 +85,7 @@ builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddAutoMapper(typeof(Mapping));
 
 //jwt
-// δερτϊ JWT Authentication
+// Χ”Χ•Χ΅Χ¤Χª JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -105,7 +105,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// δερτϊ δψωΰεϊ ξαερρεϊ-ϊτχιγιν
+// Χ”Χ•Χ΅Χ¤Χª Χ”Χ¨Χ©ΧΧ•Χª ΧΧ‘Χ•Χ΅Χ΅Χ•Χª-ΧªΧ¤Χ§Χ™Χ“Χ™Χ
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
@@ -114,17 +114,18 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 104857600; // ξβαιμ ΰϊ βεγμ δχεαυ μ-100MB
+    options.MultipartBodyLengthLimit = 104857600; // ΧΧ’Χ‘Χ™Χ ΧΧª Χ’Χ•Χ“Χ Χ”Χ§Χ•Χ‘Χ¥ Χ-100MB
 });
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientApp", policy =>
-        policy.WithOrigins(
-            "http://localhost:5173",
-            "https://localhost:5174",
-            "http://localhost:7136",
-            "https://talktome-ai-client.onrender.com") // δλϊεαϊ ωμ δχμιιπθ ωμκ αψπγψ
+    //policy.AllowAnyOrigin() // β† Χ¨Χ§ ΧΧ‘Χ“Χ™Χ§Χ”!
+                            policy.WithOrigins(
+                                "http://localhost:5173",
+                                "https://localhost:5174",
+                                "http://localhost:7136",
+                                "https://talktome-ai-client.onrender.com") // Χ”Χ›ΧªΧ•Χ‘Χª Χ©Χ Χ”Χ§ΧΧ™Χ™Χ Χ Χ©ΧΧ Χ‘Χ¨Χ Χ“Χ¨
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

@@ -105,10 +105,15 @@ builder.Services.Configure<FormOptions>(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
-        policy => policy.WithOrigins("http://localhost:5173", "https://localhost:5174", "http://localhost:7136") // כתובת הלקוח שלך
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    options.AddPolicy("AllowClientApp", policy =>
+        policy.WithOrigins(
+            "http://localhost:5173",
+            "https://localhost:5174",
+            "http://localhost:7136",
+            "https://talktome-ai-client.onrender.com") // הכתובת של הקליינט שלך ברנדר
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -120,7 +125,7 @@ var awsSecretKey = configuration["AWS:SecretKey"];
 var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 var app = builder.Build();
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowClientApp");
 
 // Configure the HTTP request pipeline.
 if (true)

@@ -130,11 +130,15 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowCredentials());
 });
-
 var app = builder.Build();
-app.UseCors("AllowClientApp");
+
 app.UseRouting();
-//Configure the HTTP request pipeline.
+
+app.UseCors("AllowClientApp");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -146,10 +150,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
 app.MapControllers();
 app.MapGet("/", () => "running");
+
 app.Run();
+
 
 

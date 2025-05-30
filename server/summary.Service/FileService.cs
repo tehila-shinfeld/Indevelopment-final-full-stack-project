@@ -20,7 +20,6 @@ namespace summary.Service
         private readonly IUserRepository _userRepository;
         private readonly IRepositoryManager _repositoryManager;
         private readonly HttpClient _httpClient;
-
         public FileService(IAmazonS3 s3Client, IMeetingRepository meetingRepository, IConfiguration configuration, IUserRepository userRepository, HttpClient httpClient)
         {
             _s3Client = s3Client;
@@ -29,8 +28,7 @@ namespace summary.Service
             _userRepository = userRepository;
             _httpClient = httpClient;
         }
-
-        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName)
+        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string selectedType)
         {
             // יצירת ישיבה חדשה
             var meeting = new Meeting
@@ -52,7 +50,8 @@ namespace summary.Service
                 BucketName = bucketName,
                 Key = fileKey,
                 Expires = DateTime.UtcNow.AddMinutes(5),
-                Verb = HttpVerb.PUT
+                Verb = HttpVerb.PUT,
+                ContentType = selectedType
             };
 
             string presignedUrl = _s3Client.GetPreSignedURL(request);

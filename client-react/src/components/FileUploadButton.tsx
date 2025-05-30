@@ -226,9 +226,11 @@ const FileUploadButton = () => {
       console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
       // שלב 2: העלאה לשרת
-      const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
-        fileName: selectedFile.name,
-      })
+      const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`,
+        {
+          fileName: selectedFile.name,
+          fileType: "application/pdf",
+        })
 
       console.log("📤 מעלה קובץ לשרת:", response1.data)
 
@@ -238,7 +240,7 @@ const FileUploadButton = () => {
 
       await axios.put(fileUrl, selectedFile, {
         headers: {
-          "Content-Type": selectedFile.type,
+          "Content-Type": "application/pdf", // או סוג הקובץ המתאים
         },
       })
 

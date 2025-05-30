@@ -10,5 +10,6 @@ namespace summary.Core
     {
         public string FileName { get; set; } = string.Empty;
         public string FileUrl { get; set; } = string.Empty;
+        public string SelectedType { get; set; }
     }
 }

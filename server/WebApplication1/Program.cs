@@ -131,10 +131,10 @@ builder.Services.AddCors(options =>
         .AllowCredentials());
 });
 var app = builder.Build();
+app.UseCors("AllowClientApp");
 
 app.UseRouting();
 
-app.UseCors("AllowClientApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

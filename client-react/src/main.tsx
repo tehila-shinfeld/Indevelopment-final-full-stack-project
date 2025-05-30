@@ -4,7 +4,7 @@ import { StrictMode, useState, useEffect } from "react"
 import { createRoot } from "react-dom/client"
 import "./index.css"
 import "./styleSheets/loading-screen.css"
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
+import { createHashRouter, Navigate, RouterProvider } from "react-router-dom"
 import { SummaryProvider } from "./context/SummaryContext.tsx"
 import { UserProvider } from "./context/UserContext.tsx"
 import UserMeetings from "./components/UserMeetings.tsx"
@@ -15,7 +15,7 @@ import LoadingScreen from "./components/loading-screen.tsx"
 import FileUploadButton from "./components/FileUploadButton.tsx"
 
 // הגדרת הנתיבים
-const routes = createBrowserRouter([
+const routes = createHashRouter([
   {
     path: "/",
     element: <Navigate to="/home" />,

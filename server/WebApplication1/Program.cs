@@ -120,16 +120,15 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientApp", policy =>
-    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-    ////policy.AllowAnyOrigin() // ← רק לבדיקה!
-    //                        policy.WithOrigins(
-    //                            "http://localhost:5173",
-    //                            "https://localhost:5174",
-    //                            "http://localhost:7136",
-    //                            "https://talktome-ai-client.onrender.com") // הכתובת של הקליינט שלך ברנדר
-    //    .AllowAnyMethod()
-    //    .AllowAnyHeader()
-    //    .AllowCredentials());
+    //policy.AllowAnyOrigin() // ← רק לבדיקה!
+                            policy.WithOrigins(
+                                "http://localhost:5173",
+                                "https://localhost:5174",
+                                "http://localhost:7136",
+                                "https://talktome-ai-client.onrender.com") // הכתובת של הקליינט שלך ברנדר
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
 var app = builder.Build();
 

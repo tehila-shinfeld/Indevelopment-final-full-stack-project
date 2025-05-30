@@ -11,7 +11,6 @@ import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
 import { useNavigate } from "react-router-dom"
 import MySidebar from "../components/my-sidbar"
-
 // הגדרת מצבי התהליך הראשיים
 type ProcessState =
   | "idle" // מצב התחלתי - אין קובץ
@@ -230,6 +229,8 @@ const FileUploadButton = () => {
       const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
         fileName: selectedFile.name,
       })
+
+      console.log("📤 מעלה קובץ לשרת:", response1.data)
 
       const { fileUrl, s3Url } = response1.data
       setFileUrl(fileUrl)

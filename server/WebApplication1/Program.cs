@@ -119,15 +119,18 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowClientApp", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.WithOrigins(
+                "https://talktome-ai-client.onrender.com",
+                "http://localhost:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 var app = builder.Build();
-app.UseCors("AllowAll");
+app.UseCors("AllowClientApp");
 
 app.UseRouting();
 

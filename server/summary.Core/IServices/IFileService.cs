@@ -7,7 +7,7 @@ namespace summary.Core.IServices
 {
     public interface IFileService
     {
-        public Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName, string selectedType);
+        public Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName, string fileType);
 
         public Task<FileDetailsDto?> GetFileByIdAsync(int fileId);
 

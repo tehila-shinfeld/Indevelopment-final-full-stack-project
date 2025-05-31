@@ -26,7 +26,7 @@ public class FilesController : ControllerBase
         }
 
         Console.WriteLine($"📂 קובץ מבוקש: {request.FileName}");
-        var response = await _fileService.GeneratePresignedUrlAsync(request.FileName,request.SelectedType);
+        var response = await _fileService.GeneratePresignedUrlAsync(request.FileName,request.FileType);
         return Ok(response);
     }
 

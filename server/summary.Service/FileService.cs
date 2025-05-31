@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic.FileIO;
 using summary.Core;
 using summary.Core.DTOs;
 using summary.Core.Entities;
@@ -28,7 +29,7 @@ namespace summary.Service
             _userRepository = userRepository;
             _httpClient = httpClient;
         }
-        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string selectedType)
+        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string fileType)
         {
             // יצירת ישיבה חדשה
             var meeting = new Meeting
@@ -51,7 +52,7 @@ namespace summary.Service
                 Key = fileKey,
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Verb = HttpVerb.PUT,
-                ContentType = selectedType
+                ContentType = fileType  // ← זה קריטי!
             };
 
             string presignedUrl = _s3Client.GetPreSignedURL(request);

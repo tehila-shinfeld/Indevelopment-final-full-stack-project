@@ -15,6 +15,7 @@ using summary.Data.Repositories;
 using summary.Service;
 using System;
 using System.Text;
+using Amazon.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -76,13 +77,21 @@ var awsSecretKey = configuration["AWS:SecretKey"];
 var bucketName = configuration["AWS:BucketName"];
 var region = configuration["AWS:Region"];
 
+// הדפסות לבדיקה
+Console.WriteLine("AccessKey: " + configuration["AWS:AccessKey"]);
+Console.WriteLine("SecretKey: " + configuration["AWS:SecretKey"]);
+Console.WriteLine("Region: " + configuration["AWS:Region"]);
+Console.WriteLine("Bucket: " + configuration["AWS:BucketName"]);
 // הגדרת AWS S3
 builder.Services.AddDefaultAWSOptions(new AWSOptions
 {
+    Credentials = new BasicAWSCredentials(
+        configuration["AWS:AccessKey"],
+        configuration["AWS:SecretKey"]
+    ),
     Region = RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
 });
 builder.Services.AddAWSService<IAmazonS3>();
-builder.Services.AddAutoMapper(typeof(Mapping));
 
 //jwt
 // הוספת JWT Authentication

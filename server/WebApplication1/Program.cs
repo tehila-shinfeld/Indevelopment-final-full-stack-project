@@ -130,9 +130,10 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
+app.UseRouting();
+
 app.UseCors("AllowClientApp");
 
-app.UseRouting();
 
 
 app.UseAuthentication();

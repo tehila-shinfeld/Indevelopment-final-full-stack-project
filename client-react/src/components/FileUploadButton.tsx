@@ -226,25 +226,47 @@ const FileUploadButton = () => {
       console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
       // שלב 2: העלאה לשרת
-      const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`,
-        {
+      console.log("➡️ שולח בקשה ליצירת כתובת העלאה לשרת...")
+
+      try {
+        const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
           fileName: selectedFile.name,
-          fileType: "application/pdf",
-        })
+          fileType: selectedFile.type,
+        });
 
-      console.log("📤 מעלה קובץ לשרת:", response1.data)
+        // בדקי את תגובת השרת
+        console.log("Upload URL created successfully:", response1.data);
+        console.log("📤 מעלה קובץ לשרת:", response1.data)
+        const { fileUrl, s3Url } = response1.data
+        setFileUrl(fileUrl)
+        sets3url(s3Url)
+        try {
+          await axios.put(fileUrl, selectedFile, );
 
-      const { fileUrl, s3Url } = response1.data
-      setFileUrl(fileUrl)
-      sets3url(s3Url)
+          console.log("File uploaded successfully to S3.");
+          alert("הקובץ הועלה בהצלחה.");
+        } catch (error) {
+          console.error("Error uploading file to S3:", error);
 
-      await axios.put(fileUrl, selectedFile, {
-        headers: {
-          "Content-Type": "application/pdf", // או סוג הקובץ המתאים
-        },
-      })
+          if (axios.isAxiosError(error)) {
+            alert(`שגיאה בהעלאת הקובץ: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
+          } else {
+            alert("אירעה שגיאה בלתי צפויה במהלך ההעלאה ל-S3.");
+          }
+        }
 
-      // Complete the progress bar
+        // תוכלי להמשיך מכאן עם קוד להעלאה בפועל ל-S3
+      } catch (error) {
+        console.error("Error creating upload URL:", error);
+
+        if (axios.isAxiosError(error)) {
+          // שגיאה מהשרת (לדוגמה 500/403)
+          alert(`שגיאה מהשרת: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
+        } else {
+          // שגיאה כללית אחרת
+          alert("אירעה שגיאה בלתי צפויה בעת יצירת קישור ההעלאה.");
+        }
+      }
       setUploadProgress(100)
       clearInterval(progressInterval)
 

@@ -52,7 +52,6 @@ namespace summary.Service
                 Key = fileKey,
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Verb = HttpVerb.PUT,
-                ContentType = fileType  // ← זה קריטי!
             };
 
             string presignedUrl = _s3Client.GetPreSignedURL(request);

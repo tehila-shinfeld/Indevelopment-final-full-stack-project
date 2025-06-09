@@ -677,7 +677,7 @@ const FileUploadButton = () => {
             <div className="upload-section">
               <div className="upload-container">
                 {/* הודעת מצב */}
-                {getStatusMessage() && processState !== "idle" && processState !== "meeting-details" && (
+                {getStatusMessage() && processState !== "idle" && (
                   <div className="status-message">
                     <div className="status-content">
                       {(processState === "uploading" ||

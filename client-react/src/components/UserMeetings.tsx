@@ -231,16 +231,24 @@ const UserMeetings = () => {
   }, [])
 
   const handleError = useCallback(
-    (error: any, context: string) => {
+    (error: unknown, context: string) => {
       console.error(`Error in ${context}:`, error)
 
-      if (error.message === "Network Error" || !navigator.onLine) {
+      // Type guard for error with message property
+      const errorWithMessage = (err: unknown): err is { message: string } =>
+        typeof err === "object" && err !== null && "message" in err && typeof (err as { message?: unknown }).message === "string"
+
+      // Type guard for error with response property
+      const errorWithResponse = (err: unknown): err is { response: { status: number } } =>
+        typeof err === "object" && err !== null && "response" in err && typeof (err as { response?: { status?: unknown } }).response?.status === "number"
+
+      if (errorWithMessage(error) && (error.message === "Network Error" || !navigator.onLine)) {
         console.error("Network error detected")
         setError("אין חיבור לאינטרנט. בדוק את החיבור שלך ונסה שוב.")
         return
       }
 
-      if (error.response) {
+      if (errorWithResponse(error)) {
         const status = error.response.status
 
         if (status === 401) {
@@ -764,11 +772,15 @@ const UserMeetings = () => {
         setSendingEmail(false)
         return
       }
+      interface DecodedToken {
+        email?: string
+        [key: string]: unknown
+      }
       let userEmail = ""
       try {
-        const decodedToken: any = jwtDecode(token)
+        const decodedToken = jwtDecode<DecodedToken>(token)
 
-        userEmail = decodedToken.email
+        userEmail = decodedToken.email || ""
         console.log("email", userEmail)
 
         if (!userEmail) {
@@ -949,7 +961,7 @@ const UserMeetings = () => {
 
                   // הוסף את הפגישה לרשימת הפגישות אם היא לא קיימת שם
                   if (!meetingsData.some((m) => m.id === meetingIdNum)) {
-                    setMeetings((prev) => [...prev, meeting])
+                    setMeetings((prev) => meeting ? [...prev, meeting] : prev)
                   }
                 } catch (error) {
                   console.error("Error parsing stored meeting data:", error)

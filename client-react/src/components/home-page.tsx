@@ -77,7 +77,6 @@ const HomePage = () => {
 
   // Update body class when dark mode changes
   useEffect(() => {
-    // הוסף קלאס גם ל-document.documentElement
     if (isDarkMode) {
       document.body.classList.add("dark-mode")
       document.documentElement.classList.add("dark-mode")
@@ -142,15 +141,18 @@ const HomePage = () => {
           sectionRef={sectionsRef.howItWorks as React.RefObject<HTMLElement>}
           activeStep={activeStep}
           isDarkMode={isDarkMode}
+          // id="how-it-works"
         />
         <FeaturesSection
           sectionRef={sectionsRef.features as React.RefObject<HTMLElement>}
           isVisible={visibleSections.features}
+          // id="features"
         />
 
         <TestimonialsSection
           sectionRef={sectionsRef.testimonials as React.RefObject<HTMLElement>}
           isVisible={visibleSections.testimonials}
+          // id="testimonials"
         />
 
         <CtaSection

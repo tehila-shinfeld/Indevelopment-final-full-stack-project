@@ -16,6 +16,7 @@ interface Testimonial {
   rating: number
   text: string
   image: string
+  fallbackImage: string
 }
 
 const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps) => {
@@ -25,61 +26,61 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
   const autoplayRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartX = useRef<number | null>(null)
 
-  // Testimonials data with real business people images from the internet
+  // ✅ תמונות מהאינטרנט שעובדות תמיד - עם כמה אפשרויות לכל אחד
   const testimonials: Testimonial[] = [
     {
       id: 1,
-      name: "יעל כהן",
-      role: "מנהלת פרויקטים, חברת טכנולוגיות מתקדמות",
+      name: "דוד כהן",
+      role: "מנהל פרויקטים, חברת טכנולוגיות מתקדמות",
       rating: 5,
       text: "המערכת חסכה לנו שעות רבות של עבודה. הסיכומים מדויקים, ברורים ומאפשרים לנו להתמקד בעיקר במקום לבזבז זמן על תיעוד פגישות.",
-      image:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      image: "https://randomuser.me/api/portraits/men/32.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=32",
     },
     {
       id: 2,
-      name: "דוד לוי",
+      name: "אמיר לוי",
       role: 'מנכ"ל, סטארטאפ חדשנות',
       rating: 5,
       text: "אחרי שהתחלנו להשתמש במערכת, הפגישות שלנו הפכו יעילות יותר. כולם יודעים שיהיה סיכום מדויק, וזה מאפשר לנו להתמקד בשיחה במקום ברישום.",
-      image:
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      image: "https://randomuser.me/api/portraits/men/45.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=45",
     },
     {
       id: 3,
-      name: "מוש אברהם",
+      name: "יוסי אברהם",
       role: "ראש צוות פיתוח, חברת תוכנה גלובלית",
       rating: 5,
       text: "הבינה המלאכותית מזהה בצורה מדהימה את הנקודות החשובות. אפילו בדיונים טכניים מורכבים, הסיכומים תמיד מדויקים ומתמקדים בדיוק במה שחשוב.",
-      image:
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      image: "https://randomuser.me/api/portraits/men/67.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=67",
     },
     {
       id: 4,
-      name: "רונית שמיר",
-      role: 'סמנכ"לית משאבי אנוש, קבוצת פיננסים',
+      name: "רון שמיר",
+      role: 'סמנכ"ל משאבי אנוש, קבוצת פיננסים',
       rating: 5,
-      text: "כמנהלת משאבי אנוש, אני משתתפת בהרבה פגישות יומיות. המערכת מאפשרת לי להיות נוכחת ומעורבת במקום לדאוג על רישום הפרטים. התוצאות מדהימות!",
-      image:
-        "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      text: "כמנהל משאבי אנוש, אני משתתף בהרבה פגישות יומיות. המערכת מאפשרת לי להיות נוכח ומעורב במקום לדאוג על רישום הפרטים. התוצאות מדהימות!",
+      image: "https://randomuser.me/api/portraits/men/23.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=23",
     },
     {
       id: 5,
-      name: "אמיר רוזן",
+      name: "גיל רוזן",
       role: "מנהל מכירות, חברת ייעוץ עסקי",
       rating: 5,
       text: "בתור מנהל מכירות, אני פוגש לקוחות כל יום. המערכת עוזרת לי לזכור כל פרט חשוב מהפגישה ולעקוב אחרי התחייבויות. זה שינה לי את הדרך לעבוד!",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      image: "https://randomuser.me/api/portraits/men/89.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=89",
     },
     {
       id: 6,
-      name: "ליאת גולדברג",
-      role: "מנהלת תפעול, חברת לוגיסטיקה",
+      name: "אלון גולדברג",
+      role: "מנהל תפעול, חברת לוגיסטיקה",
       rating: 5,
       text: "המערכת פשוט מושלמת לפגישות התיאום שלנו עם ספקים ולקוחות. הסיכומים כוללים את כל הפרטים הטכניים והלוגיסטיים בצורה מסודרת וברורה.",
-      image:
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+      image: "https://randomuser.me/api/portraits/men/56.jpg",
+      fallbackImage: "https://i.pravatar.cc/200?img=56",
     },
   ]
 
@@ -98,10 +99,9 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       setIsAnimating(true)
       setActiveIndex(index)
 
-      // Reset animation state after transition completes
       setTimeout(() => {
         setIsAnimating(false)
-      }, 500) // Match with CSS transition duration
+      }, 500)
     },
     [activeIndex, isAnimating],
   )
@@ -121,10 +121,10 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
 
       if (e.key === "ArrowLeft") {
         e.preventDefault()
-        goToNextSlide() // In RTL, ArrowLeft moves to next slide
+        goToNextSlide()
       } else if (e.key === "ArrowRight") {
         e.preventDefault()
-        goToPrevSlide() // In RTL, ArrowRight moves to previous slide
+        goToPrevSlide()
       }
     }
 
@@ -154,7 +154,6 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
     }
   }, [isVisible, goToNextSlide])
 
-  // Pause autoplay on hover/focus
   const pauseAutoplay = useCallback(() => {
     if (autoplayRef.current) {
       clearInterval(autoplayRef.current)
@@ -162,7 +161,6 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
     }
   }, [])
 
-  // Resume autoplay on mouse leave/blur
   const resumeAutoplay = useCallback(() => {
     if (!autoplayRef.current && isVisible) {
       autoplayRef.current = setInterval(() => {
@@ -171,7 +169,6 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
     }
   }, [goToNextSlide, isVisible])
 
-  // Touch event handlers for swipe
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
   }, [])
@@ -183,13 +180,10 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       const touchEndX = e.changedTouches[0].clientX
       const diff = touchStartX.current - touchEndX
 
-      // Detect swipe (with threshold of 50px)
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
-          // Swipe left in RTL means next
           goToNextSlide()
         } else {
-          // Swipe right in RTL means previous
           goToPrevSlide()
         }
       }
@@ -199,7 +193,23 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
     [goToNextSlide, goToPrevSlide],
   )
 
-  // Render star rating
+  // ✅ פונקציה חכמה לטיפול בשגיאות תמונות
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>, testimonial: Testimonial) => {
+    const target = e.target as HTMLImageElement
+    const currentSrc = target.src
+
+    // אם זה הניסיון הראשון, נסה את ה-fallback
+    if (currentSrc === testimonial.image) {
+      console.log(`נסיון fallback לתמונה של ${testimonial.name}`)
+      target.src = testimonial.fallbackImage
+    }
+    // אם גם ה-fallback נכשל, השתמש ב-placeholder מקומי
+    else if (currentSrc === testimonial.fallbackImage) {
+      console.log(`שני השירותים נכשלו עבור ${testimonial.name}, משתמש ב-placeholder`)
+      target.src = "/placeholder.svg?height=200&width=200&text=👨‍💼"
+    }
+  }, [])
+
   const renderStarRating = (rating: number) => {
     return (
       <div className="testimonial-rating" aria-label={`דירוג ${rating} מתוך 5 כוכבים`}>
@@ -224,7 +234,6 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
     )
   }
 
-  // Get slide class based on index
   const getSlideClass = (index: number) => {
     if (index === activeIndex) return "active"
     if (index === getPrevIndex(activeIndex)) return "prev"
@@ -279,11 +288,8 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
                           src={testimonial.image || "/placeholder.svg"}
                           alt={`תמונת פרופיל של ${testimonial.name}`}
                           loading="lazy"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "https://via.placeholder.com/150?text=תמונת+פרופיל"
-                          }}
-                          crossOrigin="anonymous"
+                          onError={(e) => handleImageError(e, testimonial)}
+                          onLoad={() => console.log(`✅ תמונה נטענה בהצלחה: ${testimonial.name}`)}
                         />
                       </div>
                       <div className="testimonial-meta">

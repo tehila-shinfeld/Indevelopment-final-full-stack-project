@@ -1309,9 +1309,9 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
       >
         <div className={`auth-modal-header ${isDarkMode ? "dark-mode" : ""}`}>
           <div className="auth-modal-tabs">
-            <h2 className="auth-form-title">התחברות ל-TalkToMe.AI</h2>
+            <h2 className={`auth-form-title ${isDarkMode ? "dark-mode" : ""}`}>התחברות ל-TalkToMe.AI</h2>
           </div>
-          <button className="auth-close-button" onClick={onClose} aria-label="סגור">
+          <button className={`auth-close-button ${isDarkMode ? "dark-mode" : ""}`} onClick={onClose} aria-label="סגור">
             <svg
               width="24"
               height="24"
@@ -1330,11 +1330,14 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
 
         {loadingProgress > 0 && (
           <div className="auth-progress-bar-container">
-            <div className="auth-progress-bar" style={{ width: `${loadingProgress}%` }}></div>
+            <div
+              className={`auth-progress-bar ${isDarkMode ? "dark-mode" : ""}`}
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
           </div>
         )}
 
-        <div className="auth-modal-content">
+        <div className={`auth-modal-content ${isDarkMode ? "dark-mode" : ""}`}>
           <motion.div
             initial={{ opacity: 0, x: 0 }}
             animate={{ opacity: 1, x: 0 }}
@@ -1358,8 +1361,10 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
             </div>
 
             <div className="scrollable-form-content">
-              <div className={`form-group ${loginErrors.username ? "has-error" : ""}`}>
-                <label htmlFor="login-username">שם משתמש</label>
+              <div className={`form-group ${loginErrors.username ? "has-error" : ""} ${isDarkMode ? "dark-mode" : ""}`}>
+                <label htmlFor="login-username" className={isDarkMode ? "dark-mode" : ""}>
+                  שם משתמש
+                </label>
                 <input
                   id="login-username"
                   type="text"
@@ -1368,12 +1373,14 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
                   onChange={handleLoginChange}
                   onKeyDown={handleKeyDown}
                   placeholder="הזן שם משתמש"
-                  className={loginErrors.username ? "input-error" : ""}
+                  className={`${loginErrors.username ? "input-error" : ""} ${isDarkMode ? "dark-mode" : ""}`}
                 />
               </div>
 
-              <div className={`form-group ${loginErrors.password ? "has-error" : ""}`}>
-                <label htmlFor="login-password">סיסמה</label>
+              <div className={`form-group ${loginErrors.password ? "has-error" : ""} ${isDarkMode ? "dark-mode" : ""}`}>
+                <label htmlFor="login-password" className={isDarkMode ? "dark-mode" : ""}>
+                  סיסמה
+                </label>
                 <input
                   id="login-password"
                   type="password"
@@ -1382,16 +1389,24 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
                   onChange={handleLoginChange}
                   onKeyDown={handleKeyDown}
                   placeholder="הזן סיסמה"
-                  className={loginErrors.password ? "input-error" : ""}
+                  className={`${loginErrors.password ? "input-error" : ""} ${isDarkMode ? "dark-mode" : ""}`}
                 />
               </div>
 
-              <div className="form-options">
-                <div className="remember-me">
-                  <input type="checkbox" id="remember" checked={rememberMe} onChange={handleRememberMeChange} />
-                  <label htmlFor="remember">זכור אותי</label>
+              <div className={`form-options ${isDarkMode ? "dark-mode" : ""}`}>
+                <div className={`remember-me ${isDarkMode ? "dark-mode" : ""}`}>
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
+                    className={isDarkMode ? "dark-mode" : ""}
+                  />
+                  <label htmlFor="remember" className={isDarkMode ? "dark-mode" : ""}>
+                    זכור אותי
+                  </label>
                 </div>
-                <a href="#forgot-password" className="forgot-password">
+                <a href="#forgot-password" className={`forgot-password ${isDarkMode ? "dark-mode" : ""}`}>
                   שכחת סיסמה?
                 </a>
               </div>
@@ -1401,13 +1416,13 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
             <AnimatePresence>
               {getLoginErrorMessages().length > 0 && (
                 <motion.div
-                  className="auth-errors-container"
+                  className={`auth-errors-container ${isDarkMode ? "dark-mode" : ""}`}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                 >
                   {getLoginErrorMessages().map((message, index) => (
-                    <div key={index} className="auth-error-message">
+                    <div key={index} className={`auth-error-message ${isDarkMode ? "dark-mode" : ""}`}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -1429,13 +1444,13 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
             </AnimatePresence>
 
             <button
-              className={`auth-submit-button ${isLoading ? "loading" : ""}`}
+              className={`auth-submit-button ${isLoading ? "loading" : ""} ${isDarkMode ? "dark-mode" : ""}`}
               onClick={handleLogin}
               disabled={isLoading}
             >
               {isLoading ? (
                 <div className="button-loader-container">
-                  <div className="button-loader"></div>
+                  <div className={`button-loader ${isDarkMode ? "dark-mode" : ""}`}></div>
                   <span>מתחבר...</span>
                 </div>
               ) : (
@@ -1448,7 +1463,7 @@ export default function EnhancedLoginModal({ isOpen, onClose, onNavigate, isDark
         <AnimatePresence>
           {notification.show && (
             <motion.div
-              className="auth-notification"
+              className={`auth-notification ${isDarkMode ? "dark-mode" : ""}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

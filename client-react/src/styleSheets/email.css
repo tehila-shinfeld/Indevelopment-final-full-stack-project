@@ -1,0 +1,175 @@
+.email-contact-container {
+  position: relative;
+  display: inline-block;
+}
+
+.email-contact-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-contact-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.copy-tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.copy-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #333;
+}
+
+/* מודל */
+.email-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.email-modal {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.email-modal h3 {
+  margin: 0 0 15px 0;
+  text-align: center;
+  color: #333;
+}
+
+.email-modal p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.email-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.email-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.email-option-btn:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.email-option-btn.gmail:hover {
+  border-color: #ea4335;
+}
+
+.email-option-btn.outlook:hover {
+  border-color: #0078d4;
+}
+
+.email-option-btn.copy:hover {
+  border-color: #28a745;
+}
+
+.email-details {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  font-size: 12px;
+  color: #666;
+}
+
+.email-details p {
+  margin: 5px 0;
+  text-align: right;
+}
+
+/* מצב כהה */
+.dark-mode .email-modal {
+  background: #2a2a2a;
+  color: white;
+}
+
+.dark-mode .modal-close {
+  color: #ccc;
+}
+
+.dark-mode .modal-close:hover {
+  color: white;
+}
+
+.dark-mode .email-modal h3 {
+  color: white;
+}
+
+.dark-mode .email-option-btn {
+  background: #3a3a3a;
+  border-color: #555;
+  color: white;
+}
+
+.dark-mode .email-option-btn:hover {
+  background: #4a4a4a;
+}

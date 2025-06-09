@@ -1,6 +1,7 @@
 "use client"
 
 import "../styleSheets/footer.css"
+import EnhancedEmailContact from "./email-contact"
 
 const Footer = () => {
   return (
@@ -40,22 +41,9 @@ const Footer = () => {
         <div className="footer-bottom">
           <p className="copyright">© 2025 TalkToMe.AI. כל הזכויות שמורות.</p>
           <div className="social-links">
-            <a href="mailto:talktome.ai2025@gmail.com" aria-label="Email">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-            </a>
+            {/* החלף את הלינק הישן בקומפוננט החדש */}
+            <EnhancedEmailContact />
+
             <a href="#" aria-label="LinkedIn">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

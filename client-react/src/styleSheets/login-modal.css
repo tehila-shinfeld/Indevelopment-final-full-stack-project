@@ -1,4 +1,56 @@
-Auth Modal Styles
+/* Auth Modal Styles */
+:root {
+  /* Light mode colors */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --ring: #3b82f6;
+  --gradient-from: #3b82f6;
+  --gradient-to: #06b6d4;
+}
+
+/* Dark mode colors */
+.dark-mode {
+  --background: #0f172a;
+  --foreground: #ffffff;
+  --card: #1e293b;
+  --card-foreground: #ffffff;
+  --popover: #1e293b;
+  --popover-foreground: #ffffff;
+  --primary: #d946ef;
+  --primary-hover: #c026d3;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #ffffff;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #334155;
+  --input: #334155;
+  --ring: #d946ef;
+  --gradient-from: #d946ef;
+  --gradient-to: #06b6d4;
+}
+
 .auth-modal-overlay {
   position: fixed;
   top: 0;
@@ -15,7 +67,7 @@ Auth Modal Styles
 }
 
 .auth-modal {
-  background-color: white;
+  background-color: var(--card);
   border-radius: 1rem;
   width: 100%;
   max-width: 650px; /* הגדלתי מ-480px ל-650px */
@@ -24,6 +76,7 @@ Auth Modal Styles
   display: flex;
   flex-direction: column;
   max-height: 90vh;
+  border: 1px solid var(--border);
 }
 
 .auth-modal-header {
@@ -33,7 +86,7 @@ Auth Modal Styles
   padding: 2rem 2rem 0; /* הגדלתי padding מ-1.5rem ל-2rem */
   position: sticky;
   top: 0;
-  background-color: white;
+  background-color: var(--card);
   z-index: 10;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
@@ -46,7 +99,7 @@ Auth Modal Styles
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(to right, var(--gradient-from, #d946ef), var(--gradient-to, #06b6d4));
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
 }
 
 .auth-modal-tabs {
@@ -61,7 +114,7 @@ Auth Modal Styles
   padding: 1rem 1.5rem; /* הגדלתי padding */
   font-size: 1.1rem; /* הגדלתי font-size */
   font-weight: 600;
-  color: #64748b;
+  color: var(--muted-foreground);
   cursor: pointer;
   position: relative;
   transition: color 0.3s ease;
@@ -75,13 +128,13 @@ Auth Modal Styles
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(to right, var(--gradient-from, #d946ef), var(--gradient-to, #06b6d4));
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
 
 .auth-tab.active {
-  color: var(--primary, #d946ef);
+  color: var(--primary);
 }
 
 .auth-tab.active::after {
@@ -91,7 +144,7 @@ Auth Modal Styles
 .auth-close-button {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--muted-foreground);
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -101,7 +154,7 @@ Auth Modal Styles
 }
 
 .auth-close-button:hover {
-  color: #0f172a;
+  color: var(--foreground);
 }
 
 .auth-modal-content {
@@ -109,6 +162,7 @@ Auth Modal Styles
   position: relative;
   flex: 1;
   overflow-y: auto;
+  background-color: var(--card);
 }
 
 .auth-form {
@@ -122,10 +176,10 @@ Auth Modal Styles
 .auth-form-title {
   font-size: 1.75rem; /* הגדלתי מ-1.5rem ל-1.75rem */
   font-weight: 700;
-  color: #0f172a;
+  color: var(--foreground);
   margin-bottom: 0.5rem;
   font-family: "Heebo", sans-serif;
-  background: linear-gradient(to right, var(--gradient-from, #d946ef), var(--gradient-to, #06b6d4));
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -134,11 +188,11 @@ Auth Modal Styles
 
 .auth-error {
   background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--destructive);
   padding: 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  border-left: 3px solid #ef4444;
+  border-left: 3px solid var(--destructive);
 }
 
 .scrollable-form-content {
@@ -156,28 +210,28 @@ Auth Modal Styles
 .form-group label {
   font-size: 1rem; /* הגדלתי מ-0.875rem ל-1rem */
   font-weight: 500;
-  color: #0f172a;
+  color: var(--foreground);
 }
 
 .form-group input {
   padding: 1rem; /* הגדלתי padding מ-0.75rem ל-1rem */
   border-radius: 0.5rem;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
+  border: 1px solid var(--border);
+  background-color: var(--input);
   font-size: 1.1rem; /* הגדלתי font-size */
-  color: #0f172a;
+  color: var(--foreground);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   font-family: "Heebo", sans-serif;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--primary, #d946ef);
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2);
 }
 
 .form-group input::placeholder {
-  color: #94a3b8;
+  color: var(--muted-foreground);
 }
 
 .form-options {
@@ -193,20 +247,24 @@ Auth Modal Styles
   gap: 0.75rem; /* הגדלתי gap */
 }
 
+.remember-me label {
+  color: var(--foreground);
+}
+
 .forgot-password {
-  color: var(--primary, #d946ef);
+  color: var(--primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .forgot-password:hover {
-  color: var(--primary-hover, #c026d3);
+  color: var(--primary-hover);
   text-decoration: underline;
 }
 
 .auth-submit-button {
-  background: linear-gradient(135deg, var(--gradient-from, #d946ef), var(--gradient-to, #06b6d4));
-  color: white;
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
+  color: var(--primary-foreground);
   font-size: 1.2rem; /* הגדלתי font-size */
   font-weight: 600;
   padding: 1.25rem; /* הגדלתי padding מ-0.875rem ל-1.25rem */
@@ -228,7 +286,7 @@ Auth Modal Styles
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--primary-hover, #c026d3), #0891b2);
+  background: linear-gradient(135deg, var(--primary-hover), #0891b2);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 1;
@@ -256,6 +314,13 @@ Auth Modal Styles
   cursor: wait;
 }
 
+.button-loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 .button-loader {
   width: 1.25rem;
   height: 1.25rem;
@@ -263,7 +328,6 @@ Auth Modal Styles
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s linear infinite;
-  margin: 0 auto;
 }
 
 @keyframes spin {
@@ -274,7 +338,7 @@ Auth Modal Styles
 
 .auth-switch {
   font-size: 1rem; /* הגדלתי מ-0.875rem ל-1rem */
-  color: #64748b;
+  color: var(--muted-foreground);
   text-align: center;
   margin-top: 1.5rem;
   padding-bottom: 1rem;
@@ -283,7 +347,7 @@ Auth Modal Styles
 .auth-switch-button {
   background: none;
   border: none;
-  color: var(--primary, #d946ef);
+  color: var(--primary);
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -291,7 +355,7 @@ Auth Modal Styles
 }
 
 .auth-switch-button:hover {
-  color: var(--primary-hover, #c026d3);
+  color: var(--primary-hover);
   text-decoration: underline;
 }
 
@@ -328,9 +392,9 @@ Auth Modal Styles
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
-  background-color: white;
-  color: #0f172a;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  color: var(--card-foreground);
   font-family: "Heebo", sans-serif;
 }
 
@@ -347,6 +411,11 @@ Auth Modal Styles
   color: #ea4335;
 }
 
+.dark-mode .google-button {
+  color: #ea4335;
+  background-color: var(--card);
+}
+
 .auth-divider {
   position: relative;
   text-align: center;
@@ -360,14 +429,14 @@ Auth Modal Styles
   left: 0;
   right: 0;
   height: 1px;
-  background-color: #e2e8f0;
+  background-color: var(--border);
 }
 
 .auth-divider span {
   position: relative;
-  background-color: white;
+  background-color: var(--card);
   padding: 0 1.5rem; /* הגדלתי padding */
-  color: #64748b;
+  color: var(--muted-foreground);
   font-size: 1rem; /* הגדלתי font-size */
 }
 
@@ -382,8 +451,13 @@ Auth Modal Styles
   width: 100%;
 }
 
+.dark-mode .auth-errors-container {
+  background-color: rgba(229, 62, 62, 0.15);
+  border: 1px solid rgba(229, 62, 62, 0.4);
+}
+
 .auth-error-message {
-  color: #e53e3e;
+  color: var(--destructive);
   display: flex;
   align-items: flex-start;
   gap: 0.75rem; /* הגדלתי gap */
@@ -407,7 +481,7 @@ Auth Modal Styles
 
 .password-strength-meter {
   height: 6px; /* הגדלתי height */
-  background-color: #e2e8f0;
+  background-color: var(--border);
   border-radius: 3px;
   margin-bottom: 0.75rem; /* הגדלתי margin */
   overflow: hidden;
@@ -424,11 +498,12 @@ Auth Modal Styles
   justify-content: space-between;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
+  color: var(--muted-foreground);
 }
 
 .password-strength-tips {
   font-size: 0.875rem;
-  color: #718096;
+  color: var(--muted-foreground);
   margin-top: 0.5rem;
 }
 
@@ -443,7 +518,7 @@ Auth Modal Styles
   cursor: pointer;
   width: 1.25rem; /* הגדלתי size */
   height: 1.25rem;
-  accent-color: #3182ce;
+  accent-color: var(--primary);
 }
 
 .remember-me label {
@@ -452,121 +527,20 @@ Auth Modal Styles
   font-size: 1rem; /* הגדלתי font-size */
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .auth-modal {
-    background-color: #1e293b;
-  }
-
-  .auth-modal-header {
-    background-color: #1e293b;
-  }
-
-  .auth-form-title {
-    color: #f1f5f9;
-    background: linear-gradient(to right, var(--gradient-from, #d946ef), var(--gradient-to, #06b6d4));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .form-group label {
-    color: #e2e8f0;
-  }
-
-  .form-group input {
-    background-color: #334155;
-    border-color: #475569;
-    color: #f1f5f9;
-  }
-
-  .form-group input::placeholder {
-    color: #94a3b8;
-  }
-
-  .form-group input:focus {
-    border-color: var(--primary, #d946ef);
-    box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.3);
-  }
-
-  .auth-tab {
-    color: #94a3b8;
-  }
-
-  .auth-tab.active {
-    color: var(--primary, #d946ef);
-  }
-
-  .auth-close-button:hover {
-    color: #f1f5f9;
-  }
-
-  .auth-switch {
-    color: #94a3b8;
-  }
-
-  .auth-switch-button {
-    color: var(--primary, #d946ef);
-  }
-
-  .auth-switch-button:hover {
-    color: var(--primary-hover, #c026d3);
-  }
-
-  .social-login-button {
-    background-color: #334155;
-    border-color: #475569;
-    color: #f1f5f9;
-  }
-
-  .auth-divider span {
-    background-color: #1e293b;
-    color: #94a3b8;
-  }
-
-  .scrollable-form-content::-webkit-scrollbar-track {
-    background: #334155;
-  }
-
-  .scrollable-form-content::-webkit-scrollbar-thumb {
-    background: #475569;
-  }
-
-  .scrollable-form-content::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
+/* Progress bar */
+.auth-progress-bar-container {
+  height: 3px;
+  width: 100%;
+  background-color: var(--border);
+  overflow: hidden;
 }
 
-/* Responsive styles */
-@media (max-width: 640px) {
-  .auth-modal {
-    max-width: 100%;
-    height: 100%;
-    border-radius: 0;
-    max-height: 100vh;
-  }
-
-  .auth-modal-overlay {
-    padding: 0;
-  }
-
-  .auth-modal-content {
-    padding: 1.5rem; /* שמרתי על padding קטן יותר במובייל */
-  }
-
-  .auth-form-title {
-    font-size: 1.5rem; /* שמרתי על גודל קטן יותר במובייל */
-  }
-
-  .social-login-button {
-    font-size: 1rem;
-  }
-
-  .auth-submit-button {
-    font-size: 1.1rem;
-    padding: 1rem;
-  }
+.auth-progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
+  transition: width 0.3s ease;
 }
+
 /* Fix for modal positioning - add at the top of the file */
 .auth-modal-overlay {
   position: fixed !important;
@@ -586,7 +560,7 @@ Auth Modal Styles
 }
 
 .auth-modal {
-  background-color: white;
+  background-color: var(--card);
   border-radius: 1rem;
   width: 100%;
   max-width: 650px;
@@ -624,3 +598,33 @@ body.modal-open {
   backface-visibility: hidden;
 }
 
+/* Responsive styles */
+@media (max-width: 640px) {
+  .auth-modal {
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .auth-modal-overlay {
+    padding: 0;
+  }
+
+  .auth-modal-content {
+    padding: 1.5rem; /* שמרתי על padding קטן יותר במובייל */
+  }
+
+  .auth-form-title {
+    font-size: 1.5rem; /* שמרתי על גודל קטן יותר במובייל */
+  }
+
+  .social-login-button {
+    font-size: 1rem;
+  }
+
+  .auth-submit-button {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+}

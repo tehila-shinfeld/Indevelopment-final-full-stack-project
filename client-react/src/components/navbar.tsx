@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import type { Dispatch, SetStateAction } from "react"
 import { useState } from "react"
 import "../styleSheets/navbar.css"
@@ -41,9 +40,19 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
     setIsPricingPopupOpen(false)
   }
 
+  // New function to handle smooth scrolling to sections
+  const scrollToSection = (sectionId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+      setIsMenuOpen(false)
+    }
+  }
+
   return (
     <>
-      <header  style={{ marginBottom: "40px" }} className={`navbar ${isScrolled ? "scrolled" : ""} `}>
+      <header style={{ marginBottom: "40px" }} className={`navbar ${isScrolled ? "scrolled" : ""} `}>
         <div className="container navbar-container">
           <div className="logo">
             <span className="logo-text">
@@ -52,13 +61,13 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
           </div>
 
           <nav className={`nav-links ${isMenuOpen ? "open" : ""}`}>
-            <a href="#how-it-works" onClick={() => setIsMenuOpen(false)}>
+            <a href="#how-it-works" onClick={(e) => scrollToSection("how-it-works", e)}>
               איך זה עובד
             </a>
-            <a href="#features" onClick={() => setIsMenuOpen(false)}>
+            <a href="#features" onClick={(e) => scrollToSection("features", e)}>
               יתרונות
             </a>
-            <a href="#testimonials" onClick={() => setIsMenuOpen(false)}>
+            <a href="#testimonials" onClick={(e) => scrollToSection("testimonials", e)}>
               לקוחות
             </a>
             <a href="#pricing" onClick={handlePricingClick}>
@@ -69,7 +78,6 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
           <div className="navbar-actions">
             <button className="theme-toggle" onClick={toggleDarkMode} aria-label="Toggle dark mode">
               {isDarkMode ? (
-                // במצב לילה - מציג ירח (כי זה המצב הנוכחי)
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -84,7 +92,6 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
               ) : (
-                // במצב יום - מציג שמש (כי זה המצב הנוכחי)
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -198,8 +205,6 @@ const Navbar = ({ isScrolled, isDarkMode, toggleDarkMode, isMenuOpen, setIsMenuO
                   <span>תמיכה מלאה ועדכונים</span>
                 </div>
               </div>
-
-        
 
               <div className="limited-time">⏰ הצעה מוגבלת לחודש זה בלבד</div>
             </div>

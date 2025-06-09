@@ -660,3 +660,154 @@
     color: #60a5fa;
   }
 }
+/* Enhanced Hero Button with smoother animations */
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3), 0 2px 8px rgba(59, 130, 246, 0.2), inset 0 1px 0
+    rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  font-family: "Heebo", sans-serif;
+  font-weight: 600;
+  transform: translateY(0);
+  backdrop-filter: blur(10px);
+}
+
+.hero-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.hero-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  border-radius: 1rem;
+}
+
+.hero-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), 0 4px 15px rgba(59, 130, 246, 0.3), inset 0 1px 0
+    rgba(255, 255, 255, 0.3);
+}
+
+.hero-button:hover::before {
+  left: 100%;
+}
+
+.hero-button:hover::after {
+  opacity: 1;
+}
+
+.hero-button:active {
+  transform: translateY(-1px) scale(0.98);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button-text,
+.button-icon {
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-button:hover .button-icon {
+  transform: translateX(-2px) rotate(-5deg);
+}
+
+.hero-button:hover .button-text {
+  letter-spacing: 0.02em;
+}
+
+.button-icon {
+  margin-right: 0.25rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Add a subtle pulse animation */
+@keyframes button-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3), 0 2px 8px rgba(59, 130, 246, 0.2), inset 0 1px 0
+      rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), 0 2px 12px rgba(59, 130, 246, 0.3), inset 0 1px 0
+      rgba(255, 255, 255, 0.2);
+  }
+}
+
+.hero-button {
+  animation: button-pulse 3s ease-in-out infinite;
+}
+
+.hero-button:hover {
+  animation: none;
+}
+
+/* Enhanced focus states for accessibility */
+.hero-button:focus {
+  outline: none;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3), 0 2px 8px rgba(59, 130, 246, 0.2), inset 0 1px 0
+    rgba(255, 255, 255, 0.2), 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive button adjustments */
+@media (max-width: 640px) {
+  .hero-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .hero-button:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+/* Enhanced loading state */
+.hero-button.loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.hero-button.loading::before {
+  left: -100%;
+  animation: loading-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

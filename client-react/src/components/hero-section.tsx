@@ -258,12 +258,50 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
               <motion.button
                 className="hero-button"
                 onClick={handleStartButtonClick}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                whileHover={{
+                  y: -3,
+                  scale: 1.02,
+                  transition: {
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 17,
+                    duration: 0.3,
+                  },
+                }}
+                whileTap={{
+                  scale: 0.98,
+                  y: -1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 600,
+                    damping: 20,
+                    duration: 0.1,
+                  },
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.3,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15,
+                }}
+                onHoverStart={() => {
+                  // Add subtle haptic feedback if supported
+                  if (navigator.vibrate) {
+                    navigator.vibrate(10)
+                  }
+                }}
               >
-                <span className="button-text">התחילו עכשיו</span>
-                <svg
+                <motion.span
+                  className="button-text"
+                  whileHover={{ letterSpacing: "0.02em" }}
+                  transition={{ duration: 0.3 }}
+                >
+                  התחילו עכשיו
+                </motion.span>
+                <motion.svg
                   className="button-icon"
                   width="20"
                   height="20"
@@ -273,12 +311,21 @@ export default function HeroSection({ sectionRef, isVisible, openModal }: HeroSe
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  whileHover={{
+                    x: -2,
+                    rotate: -5,
+                    transition: {
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                    },
+                  }}
                 >
                   <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
                   <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
                   <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
                   <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-                </svg>
+                </motion.svg>
               </motion.button>
             </motion.div>
 

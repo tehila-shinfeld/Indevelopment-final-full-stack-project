@@ -30,6 +30,7 @@ import { useUser } from "../context/UserContext"
 import jsPDF from "jspdf"
 import { Header } from "./header"
 import "../styleSheets/UserMeetings.css"
+
 interface Meeting {
   id: number
   name: string
@@ -131,7 +132,6 @@ const UserMeetings = () => {
   const [deletingMeetingId, setDeletingMeetingId] = useState<number | null>(null)
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
   const [copied, setCopied] = useState(false)
-  const [isClosing, setIsClosing] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     meetingId: null as number | null,
@@ -145,6 +145,10 @@ const UserMeetings = () => {
   const [downloadingPdf, setDownloadingPdf] = useState(false)
   const [sendingEmail, setSendingEmail] = useState(false)
   const [emailSentSuccess, setEmailSentSuccess] = useState(false)
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "compact">(() => {
+    const savedViewMode = localStorage.getItem("meetingsViewMode")
+    return (savedViewMode as "grid" | "list" | "compact") || "grid"
+  })
 
   const meetingsRef = useRef<HTMLDivElement>(null)
 
@@ -159,6 +163,10 @@ const UserMeetings = () => {
   const toggleDarkMode = useCallback(() => {
     setDarkMode((prev) => !prev)
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem("meetingsViewMode", viewMode)
+  }, [viewMode])
 
   useEffect(() => {
     if (darkMode) {
@@ -223,7 +231,6 @@ const UserMeetings = () => {
   }, [])
 
   const handleError = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (error: any, context: string) => {
       console.error(`Error in ${context}:`, error)
 
@@ -383,13 +390,18 @@ const UserMeetings = () => {
   })
 
   const handleCardClick = (meeting: Meeting) => {
+    console.log("Card clicked for meeting:", meeting.id, meeting.name)
+
     if (!userId) {
       handleError(new Error("User not authenticated"), "userAuthentication")
       return
     }
 
     if (meeting && meeting.id) {
-      window.open(`${window.location.pathname}?meetingId=${meeting.id}`, "_blank")
+      setSelectedMeeting(meeting)
+      const newUrl = `${window.location.pathname}?meetingId=${meeting.id}`
+      window.history.pushState({ meetingId: meeting.id }, "", newUrl)
+      console.log("Meeting selected:", meeting.name)
     } else {
       console.error("Invalid meeting ID:", meeting)
       addNotification({
@@ -398,6 +410,52 @@ const UserMeetings = () => {
         message: "לא ניתן לפתוח את פגישה. מזהה פגישה אינו תקין.",
       })
     }
+  }
+
+  const handleOpenInNewTab = (meeting: Meeting, event: React.MouseEvent) => {
+    event.stopPropagation()
+
+    console.log("Opening in new tab:", meeting.id)
+
+    if (!userId) {
+      handleError(new Error("User not authenticated"), "userAuthentication")
+      return
+    }
+
+    if (meeting && meeting.id) {
+      // שמירת נתוני הפגישה ב-localStorage במקום sessionStorage כדי שיהיו זמינים בין כרטיסיות
+      const tempKey = `meeting_${meeting.id}`
+      localStorage.setItem(tempKey, JSON.stringify(meeting))
+
+      // יצירת URL שמתאים לניתוב מבוסס האש של האפליקציה
+      // שימוש ב-/user-meetings כנתיב במקום הנתיב הנוכחי
+      const baseUrl = window.location.origin
+      const newUrl = `${baseUrl}/user-meetings?meetingId=${meeting.id}&userId=${userId}`
+
+      console.log("New tab URL:", newUrl)
+
+      const newTab = window.open(newUrl, "_blank")
+
+      if (!newTab) {
+        addNotification({
+          type: "warning",
+          title: "חלון חדש נחסם",
+          message: "הדפדפן חסם את פתיחת החלון החדש. אנא אפשר חלונות קופצים או נסה שוב.",
+        })
+      } else {
+        addNotification({
+          type: "info",
+          title: "נפתח בכרטיסייה חדשה",
+          message: `פגישה "${meeting.name}" נפתחה בכרטיסייה חדשה.`,
+        })
+      }
+    }
+  }
+
+  const handleBackToMeetingsList = () => {
+    setSelectedMeeting(null)
+    const newUrl = window.location.pathname
+    window.history.pushState({}, "", newUrl)
   }
 
   const showDeleteConfirmation = (meeting: Meeting, event: React.MouseEvent) => {
@@ -429,7 +487,9 @@ const UserMeetings = () => {
     }
 
     try {
-      await axios.delete(`https://${import.meta.env.VITE_API_BASE_URL}/api/Meeting/${confirmDialog.meetingId}/User/${userId}`)
+      await axios.delete(
+        `https://${import.meta.env.VITE_API_BASE_URL}/api/Meeting/${confirmDialog.meetingId}/User/${userId}`,
+      )
 
       setTimeout(() => {
         setMeetings((prevMeetings) => prevMeetings.filter((meeting) => meeting.id !== confirmDialog.meetingId))
@@ -685,8 +745,6 @@ const UserMeetings = () => {
     navigate("/")
   }
 
-
-
   const handleSendToEmail = async (meeting: Meeting, event?: React.MouseEvent) => {
     if (event) {
       event.stopPropagation()
@@ -708,7 +766,6 @@ const UserMeetings = () => {
       }
       let userEmail = ""
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const decodedToken: any = jwtDecode(token)
 
         userEmail = decodedToken.email
@@ -826,16 +883,6 @@ const UserMeetings = () => {
     }
   }
 
-  const handleBackToList = () => {
-    setIsClosing(true)
-
-    document.body.classList.add("tab-closing")
-
-    setTimeout(() => {
-      window.close()
-    }, 600)
-  }
-
   useEffect(() => {
     let isMounted = true
 
@@ -849,7 +896,9 @@ const UserMeetings = () => {
       }
 
       try {
-        const response = await axios.get<Meeting[]>(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/get-user-meetings/${userId}`)
+        const response = await axios.get<Meeting[]>(
+          `https://${import.meta.env.VITE_API_BASE_URL}/api/files/get-user-meetings/${userId}`,
+        )
         const meetingsData = response.data
 
         if (meetingsData.length === 0) {
@@ -877,19 +926,40 @@ const UserMeetings = () => {
           setMeetings(meetingsData)
         }
 
+        // Handle meetingId from URL parameters
         const params = new URLSearchParams(window.location.search)
         const meetingId = params.get("meetingId")
 
-        if (meetingId && meetingsData && meetingsData.length > 0) {
+        if (meetingId) {
           const meetingIdNum = Number.parseInt(meetingId, 10)
 
           if (!isNaN(meetingIdNum)) {
-            const meeting = meetingsData.find((m: Meeting) => m.id === meetingIdNum)
+            // נסה למצוא את הפגישה ברשימת הפגישות שנטענו
+            let meeting = meetingsData.find((m: Meeting) => m.id === meetingIdNum)
 
-            if (meeting) {
-              if (isMounted) {
-                setSelectedMeeting(meeting)
+            // אם הפגישה לא נמצאה, נסה לקחת אותה מ-localStorage
+            if (!meeting) {
+              const tempKey = `meeting_${meetingIdNum}`
+              const storedMeetingData = localStorage.getItem(tempKey)
+
+              if (storedMeetingData) {
+                try {
+                  meeting = JSON.parse(storedMeetingData)
+                  console.log("Found meeting in localStorage:", meeting)
+
+                  // הוסף את הפגישה לרשימת הפגישות אם היא לא קיימת שם
+                  if (!meetingsData.some((m) => m.id === meetingIdNum)) {
+                    setMeetings((prev) => [...prev, meeting])
+                  }
+                } catch (error) {
+                  console.error("Error parsing stored meeting data:", error)
+                }
               }
+            }
+
+            if (meeting && isMounted) {
+              setSelectedMeeting(meeting)
+              console.log("Selected meeting from URL parameters:", meeting)
             } else {
               console.error("Meeting not found with ID:", meetingIdNum)
               addNotification({
@@ -951,7 +1021,7 @@ const UserMeetings = () => {
         if (confirmDialog.isOpen) {
           closeConfirmDialog()
         } else if (selectedMeeting) {
-          handleBackToList()
+          handleBackToMeetingsList()
         }
       }
     }
@@ -992,9 +1062,9 @@ const UserMeetings = () => {
     if (!selectedMeeting) return null
 
     return (
-      <div className={`meeting-details-container ${isClosing ? "closing" : ""}`}>
+      <div className="meeting-details-container">
         <div className="meeting-details-header">
-          <button className="modern-back-button" onClick={handleBackToList} aria-label="חזרה לרשימת המשימות">
+          <button className="modern-back-button" onClick={handleBackToMeetingsList} aria-label="חזרה לרשימת הפגישות">
             <ArrowRight size={18} />
             <span>חזרה לרשימת הפגישות</span>
           </button>
@@ -1101,59 +1171,149 @@ const UserMeetings = () => {
       )
     }
 
-    return (
-      <div className="meetings-grid" ref={meetingsRef}>
-        {filteredMeetings.map((meeting) => (
+    const renderGridView = () => (
+      <div className="meetings-grid-enhanced" ref={meetingsRef}>
+        {filteredMeetings.map((meeting, index) => (
           <div
             key={meeting.id}
             data-id={meeting.id}
-            className={`meeting-card ${deletingMeetingId === meeting.id ? "deleting" : ""}`}
+            className={`meeting-card-enhanced ${deletingMeetingId === meeting.id ? "deleting" : ""}`}
             onClick={() => handleCardClick(meeting)}
           >
-            <div className="card-header">
-              <h3 className="meeting-title">{highlightMatch(meeting.name, searchName)}</h3>
-              <div className="meeting-date">
-                <Calendar size={14} />
-                <span>{formatDate(meeting.summaryContent)}</span>
+            <div className={`card-accent-bar accent-${(index % 5) + 1}`}></div>
+
+            <div className="card-content-enhanced">
+              <div className="card-header-enhanced">
+                <div className="meeting-info-enhanced">
+                  <h3 className="meeting-title-enhanced">{highlightMatch(meeting.name, searchName)}</h3>
+                  <div className="meeting-date-enhanced">
+                    <Calendar size={16} />
+                    <span>{formatDate(meeting.summaryContent)}</span>
+                  </div>
+                </div>
+
+                <div className="meeting-status-enhanced">
+                  {favorites.includes(meeting.id) && (
+                    <div className="favorite-indicator-enhanced">
+                      <Star size={16} fill="currentColor" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="card-actions-enhanced">
+                <button
+                  className="action-btn-enhanced favorite-btn"
+                  title={favorites.includes(meeting.id) ? "הסר ממועדפים" : "הוסף למועדפים"}
+                  onClick={(e) => toggleFavorite(meeting.id, e)}
+                >
+                  {favorites.includes(meeting.id) ? <Star size={18} fill="currentColor" /> : <StarOff size={18} />}
+                </button>
+                <button
+                  className="action-btn-enhanced download-btn"
+                  title="הורד PDF"
+                  onClick={(e) => handleDownloadPDF(meeting, e)}
+                  disabled={downloadingPdf}
+                >
+                  <FileDown size={18} />
+                </button>
+                <button
+                  className="action-btn-enhanced email-btn"
+                  title="שלח לאימייל"
+                  onClick={(e) => handleSendToEmail(meeting, e)}
+                  disabled={sendingEmail}
+                >
+                  <FileText size={18} />
+                </button>
+                <button
+                  className="action-btn-enhanced delete-btn"
+                  title="מחק"
+                  onClick={(e) => showDeleteConfirmation(meeting, e)}
+                >
+                  <Trash2 size={18} />
+                </button>
+                <button
+                  className="action-btn-enhanced expand-btn"
+                  title="פתח בחלון חדש"
+                  onClick={(e) => handleOpenInNewTab(meeting, e)}
+                >
+                  <ExternalLink size={18} />
+                </button>
               </div>
             </div>
-            <div className="card-content">
-              <p className="meeting-summary">{meeting.summaryContent}</p>
+          </div>
+        ))}
+      </div>
+    )
+
+    const renderListView = () => (
+      <div className="meetings-list-view" ref={meetingsRef}>
+        {filteredMeetings.map((meeting, index) => (
+          <div
+            key={meeting.id}
+            data-id={meeting.id}
+            className={`meeting-item-list ${deletingMeetingId === meeting.id ? "deleting" : ""}`}
+            onClick={() => handleCardClick(meeting)}
+          >
+            <div className={`list-accent-indicator accent-${(index % 5) + 1}`}></div>
+
+            <div className="list-content">
+              <div className="list-main-info">
+                <h3 className="list-title">{highlightMatch(meeting.name, searchName)}</h3>
+              </div>
+
+              <div className="list-meta">
+                <div className="list-date">
+                  <Calendar size={14} />
+                  <span>{formatDate(meeting.summaryContent)}</span>
+                </div>
+                {favorites.includes(meeting.id) && (
+                  <div className="list-favorite">
+                    <Star size={14} fill="currentColor" />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="card-actions">
+
+            <div className="list-actions">
               <button
-                className="card-action"
+                className="list-action-btn favorite-btn"
                 title={favorites.includes(meeting.id) ? "הסר ממועדפים" : "הוסף למועדפים"}
                 onClick={(e) => toggleFavorite(meeting.id, e)}
               >
-                {favorites.includes(meeting.id) ? <Star size={16} /> : <StarOff size={16} />}
+                {favorites.includes(meeting.id) ? <Star size={16} fill="currentColor" /> : <StarOff size={16} />}
               </button>
+
               <button
-                className="card-action"
+                className="list-action-btn download-btn"
                 title="הורד PDF"
                 onClick={(e) => handleDownloadPDF(meeting, e)}
                 disabled={downloadingPdf}
               >
                 <FileDown size={16} />
               </button>
+
               <button
-                className="card-action"
+                className="list-action-btn email-btn"
                 title="שלח לאימייל"
                 onClick={(e) => handleSendToEmail(meeting, e)}
                 disabled={sendingEmail}
               >
                 <FileText size={16} />
               </button>
-              <button className="card-action delete" title="מחק" onClick={(e) => showDeleteConfirmation(meeting, e)}>
+
+              <button
+                className="list-action-btn delete-btn"
+                title="מחק"
+                onClick={(e) => showDeleteConfirmation(meeting, e)}
+              >
                 <Trash2 size={16} />
               </button>
+
               <button
-                className="card-expand"
+                className="list-action-btn expand-btn"
                 title="פתח בחלון חדש"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  window.open(`${window.location.pathname}?meetingId=${meeting.id}`, "_blank")
-                }}
+                onClick={(e) => handleOpenInNewTab(meeting, e)}
               >
                 <ExternalLink size={16} />
               </button>
@@ -1162,10 +1322,56 @@ const UserMeetings = () => {
         ))}
       </div>
     )
+
+    const renderCompactView = () => (
+      <div className="meetings-compact-view" ref={meetingsRef}>
+        {filteredMeetings.map((meeting, index) => (
+          <div
+            key={meeting.id}
+            data-id={meeting.id}
+            className={`meeting-item-compact ${deletingMeetingId === meeting.id ? "deleting" : ""}`}
+            onClick={() => handleCardClick(meeting)}
+          >
+            <div className={`compact-accent accent-${(index % 5) + 1}`}></div>
+
+            <div className="compact-info">
+              <h4 className="compact-title">{highlightMatch(meeting.name, searchName)}</h4>
+              <span className="compact-date">{formatDate(meeting.summaryContent)}</span>
+            </div>
+
+            <div className="compact-status">
+              {favorites.includes(meeting.id) && <Star size={12} fill="currentColor" className="compact-favorite" />}
+            </div>
+
+            <div className="compact-actions">
+              <button className="compact-action-btn" title="פתח" onClick={(e) => handleOpenInNewTab(meeting, e)}>
+                <ExternalLink size={14} />
+              </button>
+              <button
+                className="compact-action-btn delete-btn"
+                title="מחק"
+                onClick={(e) => showDeleteConfirmation(meeting, e)}
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+
+    switch (viewMode) {
+      case "list":
+        return renderListView()
+      case "compact":
+        return renderCompactView()
+      default:
+        return renderGridView()
+    }
   }
 
   return (
-    <div className={`dashboard-container ${isClosing ? "page-closing" : ""}`}>
+    <div className="dashboard-container">
       <ConfirmationDialog
         isOpen={confirmDialog.isOpen}
         title="אישור מחיקה"
@@ -1232,6 +1438,46 @@ const UserMeetings = () => {
                 <Star size={16} />
                 <span>מועדפים</span>
               </button>
+
+              <div className="view-mode-selector">
+                <button
+                  className={`view-mode-btn ${viewMode === "grid" ? "active" : ""}`}
+                  onClick={() => setViewMode("grid")}
+                  title="תצוגת כרטיסים"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                </button>
+                <button
+                  className={`view-mode-btn ${viewMode === "list" ? "active" : ""}`}
+                  onClick={() => setViewMode("list")}
+                  title="תצוגת רשימה"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                </button>
+                <button
+                  className={`view-mode-btn ${viewMode === "compact" ? "active" : ""}`}
+                  onClick={() => setViewMode("compact")}
+                  title="תצוגה קומפקטית"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="2" />
+                    <rect x="3" y="10" width="18" height="2" />
+                    <rect x="3" y="16" width="18" height="2" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </section>
         )}
@@ -1242,15 +1488,41 @@ const UserMeetings = () => {
       </main>
 
       <ScrollToTopButton />
-      {emailSentSuccess && (
-        <div className="email-success-overlay" onClick={() => setEmailSentSuccess(false)}>
-          <div className="email-success-animation">
-            <div className="email-success-content">
-              <div className="email-success-icon">
-                <CheckCircle size={40} />
+      {sendingEmail && (
+        <div className="email-overlay">
+          <div className="email-container">
+            <div className="email-animation">
+              <div className="email-spinner">
+                <div className="spinner-circle"></div>
+                <div className="spinner-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                </div>
               </div>
-              <h3>המייל נשלח בהצלחה!</h3>
-              <p>סיכום הפגישה נשלח לתיבת הדואר שלך</p>
+              <div className="email-content">
+                <h3>שולח אימייל...</h3>
+                <p>מכין את קובץ ה-PDF ושולח לתיבת הדואר שלך</p>
+                <div className="loading-progress">
+                  <div className="progress-bar"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {emailSentSuccess && (
+        <div className="email-overlay">
+          <div className="email-container success">
+            <div className="email-animation">
+              <div className="success-icon">
+                <CheckCircle size={60} />
+                <div className="success-ripple"></div>
+              </div>
+              <div className="email-content">
+                <h3>המייל נשלח בהצלחה!</h3>
+                <p>סיכום הפגישה נשלח לתיבת הדואר שלך</p>
+              </div>
             </div>
           </div>
         </div>

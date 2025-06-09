@@ -4,308 +4,205 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
   opacity: 1;
-  transition: opacity 0.6s ease-out;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 2rem;
-  box-sizing: border-box;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .loading-screen.fade-out {
   opacity: 0;
 }
 
-.loading-container {
-  text-align: center;
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 3rem 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: containerFadeIn 0.8s ease-out;
-}
-
-/* לוגו מרכזי */
-.logo-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.logo-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #ff6b6b, #ffa726);
-  border-radius: 20px;
+.loading-circle-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.5rem;
-  animation: logoFloat 3s ease-in-out infinite;
-  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.ai-symbol {
-  color: white;
-  font-size: 2rem;
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.brand-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  animation: titleSlideIn 0.8s ease-out 0.2s both;
-}
-
-.brand-subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 400;
-  animation: subtitleSlideIn 0.8s ease-out 0.4s both;
-}
-
-/* בר התקדמות */
-.progress-section {
+.loading-circle {
   width: 100%;
-  animation: progressSlideIn 0.8s ease-out 0.6s both;
-}
-
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.progress-text {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.progress-percentage {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, #ffa726);
-  border-radius: 8px;
-  transition: width 0.4s ease;
-  position: relative;
-  box-shadow: 0 0 12px rgba(255, 107, 107, 0.5);
+  transform: rotate(-90deg);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.progress-fill::after {
-  content: "";
+.loading-circle-bg {
+  fill: none;
+  stroke: #f3f4f6;
+  stroke-width: 2;
+}
+
+.loading-circle-progress {
+  fill: none;
+  stroke: #d946ef;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.loading-percentage {
   position: absolute;
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Particles */
+.particles-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: linear-gradient(45deg, #d946ef, #3b82f6);
+  border-radius: 50%;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: progressShine 1.5s ease-in-out infinite;
+  animation: particleExplode 1s ease-out var(--delay) forwards;
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(217, 70, 239, 0.6);
 }
 
-/* נקודות טעינה */
-.loading-dots {
-  display: flex;
-  gap: 0.5rem;
-  animation: dotsSlideIn 0.8s ease-out 0.8s both;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  animation: dotPulse 1.5s ease-in-out infinite;
-}
-
-.dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.dot:nth-child(2) {
-  animation-delay: 0.3s;
-}
-
-.dot:nth-child(3) {
-  animation-delay: 0.6s;
-}
-
-/* אנימציות */
-@keyframes containerFadeIn {
+/* Animations */
+@keyframes rotate {
   0% {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: rotate(-90deg);
   }
   100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: rotate(270deg);
   }
 }
 
-@keyframes logoFloat {
+@keyframes pulse {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: rotate(-90deg) scale(1);
   }
   50% {
-    transform: translateY(-10px);
+    transform: rotate(-90deg) scale(1.02);
   }
 }
 
-@keyframes titleSlideIn {
+@keyframes backgroundExpand {
   0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #d946ef;
+    transform: scale(1);
+  }
+  100% {
+    background-color: #d946ef;
+    transform: scale(1.2);
     opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes subtitleSlideIn {
+@keyframes circleExplode {
   0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.3) rotate(180deg);
+    opacity: 0.8;
+  }
+  60% {
+    transform: scale(2) rotate(360deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(4) rotate(720deg);
     opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes progressSlideIn {
+@keyframes percentageFade {
   0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
     opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes dotsSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes progressShine {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes dotPulse {
-  0%,
-  100% {
-    opacity: 0.6;
     transform: scale(1);
   }
   50% {
-    opacity: 1;
+    opacity: 0.5;
     transform: scale(1.2);
+    color: #ffffff;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+    color: #ffffff;
   }
 }
 
-/* רספונסיביות */
+@keyframes particleExplode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(cos(var(--angle)) * var(--distance)), calc(sin(var(--angle)) * var(--distance)))
+      scale(0.3);
+  }
+}
+
+.loading-circle {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.exit-animation {
+  background-color: #d946ef;
+  animation: backgroundExpand 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.circle-exit {
+  animation: circleExplode 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.percentage-exit {
+  animation: percentageFade 0.4s ease-out forwards;
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
-  .loading-container {
-    gap: 2rem;
-    padding: 2rem 1.5rem;
-    margin: 1rem;
+  .loading-circle-container {
+    width: 140px;
+    height: 140px;
   }
 
-  .logo-icon {
-    width: 60px;
-    height: 60px;
-  }
-
-  .ai-symbol {
-    font-size: 1.5rem;
-  }
-
-  .brand-title {
-    font-size: 2rem;
-  }
-
-  .brand-subtitle {
-    font-size: 1rem;
-  }
-
-  .progress-percentage {
-    font-size: 1.2rem;
+  .loading-percentage {
+    font-size: 18px;
   }
 }
 
 @media (max-width: 480px) {
-  .loading-container {
-    gap: 1.5rem;
-    padding: 1.5rem 1rem;
+  .loading-circle-container {
+    width: 120px;
+    height: 120px;
   }
 
-  .progress-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .brand-title {
-    font-size: 1.8rem;
-  }
-
-  .progress-text {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-height: 600px) {
-  .loading-container {
-    gap: 1.5rem;
-    padding: 1.5rem;
+  .loading-percentage {
+    font-size: 16px;
   }
 }

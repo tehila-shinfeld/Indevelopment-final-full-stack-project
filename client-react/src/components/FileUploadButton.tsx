@@ -2,7 +2,22 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
-import { FileText, Upload, X, Check, FileUp, Sparkles, Menu, Moon, Sun, ArrowUp, Loader2 } from "lucide-react"
+import {
+  FileText,
+  Upload,
+  X,
+  Check,
+  FileUp,
+  Sparkles,
+  Menu,
+  Moon,
+  Sun,
+  ArrowUp,
+  Loader2,
+  Edit3,
+  Calendar,
+  User,
+} from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
@@ -13,6 +28,7 @@ import { useNavigate } from "react-router-dom"
 import MySidebar from "../components/my-sidbar"
 // הגדרת מצבי התהליך הראשיים
 type ProcessState =
+  | "meeting-details" // מצב הזנת פרטי הפגישה - חדש!
   | "idle" // מצב התחלתי - אין קובץ
   | "file-selected" // קובץ נבחר אבל לא הועלה
   | "uploading" // מעלה קובץ לשרת
@@ -35,8 +51,13 @@ const FileUploadButton = () => {
   const [showDropSuccess, setShowDropSuccess] = useState(false)
   const [showDropError, setShowDropError] = useState(false)
 
+  // מצבי פרטי הפגישה - חדש!
+  const [meetingName, setMeetingName] = useState<string>("")
+  const [meetingDate, setMeetingDate] = useState<string>("")
+  const [meetingDetailsError, setMeetingDetailsError] = useState<string | null>(null)
+
   // מצב התהליך הראשי - זה המצב המרכזי שקובע מה מוצג
-  const [processState, setProcessState] = useState<ProcessState>("idle")
+  const [processState, setProcessState] = useState<ProcessState>("meeting-details")
 
   // מצבי ממשק
   const [darkMode, setDarkMode] = useState(false)
@@ -143,6 +164,30 @@ const FileUploadButton = () => {
     navigate("/") // ניווט לעמוד הכניסה
   }
 
+  // פונקציה לטיפול בשליחת פרטי הפגישה
+  const handleMeetingDetailsSubmit = () => {
+    setMeetingDetailsError(null)
+
+    // בדיקת תקינות הנתונים
+    if (!meetingName.trim()) {
+      setMeetingDetailsError("אנא הזן שם פגישה")
+      return
+    }
+
+    if (!meetingDate) {
+      setMeetingDetailsError("אנא בחר תאריך פגישה")
+      return
+    }
+
+    // אם הכל תקין, עבור לשלב הבא
+    setProcessState("idle")
+  }
+
+  // פונקציה לחזרה לעריכת פרטי הפגישה
+  const handleEditMeetingDetails = () => {
+    setProcessState("meeting-details")
+  }
+
   // פונקציה מאוחדת להעלאה ועיבוד הקובץ
   const handleFileUploadAndProcess = async (selectedFile: File) => {
     setProcessState("uploading")
@@ -232,39 +277,39 @@ const FileUploadButton = () => {
         const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
           fileName: selectedFile.name,
           fileType: selectedFile.type,
-        });
+        })
 
         // בדקי את תגובת השרת
-        console.log("Upload URL created successfully:", response1.data);
+        console.log("Upload URL created successfully:", response1.data)
         console.log("📤 מעלה קובץ לשרת:", response1.data)
         const { fileUrl, s3Url } = response1.data
         setFileUrl(fileUrl)
         sets3url(s3Url)
         try {
-          await axios.put(fileUrl, selectedFile, );
+          await axios.put(fileUrl, selectedFile)
 
-          console.log("File uploaded successfully to S3.");
-          alert("הקובץ הועלה בהצלחה.");
+          console.log("File uploaded successfully to S3.")
+          alert("הקובץ הועלה בהצלחה.")
         } catch (error) {
-          console.error("Error uploading file to S3:", error);
+          console.error("Error uploading file to S3:", error)
 
           if (axios.isAxiosError(error)) {
-            alert(`שגיאה בהעלאת הקובץ: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
+            alert(`שגיאה בהעלאת הקובץ: ${error.response?.status} - ${error.response?.data?.message || error.message}`)
           } else {
-            alert("אירעה שגיאה בלתי צפויה במהלך ההעלאה ל-S3.");
+            alert("אירעה שגיאה בלתי צפויה במהלך ההעלאה ל-S3.")
           }
         }
 
         // תוכלי להמשיך מכאן עם קוד להעלאה בפועל ל-S3
       } catch (error) {
-        console.error("Error creating upload URL:", error);
+        console.error("Error creating upload URL:", error)
 
         if (axios.isAxiosError(error)) {
           // שגיאה מהשרת (לדוגמה 500/403)
-          alert(`שגיאה מהשרת: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
+          alert(`שגיאה מהשרת: ${error.response?.status} - ${error.response?.data?.message || error.message}`)
         } else {
           // שגיאה כללית אחרת
-          alert("אירעה שגיאה בלתי צפויה בעת יצירת קישור ההעלאה.");
+          alert("אירעה שגיאה בלתי צפויה בעת יצירת קישור ההעלאה.")
         }
       }
       setUploadProgress(100)
@@ -315,11 +360,15 @@ const FileUploadButton = () => {
     setFile(null)
     setError(null)
     setUploadProgress(0)
-    setProcessState("idle")
+    setProcessState("meeting-details") // חזרה לשלב הראשון
     setFileUrl(null)
     sets3url(null)
     setFileTextContent(null)
     setSummary(null)
+    // איפוס פרטי הפגישה
+    setMeetingName("")
+    setMeetingDate("")
+    setMeetingDetailsError(null)
   }
 
   // קבלת אייקון מתאים לסוג הקובץ
@@ -392,6 +441,8 @@ const FileUploadButton = () => {
   // קביעת כותרת הדף בהתאם לשלב הנוכחי
   const getHeaderTitle = () => {
     switch (processState) {
+      case "meeting-details":
+        return "פרטי הפגישה"
       case "idle":
         return "העלאת מסמך לסיכום"
       case "file-selected":
@@ -500,29 +551,116 @@ const FileUploadButton = () => {
 
       <main className="app-content">
         <div className="content-container">
+          {/* פס מידע פגישה - מוצג בכל השלבים חוץ מהזנת הפרטים */}
+          {(processState === "idle" || processState === "file-selected") && meetingName && (
+            <div className="meeting-info-bar">
+              <div className="meeting-info">
+                <div className="meeting-info-item">
+                  <User size={16} />
+                  <span className="meeting-name">{meetingName}</span>
+                </div>
+                <div className="meeting-info-item">
+                  <Calendar size={16} />
+                  <span className="meeting-date">{new Date(meetingDate).toLocaleDateString("he-IL")}</span>
+                </div>
+              </div>
+              <button className="edit-meeting-button" onClick={handleEditMeetingDetails}>
+                <Edit3 size={16} />
+                <span>עריכת פרטי פגישה</span>
+              </button>
+            </div>
+          )}
+
           {/* אינדיקטור התקדמות */}
           <div className="process-indicator">
             <div className="steps">
-              <div className={`step ${processState !== "idle" ? "completed" : "current"}`}>
+              <div className={`step ${processState !== "meeting-details" ? "completed" : "current"}`}>
                 <div className="step-number">1</div>
+                <div className="step-label">פרטי פגישה</div>
+              </div>
+              <div
+                className={`step ${processState !== "meeting-details" && processState !== "idle" ? "completed" : processState === "idle" ? "current" : ""}`}
+              >
+                <div className="step-number">2</div>
                 <div className="step-label">בחירת קובץ</div>
               </div>
               <div
                 className={`step ${["uploading", "processing", "ready-to-summarize", "summarizing", "completed"].includes(processState) ? "completed" : ["uploading", "processing"].includes(processState) ? "current" : ""}`}
               >
-                <div className="step-number">2</div>
+                <div className="step-number">3</div>
                 <div className="step-label">עיבוד הקובץ</div>
               </div>
               <div
                 className={`step ${["summarizing", "completed"].includes(processState) ? "completed" : processState === "ready-to-summarize" ? "current" : ""}`}
               >
-                <div className="step-number">3</div>
+                <div className="step-number">4</div>
                 <div className="step-label">יצירת סיכום</div>
               </div>
             </div>
           </div>
 
-          {processState === "completed" ? (
+          {processState === "meeting-details" ? (
+            <div className="meeting-details-section">
+              <div className="upload-card">
+                <div className="meeting-illustration">
+                  <div className="upload-illustration">
+                    <div className="upload-icon-wrapper">
+                      <FileText className="upload-icon" />
+                      <div className="icon-pulse"></div>
+                    </div>
+                  </div>
+                  <h2 className="upload-heading">פרטי הפגישה</h2>
+                  <div className="upload-instructions">
+                    <p>אנא הזן את פרטי הפגישה לפני העלאת המסמך</p>
+                    <p>הפרטים יעזרו לנו ליצור סיכום מותאם ומדויק יותר</p>
+                  </div>
+                </div>
+
+                <div className="meeting-form-content">
+                  <div className="meeting-form">
+                    <div className="form-group">
+                      <label htmlFor="meetingName" className="form-label">
+                        שם הפגישה
+                      </label>
+                      <input
+                        type="text"
+                        id="meetingName"
+                        className="form-input"
+                        placeholder="לדוגמה: פגישת צוות שבועית"
+                        value={meetingName}
+                        onChange={(e) => setMeetingName(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="meetingDate" className="form-label">
+                        תאריך הפגישה
+                      </label>
+                      <input
+                        type="date"
+                        id="meetingDate"
+                        className="form-input"
+                        value={meetingDate}
+                        onChange={(e) => setMeetingDate(e.target.value)}
+                      />
+                    </div>
+
+                    {meetingDetailsError && (
+                      <div className="error-message">
+                        <X size={16} />
+                        <span>{meetingDetailsError}</span>
+                      </div>
+                    )}
+
+                    <button className="upload-button" onClick={handleMeetingDetailsSubmit}>
+                      <span className="button-text">המשך להעלאת קובץ</span>
+                      <ArrowUp size={18} className="button-icon" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : processState === "completed" ? (
             <div className="summary-section">
               {summary && (
                 <>
@@ -535,10 +673,11 @@ const FileUploadButton = () => {
               )}
             </div>
           ) : (
+            // כל שאר התוכן הקיים נשאר כמו שהוא...
             <div className="upload-section">
               <div className="upload-container">
                 {/* הודעת מצב */}
-                {getStatusMessage() && (
+                {getStatusMessage() && processState !== "idle" && processState !== "meeting-details" && (
                   <div className="status-message">
                     <div className="status-content">
                       {(processState === "uploading" ||
@@ -611,7 +750,7 @@ const FileUploadButton = () => {
 
                 {/* כרטיס העלאה */}
                 <div
-                  className={`upload-card ${dragging ? "dragging" : ""} ${processState !== "idle" ? "has-file" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
+                  className={`upload-card ${dragging ? "dragging" : ""} ${processState !== "idle" ? "has-file" : ""} ${processState === "ready-to-summarize" ? "ready-to-summarize" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
                   onDragEnter={handleDragEnter}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -710,10 +849,12 @@ const FileUploadButton = () => {
                       )}
 
                       {processState === "ready-to-summarize" && (
-                        <button className="process-button summarize-button" onClick={handleSummarize}>
-                          <span className="button-text">יצירת סיכום</span>
-                          <Sparkles size={18} className="button-icon" />
-                        </button>
+                        <div className="summarize-action">
+                          <button className="process-button summarize-button" onClick={handleSummarize}>
+                            <span className="button-text">יצירת סיכום</span>
+                            <Sparkles size={18} className="button-icon" />
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}

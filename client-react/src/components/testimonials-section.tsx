@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { type RefObject, useState, useEffect, useCallback, useRef } from "react"
 import "../styleSheets/testimonials-section.css"
 
@@ -26,7 +25,7 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
   const autoplayRef = useRef<NodeJS.Timeout | null>(null)
   const touchStartX = useRef<number | null>(null)
 
-  // Testimonials data
+  // Testimonials data with real business people images from the internet
   const testimonials: Testimonial[] = [
     {
       id: 1,
@@ -34,7 +33,8 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       role: "מנהלת פרויקטים, חברת טכנולוגיות מתקדמות",
       rating: 5,
       text: "המערכת חסכה לנו שעות רבות של עבודה. הסיכומים מדויקים, ברורים ומאפשרים לנו להתמקד בעיקר במקום לבזבז זמן על תיעוד פגישות.",
-      image: "",
+      image:
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
     },
     {
       id: 2,
@@ -42,7 +42,8 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       role: 'מנכ"ל, סטארטאפ חדשנות',
       rating: 5,
       text: "אחרי שהתחלנו להשתמש במערכת, הפגישות שלנו הפכו יעילות יותר. כולם יודעים שיהיה סיכום מדויק, וזה מאפשר לנו להתמקד בשיחה במקום ברישום.",
-      image: "",
+      image:
+        "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
     },
     {
       id: 3,
@@ -50,7 +51,35 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
       role: "ראש צוות פיתוח, חברת תוכנה גלובלית",
       rating: 5,
       text: "הבינה המלאכותית מזהה בצורה מדהימה את הנקודות החשובות. אפילו בדיונים טכניים מורכבים, הסיכומים תמיד מדויקים ומתמקדים בדיוק במה שחשוב.",
-      image: "",
+      image:
+        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+    },
+    {
+      id: 4,
+      name: "רונית שמיר",
+      role: 'סמנכ"לית משאבי אנוש, קבוצת פיננסים',
+      rating: 5,
+      text: "כמנהלת משאבי אנוש, אני משתתפת בהרבה פגישות יומיות. המערכת מאפשרת לי להיות נוכחת ומעורבת במקום לדאוג על רישום הפרטים. התוצאות מדהימות!",
+      image:
+        "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+    },
+    {
+      id: 5,
+      name: "אמיר רוזן",
+      role: "מנהל מכירות, חברת ייעוץ עסקי",
+      rating: 5,
+      text: "בתור מנהל מכירות, אני פוגש לקוחות כל יום. המערכת עוזרת לי לזכור כל פרט חשוב מהפגישה ולעקוב אחרי התחייבויות. זה שינה לי את הדרך לעבוד!",
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+    },
+    {
+      id: 6,
+      name: "ליאת גולדברג",
+      role: "מנהלת תפעול, חברת לוגיסטיקה",
+      rating: 5,
+      text: "המערכת פשוט מושלמת לפגישות התיאום שלנו עם ספקים ולקוחות. הסיכומים כוללים את כל הפרטים הטכניים והלוגיסטיים בצורה מסודרת וברורה.",
+      image:
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
     },
   ]
 
@@ -246,7 +275,16 @@ const TestimonialsSection = ({ sectionRef, isVisible }: TestimonialsSectionProps
                   <div className="testimonial-card">
                     <div className="testimonial-header">
                       <div className="testimonial-avatar">
-                        <img src={testimonial.image } alt="" aria-hidden="true" />
+                        <img
+                          src={testimonial.image || "/placeholder.svg"}
+                          alt={`תמונת פרופיל של ${testimonial.name}`}
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "https://via.placeholder.com/150?text=תמונת+פרופיל"
+                          }}
+                          crossOrigin="anonymous"
+                        />
                       </div>
                       <div className="testimonial-meta">
                         <h3 className="testimonial-name">{testimonial.name}</h3>

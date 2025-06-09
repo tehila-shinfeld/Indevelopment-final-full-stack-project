@@ -168,9 +168,6 @@ const HomePage = () => {
         onNavigate={handleNavigate}
         isDarkMode={isDarkMode}
       />
-
-      {/* הסר את FloatingThemeToggle כדי למנוע קונפליקט */}
-      {/* <FloatingThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} /> */}
     </div>
   )
 }

@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import "../styleSheets/footer.css"
-import EnhancedEmailContact from "../components/email-contact"
+// import EnhancedEmailContact from "../components/email-contact"
+import MinimalFooter from "./minimal-footer"
 
-const FooterWithNotifications = () => {
+const Footer = () => {
   const [notification, setNotification] = useState<string | null>(null)
 
   // ✅ גלילה לסקשנים קיימים
@@ -91,7 +91,8 @@ const FooterWithNotifications = () => {
               </div>
             </div>
           </div>
-          <div className="footer-bottom">
+      <MinimalFooter></MinimalFooter>
+          {/* <div className="footer-bottom">
             <p className="copyright">© 2025 TalkToMe.AI. כל הזכויות שמורות.</p>
             <div className="social-links">
               <EnhancedEmailContact />
@@ -135,7 +136,8 @@ const FooterWithNotifications = () => {
                 </svg>
               </a>
             </div>
-          </div>
+          </div> */}
+
         </div>
       </footer>
 
@@ -145,10 +147,8 @@ const FooterWithNotifications = () => {
           <p>{notification}</p>
         </div>
       )}
-
-      {/* Notification toast styles moved to footer.css */}
     </>
   )
 }
 
-export default FooterWithNotifications
+export default Footer

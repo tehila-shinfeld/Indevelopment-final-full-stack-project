@@ -1,0 +1,498 @@
+/* CSS Variables for Light Mode */
+:root {
+  --header-bg: #ffffff;
+  --header-border: #e2e8f0;
+  --header-text: #1e293b;
+  --header-text-secondary: #64748b;
+  --header-shadow: rgba(0, 0, 0, 0.1);
+
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #dbeafe;
+  --primary-foreground: #ffffff;
+
+  --button-bg: #f8fafc;
+  --button-hover: #f1f5f9;
+  --button-border: #e2e8f0;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+}
+
+/* Dark Mode Variables - הבעיה הייתה כאן! */
+/* צריך להחיל את המשתנים על האלמנט עם הקלאס dark-mode */
+.dashboard-header.dark-mode {
+  --header-bg: #0f172a;
+  --header-border: #334155;
+  --header-text: #ffffff;
+  --header-text-secondary: #94a3b8;
+  --header-shadow: rgba(0, 0, 0, 0.3);
+
+  --primary: #d946ef;
+  --primary-hover: #c026d3;
+  --primary-light: rgba(217, 70, 239, 0.1);
+  --primary-foreground: #ffffff;
+
+  --button-bg: #1e293b;
+  --button-hover: #334155;
+  --button-border: #475569;
+}
+
+/* גם להוסיף תמיכה כללית למצב חושך */
+body.dark-mode {
+  --header-bg: #0f172a;
+  --header-border: #334155;
+  --header-text: #ffffff;
+  --header-text-secondary: #94a3b8;
+  --header-shadow: rgba(0, 0, 0, 0.3);
+
+  --primary: #d946ef;
+  --primary-hover: #c026d3;
+  --primary-light: rgba(217, 70, 239, 0.1);
+  --primary-foreground: #ffffff;
+
+  --button-bg: #1e293b;
+  --button-hover: #334155;
+  --button-border: #475569;
+}
+
+/* Header Styles */
+.dashboard-header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  box-shadow: 0 1px 3px var(--header-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: all var(--transition-normal);
+}
+
+.dashboard-header.animate-header {
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header Content Layout */
+.header-content {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: var(--spacing-4);
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--spacing-4);
+  min-height: 70px;
+}
+
+.header-left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-center {
+  display: flex;
+  justify-content: center;
+}
+
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+/* Header Controls */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-shrink: 0;
+}
+
+/* Button Base Styles */
+.menu-button,
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--button-border);
+  background-color: var(--button-bg);
+  color: var(--header-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-button:hover,
+.theme-toggle:hover {
+  background-color: var(--button-hover);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button:focus,
+.theme-toggle:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.menu-button svg,
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.menu-button:hover svg,
+.theme-toggle:hover svg {
+  transform: scale(1.1);
+}
+
+/* Title Styles */
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--header-text);
+  margin: 0;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.title-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.title-text {
+  white-space: nowrap;
+}
+
+/* Magic Add Meeting Button */
+.magic-button {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+  min-width: 140px;
+}
+
+/* עדכון הכפתור במצב חושך */
+.dashboard-header.dark-mode .magic-button {
+  background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+  box-shadow: 0 4px 15px rgba(217, 70, 239, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.magic-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-header.dark-mode .magic-button:hover {
+  box-shadow: 0 8px 25px rgba(217, 70, 239, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.magic-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Magic Background Animation */
+.magic-bg {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.magic-button:hover .magic-bg {
+  left: 100%;
+}
+
+/* Button Content */
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  position: relative;
+  z-index: 3;
+}
+
+.btn-icon {
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+.magic-button:hover .btn-icon {
+  transform: scale(1.2) rotate(180deg);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+.btn-text {
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Glow Effect */
+.btn-glow {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 18px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  filter: blur(8px);
+}
+
+.dashboard-header.dark-mode .btn-glow {
+  background: linear-gradient(135deg, var(--primary), #a855f7);
+}
+
+.magic-button:hover .btn-glow {
+  opacity: 0.7;
+}
+
+/* Sparkles Animation */
+.btn-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  animation: sparkle 2s infinite;
+}
+
+.sparkle-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 60%;
+  right: 25%;
+  animation-delay: 0.7s;
+}
+
+.sparkle-3 {
+  bottom: 25%;
+  left: 60%;
+  animation-delay: 1.4s;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.magic-button:hover .sparkle {
+  animation-duration: 1s;
+}
+
+/* Logo Styles */
+.logo {
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  padding: var(--spacing-2);
+  border-radius: 8px;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-light);
+}
+
+.logo:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--header-text);
+  white-space: nowrap;
+}
+
+.logo-highlight {
+  color: var(--primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content {
+    grid-template-columns: auto 1fr auto;
+    padding: var(--spacing-3);
+    gap: var(--spacing-2);
+  }
+
+  .header-left {
+    order: 1;
+  }
+
+  .header-center {
+    order: 3;
+    grid-column: 1 / -1;
+    margin-top: var(--spacing-2);
+  }
+
+  .header-right {
+    order: 2;
+    gap: var(--spacing-2);
+  }
+
+  .menu-button,
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .menu-button svg,
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+    justify-content: center;
+  }
+
+  .magic-button {
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    min-width: 120px;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    gap: var(--spacing-2);
+  }
+
+  .header-right {
+    gap: var(--spacing-2);
+  }
+
+  .magic-button .btn-text {
+    display: none;
+  }
+
+  .magic-button {
+    padding: 12px;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .dashboard-title {
+    font-size: 1.1rem;
+  }
+
+  .title-text {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Animation for theme toggle */
+.theme-toggle svg {
+  transition: transform var(--transition-normal);
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Focus states for accessibility */
+.magic-button:focus,
+.theme-toggle:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .menu-button,
+  .theme-toggle {
+    border-width: 2px;
+  }
+
+  .magic-button {
+    border: 2px solid var(--primary);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

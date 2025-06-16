@@ -13,8 +13,8 @@ import OAuthCallback from "./components/OAuthCallback.tsx"
 import UserProfile from "./components/user-profile.tsx"
 import LoadingScreen from "./components/loading-screen.tsx"
 import FileUploadButton from "./components/FileUploadButton.tsx"
+import MeetingDetail from "./components/UserMeetings.tsx"
 
-// הגדרת הנתיבים
 const routes = createHashRouter([
   {
     path: "/",
@@ -33,10 +33,17 @@ const routes = createHashRouter([
     element: <UserMeetings />,
   },
   {
+    path: "/meeting/:meetingId", // ← זה הroute החסר שהוספתי!
+    element: <MeetingDetail />,
+  },
+  {
     path: "/my-profile",
     element: <UserProfile />,
   },
-  { path: "/oauth", element: <OAuthCallback /> },
+  {
+    path: "/oauth",
+    element: <OAuthCallback />,
+  },
 ])
 
 // קומפוננט ראשי עם לוגיקת מסך הטעינה

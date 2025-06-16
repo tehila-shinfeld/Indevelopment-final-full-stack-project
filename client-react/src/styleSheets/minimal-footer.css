@@ -1,0 +1,163 @@
+/* Minimal Footer Styles */
+.minimal_footer {
+  background-color: transparent; /* הסרת הרקע הכהה */
+  color: #374151; /* שינוי צבע הטקסט לכהה */
+  padding: 0.8rem 0;
+  margin: 2rem 0 0 0;
+  width: 100vw; /* רוחב מלא של המסך */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.footer-bottom {
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.copyright {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280; /* צבע אפור בהיר */
+  font-weight: 400;
+  order: 1;
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  order: 2;
+  margin-bottom: 1rem; /* מרחק נוסף מתחת לאייקונים */
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #6b7280; /* צבע אפור */
+  text-decoration: none;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+.social-links a:hover {
+  color: #374151; /* צבע כהה יותר בהובר */
+  background-color: #f3f4f6; /* רקע אפור בהיר בהובר */
+  border-color: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+.social-links svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-bottom {
+    gap: 1rem;
+  }
+
+  .copyright {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .minimal_footer {
+    padding: 0.5rem 0;
+    margin-top: 1.5rem;
+  }
+
+  .social-links {
+    margin-bottom: 0.8rem;
+  }
+
+  .footer-bottom {
+    padding: 0 0.75rem;
+    gap: 0.8rem;
+  }
+
+  .social-links a {
+    width: 36px;
+    height: 36px;
+  }
+
+  .social-links svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .copyright {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .minimal_footer {
+    background-color: transparent; /* גם במצב כהה - רקע שקוף */
+  }
+
+  .social-links a:hover {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+  }
+}
+
+/* Animation for smooth transitions */
+.social-links a {
+  position: relative;
+  overflow: hidden;
+}
+
+.social-links a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.social-links a:hover::before {
+  left: 100%;
+}
+
+/* Accessibility improvements */
+.social-links a:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Print styles */
+@media print {
+  .minimal_footer {
+    background-color: transparent !important;
+    color: black !important;
+    border-top: 1px solid #000;
+  }
+
+  .social-links {
+    display: none;
+  }
+}

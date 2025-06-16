@@ -3,7 +3,7 @@
 import type React from "react"
 import { FileText, Menu, Moon, Sun, Zap } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import "../styleSheets/toogle.css"
+import "../styleSheets/header.css"
 import MySidebar from "./my-sidbar"
 
 interface HeaderProps {
@@ -43,29 +43,52 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className={`dashboard-header ${animateHeader ? "animate-header" : ""}`}>
+      <header className={`dashboard-header ${animateHeader ? "animate-header" : ""} ${darkMode ? "dark-mode" : ""}`}>
         <div className="header-content">
-          <div className="header-controls">
-            <button className="menu-button" onClick={handleMenuClick} aria-label="תפריט">
-              <Menu size={24} />
-            </button>
-            <button className="theme-toggle" onClick={toggleDarkMode} aria-label={darkMode ? "מצב בהיר" : "מצב חושך"}>
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+          <div className="header-left">
+            <div className="header-controls">
+              <button className="menu-button" onClick={handleMenuClick} aria-label="תפריט">
+                <Menu size={20} />
+              </button>
+              <button className="theme-toggle" onClick={toggleDarkMode} aria-label={darkMode ? "מצב בהיר" : "מצב חושך"}>
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            </div>
           </div>
-          <h1 className="dashboard-title">
-            <FileText className="title-icon" size={24} />
-            <span>{selectedMeeting ? selectedMeeting.name : "סיכומי הפגישות שלי:"}</span>
-          </h1>
-          <div className="header-right-group">
-            <button className="add-meeting-button magic-btn" onClick={() => navigate("/summary-up!")}>
+
+          <div className="header-center">
+            <h1 className="dashboard-title">
+              <FileText className="title-icon" size={24} />
+              <span className="title-text">{selectedMeeting ? selectedMeeting.name : "סיכומי הפגישות שלי"}</span>
+            </h1>
+          </div>
+
+          <div className="header-right">
+            <button className="add-meeting-button magic-button" onClick={() => navigate("/summary-up!")}>
+              <div className="magic-bg"></div>
               <div className="btn-content">
                 <Zap size={18} className="btn-icon" />
-                <span>פגישה חדשה</span>
+                <span className="btn-text">פגישה חדשה</span>
               </div>
               <div className="btn-glow"></div>
+              <div className="btn-sparkles">
+                <div className="sparkle sparkle-1"></div>
+                <div className="sparkle sparkle-2"></div>
+                <div className="sparkle sparkle-3"></div>
+              </div>
             </button>
-            <div className="logo" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
+
+            <div
+              className="logo"
+              onClick={() => navigate("/home")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  navigate("/home")
+                }
+              }}
+            >
               <span className="logo-text">
                 TalkToMe.<span className="logo-highlight">AI</span>
               </span>
@@ -74,7 +97,6 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* Sidebar - מוטמע בתוך ה-Header */}
       <MySidebar
         isOpen={menuOpen}
         onClose={() => toggleDrawer(false)}

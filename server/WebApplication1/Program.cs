@@ -69,6 +69,8 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddHttpClient<IFileService, FileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddAutoMapper(typeof(Mapping));
+
 var configuration = builder.Configuration;
 
 

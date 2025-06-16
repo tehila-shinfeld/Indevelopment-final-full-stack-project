@@ -1,38 +1,46 @@
+/* Enhanced Email Contact Styles */
 .email-contact-container {
   position: relative;
   display: inline-block;
 }
 
+.email-contact-container.loading {
+  position: relative;
+}
+
 .email-contact-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  color: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .email-contact-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.1);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  transform: translateY(-2px);
 }
 
 .copy-tooltip {
   position: absolute;
-  top: -40px;
+  bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
-  background: #333;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
   white-space: nowrap;
   z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
 }
 
 .copy-tooltip::after {
@@ -42,134 +50,222 @@
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: #333;
+  border-top-color: var(--primary);
 }
 
-/* מודל */
+/* Modal Styles */
 .email-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .email-modal {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  padding: 2rem;
   max-width: 400px;
   width: 90%;
   position: relative;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
 }
 
 .modal-close {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
-  color: #666;
+  color: var(--muted-foreground);
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
 }
 
 .modal-close:hover {
-  color: #000;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .email-modal h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 1rem 0;
+  color: var(--foreground);
   text-align: center;
-  color: #333;
 }
 
 .email-modal p {
+  margin: 0 0 1.5rem 0;
+  color: var(--muted-foreground);
   text-align: center;
-  margin-bottom: 20px;
-  color: #666;
 }
 
 .email-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .email-option-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  background: white;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background-color: var(--background);
+  color: var(--foreground);
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
+  transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
 .email-option-btn:hover {
-  border-color: #007bff;
-  background: #f8f9fa;
-  transform: translateY(-2px);
+  background-color: var(--accent);
+  border-color: var(--primary);
 }
 
 .email-option-btn.gmail:hover {
+  background-color: #ea4335;
+  color: white;
   border-color: #ea4335;
 }
 
 .email-option-btn.outlook:hover {
+  background-color: #0078d4;
+  color: white;
   border-color: #0078d4;
 }
 
 .email-option-btn.copy:hover {
-  border-color: #28a745;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
 }
 
 .email-details {
-  border-top: 1px solid #e0e0e0;
-  padding-top: 15px;
-  font-size: 12px;
-  color: #666;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  font-size: 0.875rem;
 }
 
 .email-details p {
-  margin: 5px 0;
+  margin: 0.5rem 0;
   text-align: right;
+  color: var(--muted-foreground);
 }
 
-/* מצב כהה */
-.dark-mode .email-modal {
-  background: #2a2a2a;
-  color: white;
+.email-details strong {
+  color: var(--foreground);
 }
 
-.dark-mode .modal-close {
-  color: #ccc;
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.dark-mode .modal-close:hover {
-  color: white;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dark-mode .email-modal h3 {
-  color: white;
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
-.dark-mode .email-option-btn {
-  background: #3a3a3a;
-  border-color: #555;
-  color: white;
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .email-modal {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .email-option-btn {
+    padding: 1rem;
+    font-size: 1rem;
+  }
 }
 
-.dark-mode .email-option-btn:hover {
-  background: #4a4a4a;
+/* Loading States */
+.email-contact-btn.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading tooltip */
+.email-contact-container.loading::after {
+  content: "פותח אפליקציית מייל...";
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.email-contact-container.loading::before {
+  content: "";
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--primary);
+  z-index: 1000;
 }

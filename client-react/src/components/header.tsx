@@ -3,14 +3,13 @@
 import type React from "react"
 import { FileText, Menu, Moon, Sun, Zap } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useTheme } from "../context/ThemeContext"
 import "../styleSheets/header.css"
 import MySidebar from "./my-sidbar"
 
 interface HeaderProps {
   animateHeader: boolean
   toggleDrawer: (open: boolean) => void
-  toggleDarkMode: () => void
-  darkMode: boolean
   selectedMeeting: { name: string } | null
   menuOpen: boolean
   user?: {
@@ -23,14 +22,13 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   animateHeader,
   toggleDrawer,
-  toggleDarkMode,
-  darkMode,
   selectedMeeting,
   menuOpen,
   user,
   onLogout,
 }) => {
   const navigate = useNavigate()
+  const { darkMode, toggleDarkMode } = useTheme()
 
   const handleSidebarNavigate = (path: string) => {
     navigate(path)

@@ -496,3 +496,136 @@ body.dark-mode {
     transition-duration: 0.01ms !important;
   }
 }
+/* Dark Mode Variables - תיקון הגוונים */
+.dashboard-header.dark-mode {
+  --header-bg: #1e293b;
+  --header-border: #334155;
+  --header-text: #f8fafc;
+  --header-text-secondary: #cbd5e1;
+  --header-shadow: rgba(0, 0, 0, 0.4);
+
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --primary-light: rgba(96, 165, 250, 0.1);
+  --primary-foreground: #ffffff;
+
+  --button-bg: #334155;
+  --button-hover: #475569;
+  --button-border: #64748b;
+}
+
+/* גם להוסיף תמיכה כללית למצב חושך */
+body.dark-mode {
+  --header-bg: #1e293b;
+  --header-border: #334155;
+  --header-text: #f8fafc;
+  --header-text-secondary: #cbd5e1;
+  --header-shadow: rgba(0, 0, 0, 0.4);
+
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --primary-light: rgba(96, 165, 250, 0.1);
+  --primary-foreground: #ffffff;
+
+  --button-bg: #334155;
+  --button-hover: #475569;
+  --button-border: #64748b;
+}
+
+/* הוסף את הסגנונות הבסיסיים להדר במצב חושך: */
+.dashboard-header {
+  background: var(--header-bg, #ffffff);
+  border-bottom: 1px solid var(--header-border, #e5e7eb);
+  color: var(--header-text, #1f2937);
+  transition: all 0.3s ease;
+}
+
+/* הוסף סגנונות ספציפיים למצב חושך: */
+.dashboard-header.dark-mode,
+body.dark-mode .dashboard-header {
+  background: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* עדכון הכפתור במצב חושך */
+.dashboard-header.dark-mode .magic-button {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-header.dark-mode .magic-button:hover {
+  box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-header.dark-mode .btn-glow {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+/* תיקון הלוגו במצב חושך */
+.dark-mode .logo-text {
+  color: #f8fafc;
+}
+
+.dark-mode .logo-highlight {
+  color: #60a5fa;
+}
+
+/* תיקון הכותרת במצב חושך */
+.dark-mode .dashboard-title {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark-mode .title-icon {
+  color: #60a5fa;
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.3));
+}
+
+/* תיקון הכותרת במצב חושך: */
+.dashboard-header.dark-mode .dashboard-title,
+body.dark-mode .dashboard-header .dashboard-title {
+  color: #f8fafc !important;
+}
+
+.dashboard-header.dark-mode .title-text,
+body.dark-mode .dashboard-header .title-text {
+  color: #f8fafc !important;
+}
+
+/* תיקון הלוגו במצב חושך: */
+.dashboard-header.dark-mode .logo-text,
+body.dark-mode .dashboard-header .logo-text {
+  color: #f8fafc !important;
+}
+
+.dashboard-header.dark-mode .logo-highlight,
+body.dark-mode .dashboard-header .logo-highlight {
+  color: #60a5fa !important;
+}
+
+/* תיקון הכפתורים במצב חושך: */
+.dashboard-header.dark-mode .theme-toggle,
+.dashboard-header.dark-mode .menu-button,
+body.dark-mode .dashboard-header .theme-toggle,
+body.dark-mode .dashboard-header .menu-button {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border: 1px solid #64748b !important;
+}
+
+.dashboard-header.dark-mode .theme-toggle:hover,
+.dashboard-header.dark-mode .menu-button:hover,
+body.dark-mode .dashboard-header .theme-toggle:hover,
+body.dark-mode .dashboard-header .menu-button:hover {
+  background: #475569 !important;
+}
+
+/* תיקון הכפתור הקסום במצב חושך: */
+.dashboard-header.dark-mode .magic-button,
+body.dark-mode .dashboard-header .magic-button {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}

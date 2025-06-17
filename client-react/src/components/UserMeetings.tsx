@@ -27,8 +27,9 @@ import {
   FileDown,
 } from "lucide-react"
 import { useUser } from "../context/UserContext"
+import { useTheme } from "../context/ThemeContext"
 import jsPDF from "jspdf"
-import { Header } from "./header"
+import { Header } from "../components/header"
 import "../styleSheets/UserMeetings.css"
 import MinimalFooter from "./minimal-footer"
 
@@ -142,7 +143,6 @@ const UserMeetings = () => {
     const savedFavorites = localStorage.getItem("userFavorites")
     return savedFavorites ? JSON.parse(savedFavorites) : []
   })
-  const [darkMode, setDarkMode] = useState(false)
   const [downloadingPdf, setDownloadingPdf] = useState(false)
   const [sendingEmail, setSendingEmail] = useState(false)
   const [emailSentSuccess, setEmailSentSuccess] = useState(false)
@@ -152,43 +152,27 @@ const UserMeetings = () => {
   })
 
   const meetingsRef = useRef<HTMLDivElement>(null)
-
   const navigate = useNavigate()
   const { user } = useUser()
+  const { darkMode } = useTheme()
   const userId = localStorage.getItem("userID")
 
   const setPrimaryColor = useCallback(() => {
     document.documentElement.style.setProperty("--primary-400-rgb", "101, 195, 249")
   }, [])
 
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prev) => !prev)
-  }, [])
+  const toggleDrawer = (open: boolean) => {
+    setMenuOpen(open)
+    if (open) {
+      document.body.classList.add("menu-open")
+    } else {
+      document.body.classList.remove("menu-open")
+    }
+  }
 
   useEffect(() => {
     localStorage.setItem("meetingsViewMode", viewMode)
   }, [viewMode])
-
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-mode")
-    } else {
-      document.body.classList.remove("dark-mode")
-    }
-  }, [darkMode])
-
-  useEffect(() => {
-    const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-    setDarkMode(prefersDarkMode)
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-    const handleChange = (e: MediaQueryListEvent) => {
-      setDarkMode(e.matches)
-    }
-
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [])
 
   useEffect(() => {
     setPrimaryColor()
@@ -235,14 +219,12 @@ const UserMeetings = () => {
     (error: unknown, context: string) => {
       console.error(`Error in ${context}:`, error)
 
-      // Type guard for error with message property
       const errorWithMessage = (err: unknown): err is { message: string } =>
         typeof err === "object" &&
         err !== null &&
         "message" in err &&
         typeof (err as { message?: unknown }).message === "string"
 
-      // Type guard for error with response property
       const errorWithResponse = (err: unknown): err is { response: { status: number } } =>
         typeof err === "object" &&
         err !== null &&
@@ -317,15 +299,6 @@ const UserMeetings = () => {
     },
     [navigate],
   )
-
-  const toggleDrawer = (open: boolean) => {
-    setMenuOpen(open)
-    if (open) {
-      document.body.classList.add("menu-open")
-    } else {
-      document.body.classList.remove("menu-open")
-    }
-  }
 
   const resetSearch = () => {
     setSearchName("")
@@ -438,19 +411,13 @@ const UserMeetings = () => {
     }
 
     if (meeting && meeting.id) {
-      // שמירת נתוני הפגישה ב-localStorage כדי שיהיו זמינים בכרטיסייה החדשה
       const tempKey = `meeting_${meeting.id}`
       localStorage.setItem(tempKey, JSON.stringify(meeting))
 
-      // יצירת URL עם hash routing - זה החלק החשוב!
       const baseUrl = window.location.origin
       const currentPath = window.location.pathname
 
-      // אם אתם משתמשים ב-hash routing, הURL צריך להיות כך:
       const newUrl = `${baseUrl}${currentPath}#/meeting/${meeting.id}?userId=${userId}`
-
-      // אלטרנטיבה אם ה-hash routing שלכם עובד אחרת:
-      // const newUrl = `${baseUrl}${currentPath}?meetingId=${meeting.id}&userId=${userId}#meeting-${meeting.id}`
 
       console.log("New tab URL:", newUrl)
 
@@ -950,7 +917,6 @@ const UserMeetings = () => {
           setMeetings(meetingsData)
         }
 
-        // Handle meetingId from URL parameters
         const params = new URLSearchParams(window.location.search)
         const meetingId = params.get("meetingId")
 
@@ -958,10 +924,8 @@ const UserMeetings = () => {
           const meetingIdNum = Number.parseInt(meetingId, 10)
 
           if (!isNaN(meetingIdNum)) {
-            // נסה למצוא את הפגישה ברשימת הפגישות שנטענו
             let meeting = meetingsData.find((m: Meeting) => m.id === meetingIdNum)
 
-            // אם הפגישה לא נמצאה, נסה לקחת אותה מ-localStorage
             if (!meeting) {
               const tempKey = `meeting_${meetingIdNum}`
               const storedMeetingData = localStorage.getItem(tempKey)
@@ -971,7 +935,6 @@ const UserMeetings = () => {
                   meeting = JSON.parse(storedMeetingData)
                   console.log("Found meeting in localStorage:", meeting)
 
-                  // הוסף את הפגישה לרשימת הפגישות אם היא לא קיימת שם
                   if (!meetingsData.some((m) => m.id === meetingIdNum)) {
                     setMeetings((prev) => (meeting ? [...prev, meeting] : prev))
                   }
@@ -1039,15 +1002,12 @@ const UserMeetings = () => {
     }
   }, [userId, navigate, handleScroll, handleError, addNotification])
 
-  // הוסף את זה אחרי ה-useEffect הקיים שטוען את הפגישות
   useEffect(() => {
-    // טיפול ב-hash routing עבור פתיחה בכרטיסייה חדשה
     const handleHashChange = () => {
       const hash = window.location.hash
       const urlParams = new URLSearchParams(window.location.search)
       const meetingId = urlParams.get("meetingId")
 
-      // אם יש hash שמתחיל ב-/meeting/ או meetingId בפרמטרים
       const hashMeetingMatch = hash.match(/#\/meeting\/(\d+)/)
       const targetMeetingId = hashMeetingMatch ? hashMeetingMatch[1] : meetingId
 
@@ -1055,10 +1015,8 @@ const UserMeetings = () => {
         const meetingIdNum = Number.parseInt(targetMeetingId, 10)
 
         if (!isNaN(meetingIdNum)) {
-          // נסה למצוא את הפגישה ברשימה הקיימת
           let meeting = meetings.find((m) => m.id === meetingIdNum)
 
-          // אם לא נמצאה, נסה ב-localStorage
           if (!meeting) {
             const tempKey = `meeting_${meetingIdNum}`
             const storedMeetingData = localStorage.getItem(tempKey)
@@ -1081,16 +1039,14 @@ const UserMeetings = () => {
       }
     }
 
-    // קרא מיד בטעינה
     handleHashChange()
 
-    // האזן לשינויים ב-hash
     window.addEventListener("hashchange", handleHashChange)
 
     return () => {
       window.removeEventListener("hashchange", handleHashChange)
     }
-  }, [meetings]) // תלוי ברשימת הפגישות
+  }, [meetings])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -1448,7 +1404,7 @@ const UserMeetings = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container ${darkMode ? "dark-mode" : ""}`}>
       <ConfirmationDialog
         isOpen={confirmDialog.isOpen}
         title="אישור מחיקה"
@@ -1462,8 +1418,6 @@ const UserMeetings = () => {
       <Header
         animateHeader={animateHeader}
         toggleDrawer={toggleDrawer}
-        toggleDarkMode={toggleDarkMode}
-        darkMode={darkMode}
         selectedMeeting={selectedMeeting}
         menuOpen={menuOpen}
         user={user ?? undefined}

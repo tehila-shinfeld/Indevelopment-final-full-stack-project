@@ -11,8 +11,7 @@ import ReactMarkdown from "react-markdown"
 import dynamic from "next/dynamic"
 import "../styleSheets/SummarizeFile.css"
 import "../styleSheets/canva-editor.css"
-// Dynamically import the Canvas Editor component to avoid SSR issues
-const CanvasEditor = dynamic(() => import("../components/canvasEditor"), { ssr: false })
+const CanvasEditor = dynamic(() => import("./canvasEditor"), { ssr: false })
 
 const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const { summary, setSummary } = useSummary()

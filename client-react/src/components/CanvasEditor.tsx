@@ -3,7 +3,6 @@
 import type React from "react"
 import { useRef, useEffect, useState, useCallback } from "react"
 import { Save, X, Type, Palette, Eraser, Undo, Redo, Download, Bold, Mouse } from "lucide-react"
-
 interface CanvasEditorProps {
   onSave: (editedText: string) => void
   onCancel: () => void

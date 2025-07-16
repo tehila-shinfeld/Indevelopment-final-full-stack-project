@@ -16,7 +16,16 @@ using summary.Service;
 using System;
 using System.Text;
 using Amazon.Runtime;
+using System.Globalization;
 
+//---------------
+var cultureInfo = new CultureInfo("he-IL");
+cultureInfo.DateTimeFormat.Calendar = new GregorianCalendar(); // ✅ החלק הקריטי
+
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+//----------------
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace summary.Service
 {
@@ -33,14 +34,16 @@ namespace summary.Service
             _userRepository = userRepository;
             _httpClient = httpClient;
         }
-        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string fileType,DateTime meetingDate)
+        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string fileType,string meetingDate)
         {
+            var dateTemplate = DateTime.ParseExact(meetingDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
             // יצירת ישיבה חדשה
             var meeting = new Meeting
             {
                 Name = $"{fileName}",
-                MeetingDate = meetingDate,
-                UpdatedAt = DateTime.UtcNow
+                MeetingDate = dateTemplate,
+                UpdatedAt = DateTime.Now
             };
 
             await _meetingRepository.AddMeetingAsync(meeting);

@@ -286,7 +286,6 @@ const FileUploadButton = () => {
 
       try {
         console.log("📅 פרטי הפגישה:",meetingDate,meetingName);
-        
         const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
           fileName: meetingName,
           fileType: selectedFile.type,

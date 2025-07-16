@@ -48,12 +48,11 @@ public class FilesController : ControllerBase
     [HttpPost("summarize")]
     public async Task<IActionResult> Post([FromBody] SummarizeRequest request)
     {
-        //if (string.IsNullOrWhiteSpace(request.Text))
-        //    return BadRequest("Missing text");
+        if (string.IsNullOrWhiteSpace(request.Text))
+            return BadRequest("Missing text");
 
-        //var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
-        //return Ok(new { summary });
-        return Ok(new { V = "ד' יז כול יכול" });
+        var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
+        return Ok(new { summary });
     }
 
     [HttpPost("assign-file-to-customers")]

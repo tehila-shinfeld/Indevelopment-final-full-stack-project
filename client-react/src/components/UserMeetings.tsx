@@ -1298,7 +1298,7 @@ const UserMeetings = () => {
               <div className="list-meta">
                 <div className="list-date">
                   <Calendar size={14} />
-                  <span>{formatDate(meeting.summaryContent)}</span>
+                  <span>{formatDate(meeting.meetingDate)}</span>
                 </div>
                 {favorites.includes(meeting.id) && (
                   <div className="list-favorite">
@@ -1436,6 +1436,7 @@ const UserMeetings = () => {
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                   />
+  {/* ----------------------------------------------------------------------------------------------------------- */}
                 </div>
                 <div className="search-input date-input">
                   <input type="date" value={searchDate} onChange={(e) => setSearchDate(e.target.value)} />

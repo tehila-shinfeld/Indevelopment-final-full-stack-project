@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace summary.Core.DTOs
 {
-   public class MeetingDto
+    public class MeetingDto
     {
         public int Id { get; set; } // מזהה ישיבה
 
@@ -15,6 +15,8 @@ namespace summary.Core.DTOs
         public string TranscriptionLink { get; set; } // קישור לתמלול בענן
 
         public string SummaryContent { get; set; } // קישור לסיכום בענן
+
+        public DateTime MeetingDate { get; set; }
 
         //public DATE
 

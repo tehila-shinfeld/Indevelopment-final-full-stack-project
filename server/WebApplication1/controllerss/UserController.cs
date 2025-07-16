@@ -55,7 +55,7 @@ namespace summary.Api.controllerss
             return BadRequest("Invalid user data");
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] UserDto userDto)
         {
             var updatedUser = await userService.ChangeAsync(id, userDto);

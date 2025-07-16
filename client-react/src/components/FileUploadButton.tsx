@@ -285,9 +285,11 @@ const FileUploadButton = () => {
       console.log("➡️ שולח בקשה ליצירת כתובת העלאה לשרת...")
 
       try {
+        console.log("📅 פרטי הפגישה:",meetingDate,meetingName);
+        
         const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
-          fileName: selectedFile.name,
-          fileType: meetingName,
+          fileName: meetingName,
+          fileType: selectedFile.type,
           date: meetingDate,
         })
 
@@ -579,7 +581,7 @@ const FileUploadButton = () => {
                 </div>
                 <div className="meeting-info-item">
                   <Calendar size={16} />
-                  <span className="meeting-date">{new Date(meetingDate).toLocaleDateString("he-IL")}</span>
+                  <span className="meeting-date">{meetingDate}</span>
                 </div>
               </div>
               <button className="edit-meeting-button" onClick={handleEditMeetingDetails}>

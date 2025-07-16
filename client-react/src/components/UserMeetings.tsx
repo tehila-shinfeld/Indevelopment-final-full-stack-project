@@ -1,5 +1,4 @@
 "use client"
-
 import type React from "react"
 import { useEffect, useState, useRef, useCallback } from "react"
 import axios from "axios"
@@ -37,6 +36,7 @@ interface Meeting {
   id: number
   name: string
   summaryContent: string
+  transcriptionLink: string // Added based on MeetingDto
   meetingDate: Date
 }
 
@@ -62,7 +62,6 @@ interface ConfirmationDialogProps {
 
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, title, message, onConfirm, onCancel }) => {
   if (!isOpen) return null
-
   return (
     <div className="confirmation-overlay" onClick={onCancel}>
       <div className="confirmation-dialog" onClick={(e) => e.stopPropagation()}>
@@ -90,7 +89,6 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, title, 
 
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false)
-
   const toggleVisibility = () => {
     if (window.pageYOffset > 300) {
       setIsVisible(true)
@@ -98,19 +96,16 @@ const ScrollToTopButton = () => {
       setIsVisible(false)
     }
   }
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     })
   }
-
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibility)
     return () => window.removeEventListener("scroll", toggleVisibility)
   }, [])
-
   return (
     <button
       className={`scroll-to-top-button ${isVisible ? "visible" : ""}`}
@@ -150,7 +145,6 @@ const UserMeetings = () => {
     const savedViewMode = localStorage.getItem("meetingsViewMode")
     return (savedViewMode as "grid" | "list" | "compact") || "grid"
   })
-
   const meetingsRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const { user } = useUser()
@@ -185,22 +179,18 @@ const UserMeetings = () => {
     } else {
       header?.classList.remove("header-scrolled")
     }
-
     const animateElements = document.querySelectorAll(".scroll-trigger")
     animateElements.forEach((element) => {
       const elementTop = element.getBoundingClientRect().top
       const elementVisible = 150
-
       if (elementTop < window.innerHeight - elementVisible) {
         element.classList.add("animated")
       }
     })
-
     const cardElements = document.querySelectorAll(".card-scroll-trigger")
     cardElements.forEach((element) => {
       const elementTop = element.getBoundingClientRect().top
       const elementVisible = 150
-
       if (elementTop < window.innerHeight - elementVisible) {
         element.classList.add("animated")
       }
@@ -209,7 +199,6 @@ const UserMeetings = () => {
 
   const addNotification = useCallback((notification: Omit<ErrorNotification, "id">) => {
     console.log("Notification (suppressed):", notification)
-
     if (notification.type === "error") {
       setError(notification.message)
     }
@@ -218,13 +207,11 @@ const UserMeetings = () => {
   const handleError = useCallback(
     (error: unknown, context: string) => {
       console.error(`Error in ${context}:`, error)
-
       const errorWithMessage = (err: unknown): err is { message: string } =>
         typeof err === "object" &&
         err !== null &&
         "message" in err &&
         typeof (err as { message?: unknown }).message === "string"
-
       const errorWithResponse = (err: unknown): err is { response: { status: number } } =>
         typeof err === "object" &&
         err !== null &&
@@ -239,20 +226,17 @@ const UserMeetings = () => {
 
       if (errorWithResponse(error)) {
         const status = error.response.status
-
         if (status === 401) {
           console.error("Authentication error")
           setError("פג תוקף החיבור שלך. אנא התחבר מחדש.")
           navigate("/")
           return
         }
-
         if (status === 403) {
           console.error("Forbidden access")
           setError("אין לך הרשאה לבצע פעולה זו.")
           return
         }
-
         if (status === 404) {
           if (context === "fetchMeetings") {
             console.log("No meetings found")
@@ -263,7 +247,6 @@ const UserMeetings = () => {
           }
           return
         }
-
         if (status >= 500) {
           console.error("Server error")
           setError("אירעה שגיאה בשרת. אנא נסה שוב מאוחר יותר.")
@@ -276,22 +259,18 @@ const UserMeetings = () => {
           console.error("Error fetching meetings")
           setError("לא ניתן לטעון את רשימת הפגישות שלך. אנא נסה שוב.")
           break
-
         case "deleteMeeting":
           console.error("Error deleting meeting")
           setError("לא ניתן למחוק את הפגישה. אנא נסה שוב.")
           break
-
         case "userAuthentication":
           console.error("User authentication error")
           setError("לא ניתן לזהות את המשתמש. אנא התחבר מחדש.")
           break
-
         case "downloadPdf":
           console.error("Error downloading PDF")
           setError("לא ניתן להוריד את הקובץ. אנא נסה שוב.")
           break
-
         default:
           console.error("Unexpected error")
           setError("אירעה שגיאה לא צפויה. אנא נסה שוב.")
@@ -303,7 +282,6 @@ const UserMeetings = () => {
   const resetSearch = () => {
     setSearchName("")
     setSearchDate("")
-
     const searchContainer = document.querySelector(".search-container")
     searchContainer?.classList.add("reset-animation")
     setTimeout(() => {
@@ -313,10 +291,8 @@ const UserMeetings = () => {
 
   const toggleFavorite = (meetingId: number, event: React.MouseEvent) => {
     event.stopPropagation()
-
     setFavorites((prev) => {
       const newFavorites = prev.includes(meetingId) ? prev.filter((id) => id !== meetingId) : [...prev, meetingId]
-
       localStorage.setItem("userFavorites", JSON.stringify(newFavorites))
       return newFavorites
     })
@@ -324,7 +300,6 @@ const UserMeetings = () => {
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text
-
     const parts = text.split(new RegExp(`(${query})`, "gi"))
     return parts.map((part, index) =>
       part.toLowerCase() === query.toLowerCase() ? (
@@ -342,13 +317,10 @@ const UserMeetings = () => {
       if (!dateString) {
         return "תאריך לא זמין"
       }
-
       const date = new Date(dateString)
-
       if (isNaN(date.getTime())) {
         return "תאריך לא תקין"
       }
-
       return new Intl.DateTimeFormat("he-IL", {
         year: "numeric",
         month: "long",
@@ -362,29 +334,24 @@ const UserMeetings = () => {
 
   const filteredMeetings = meetings.filter((meeting) => {
     const matchesName = meeting.name.toLowerCase().includes(searchName.toLowerCase())
-    const matchesDate = searchDate ? new Date(meeting.summaryContent).toISOString().split("T")[0] === searchDate : true
-
+    const matchesDate = searchDate ? new Date(meeting.meetingDate).toISOString().split("T")[0] === searchDate : true
     if (activeFilter === "recent") {
       const oneWeekAgo = new Date()
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-      return matchesName && matchesDate && new Date(meeting.summaryContent) >= oneWeekAgo
+      return matchesName && matchesDate && new Date(meeting.meetingDate) >= oneWeekAgo
     }
-
     if (activeFilter === "favorites") {
       return matchesName && matchesDate && favorites.includes(meeting.id)
     }
-
     return matchesName && matchesDate
   })
 
   const handleCardClick = (meeting: Meeting) => {
     console.log("Card clicked for meeting:", meeting.id, meeting.name)
-
     if (!userId) {
       handleError(new Error("User not authenticated"), "userAuthentication")
       return
     }
-
     if (meeting && meeting.id) {
       setSelectedMeeting(meeting)
       const newUrl = `${window.location.pathname}?meetingId=${meeting.id}`
@@ -402,27 +369,19 @@ const UserMeetings = () => {
 
   const handleOpenInNewTab = (meeting: Meeting, event: React.MouseEvent) => {
     event.stopPropagation()
-
     console.log("Opening in new tab:", meeting.id)
-
     if (!userId) {
       handleError(new Error("User not authenticated"), "userAuthentication")
       return
     }
-
     if (meeting && meeting.id) {
       const tempKey = `meeting_${meeting.id}`
       localStorage.setItem(tempKey, JSON.stringify(meeting))
-
       const baseUrl = window.location.origin
       const currentPath = window.location.pathname
-
       const newUrl = `${baseUrl}${currentPath}#/meeting/${meeting.id}?userId=${userId}`
-
       console.log("New tab URL:", newUrl)
-
       const newTab = window.open(newUrl, "_blank")
-
       if (!newTab) {
         addNotification({
           type: "warning",
@@ -447,12 +406,10 @@ const UserMeetings = () => {
 
   const showDeleteConfirmation = (meeting: Meeting, event: React.MouseEvent) => {
     event.stopPropagation()
-
     if (!userId) {
       handleError(new Error("User not authenticated"), "userAuthentication")
       return
     }
-
     setConfirmDialog({
       isOpen: true,
       meetingId: meeting.id,
@@ -465,23 +422,18 @@ const UserMeetings = () => {
       handleError(new Error("User not authenticated or invalid meeting ID"), "userAuthentication")
       return
     }
-
     setDeletingMeetingId(confirmDialog.meetingId)
-
     const card = document.querySelector(`.meeting-card[data-id="${confirmDialog.meetingId}"]`)
     if (card) {
       card.classList.add("deleting")
     }
-
     try {
       await axios.delete(
         `https://${import.meta.env.VITE_API_BASE_URL}/api/Meeting/${confirmDialog.meetingId}/User/${userId}`,
       )
-
       setTimeout(() => {
         setMeetings((prevMeetings) => prevMeetings.filter((meeting) => meeting.id !== confirmDialog.meetingId))
         setDeletingMeetingId(null)
-
         addNotification({
           type: "info",
           title: "פגישה נמחקה",
@@ -532,7 +484,6 @@ const UserMeetings = () => {
         .then(() => {
           setCopied(true)
           setTimeout(() => setCopied(false), 2000)
-
           addNotification({
             type: "info",
             title: "הועתק ללוח",
@@ -594,7 +545,7 @@ const UserMeetings = () => {
               </head>
               <body>
                 <h1>${selectedMeeting.name}</h1>
-                <div class="date">תאריך: ${formatDate(selectedMeeting.summaryContent)}</div>
+                <div class="date">תאריך: ${formatDate(selectedMeeting.meetingDate)}</div>
                 <div class="content">${selectedMeeting.summaryContent}</div>
                 <div class="footer">הודפס מתוך מערכת AI.TalkToMe &copy; ${new Date().getFullYear()}</div>
               </body>
@@ -602,16 +553,13 @@ const UserMeetings = () => {
           `)
           printWindow.document.close()
           printWindow.focus()
-
           const printWindowClosedInterval = setInterval(() => {
             if (printWindow.closed) {
               clearInterval(printWindowClosedInterval)
               window.focus()
             }
           }, 500)
-
           printWindow.print()
-
           addNotification({
             type: "info",
             title: "הדפסה",
@@ -635,16 +583,13 @@ const UserMeetings = () => {
     if (event) {
       event.stopPropagation()
     }
-
     try {
       setDownloadingPdf(true)
-
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       })
-
       const container = document.createElement("div")
       container.style.position = "absolute"
       container.style.left = "-9999px"
@@ -652,12 +597,11 @@ const UserMeetings = () => {
       container.style.direction = "rtl"
       container.style.fontFamily = "Arial, sans-serif"
       document.body.appendChild(container)
-
       container.innerHTML = `
     <div style="width: 170mm; direction: rtl; text-align: right; font-family: Arial, sans-serif;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div style="text-align: left;">
-          <div style="font-size: 12px; color: #6b7280;">תאריך: ${formatDate(meeting.summaryContent)}</div>
+          <div style="font-size: 12px; color: #6b7280;">תאריך: ${formatDate(meeting.meetingDate)}</div>
         </div>
         <div style="text-align: right;">
           <div style="font-size: 28px; font-weight: bold; color: #0078c8;">
@@ -665,23 +609,17 @@ const UserMeetings = () => {
           </div>
         </div>
       </div>
-      
-      <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
-      
-      <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${meeting.name}</h1>
-      
-      <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${meeting.summaryContent}</div>
-      
-      <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
+            <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
+            <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${meeting.name}</h1>
+            <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${meeting.summaryContent}</div>
+            <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
         TalkToMe.AI © ${new Date().getFullYear()}
       </div>
     </div>
-  `
-
+    `
       import("html2canvas")
         .then((html2canvasModule) => {
           const html2canvas = html2canvasModule.default
-
           html2canvas(container, {
             scale: 2,
             useCORS: true,
@@ -689,19 +627,14 @@ const UserMeetings = () => {
             backgroundColor: "#ffffff",
           }).then((canvas) => {
             const imgData = canvas.toDataURL("image/jpeg", 1.0)
-
             pdf.addImage(imgData, "JPEG", 10, 10, 190, 0)
-
             pdf.save(`${meeting.name.replace(/[^\w\s]/gi, "")}.pdf`)
-
             document.body.removeChild(container)
-
             addNotification({
               type: "info",
               title: "הורדת PDF",
               message: "קובץ ה-PDF הורד בהצלחה.",
             })
-
             setDownloadingPdf(false)
           })
         })
@@ -714,13 +647,11 @@ const UserMeetings = () => {
     } catch (error) {
       console.error("Failed to download PDF:", error)
       handleError(error, "downloadPdf")
-
       addNotification({
         type: "error",
         title: "שגיאה בהורדת PDF",
         message: "לא ניתן להוריד את קובץ ה-PDF. אנא נסה שוב.",
       })
-
       setDownloadingPdf(false)
     }
   }
@@ -736,12 +667,9 @@ const UserMeetings = () => {
     if (event) {
       event.stopPropagation()
     }
-
     try {
       setSendingEmail(true)
-
       const token = sessionStorage.getItem("token")
-
       if (!token) {
         addNotification({
           type: "error",
@@ -751,17 +679,17 @@ const UserMeetings = () => {
         setSendingEmail(false)
         return
       }
+
       interface DecodedToken {
         email?: string
         [key: string]: unknown
       }
+
       let userEmail = ""
       try {
         const decodedToken = jwtDecode<DecodedToken>(token)
-
         userEmail = decodedToken.email || ""
         console.log("email", userEmail)
-
         if (!userEmail) {
           addNotification({
             type: "error",
@@ -787,7 +715,6 @@ const UserMeetings = () => {
         unit: "mm",
         format: "a4",
       })
-
       const container = document.createElement("div")
       container.style.position = "absolute"
       container.style.left = "-9999px"
@@ -795,12 +722,11 @@ const UserMeetings = () => {
       container.style.direction = "rtl"
       container.style.fontFamily = "Arial, sans-serif"
       document.body.appendChild(container)
-
       container.innerHTML = `
         <div style="width: 170mm; direction: rtl; text-align: right; font-family: Arial, sans-serif;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="text-align: left;">
-              <div style="font-size: 12px; color: #6b7280;">תאריך: ${formatDate(meeting.summaryContent)}</div>
+              <div style="font-size: 12px; color: #6b7280;">תאריך: ${formatDate(meeting.meetingDate)}</div>
             </div>
             <div style="text-align: right;">
               <div style="font-size: 28px; font-weight: bold; color: #0078c8;">
@@ -808,38 +734,30 @@ const UserMeetings = () => {
               </div>
             </div>
           </div>
-          
-          <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
-          
-          <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${meeting.name}</h1>
-          
-          <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${meeting.summaryContent}</div>
-          
-          <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
-            TalkToMe.AI © ${new Date().getFullYear()}
-          </div>
+                        <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
+                        <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${meeting.name}</h1>
+                        <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${meeting.summaryContent}</div>
+                        <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
+                TalkToMe.AI © ${new Date().getFullYear()}
+              </div>
         </div>
       `
-
       const html2canvasModule = await import("html2canvas")
       const html2canvas = html2canvasModule.default
-
       const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
       })
-
       const imgData = canvas.toDataURL("image/jpeg", 1.0)
       pdf.addImage(imgData, "JPEG", 10, 10, 190, 0)
-
       const pdfBlob = pdf.output("blob")
 
       const formData = new FormData()
       formData.append("email", userEmail)
       formData.append("subject", `סיכום פגישה: ${meeting.name}`)
-      formData.append("message", `מצורף סיכום הפגישה "${meeting.name}" מתאריך ${formatDate(meeting.summaryContent)}.`)
+      formData.append("message", `מצורף סיכום הפגישה "${meeting.name}" מתאריך ${formatDate(meeting.meetingDate)}.`)
       formData.append("attachment", pdfBlob, `${meeting.name.replace(/[^\w\s]/gi, "")}.pdf`)
 
       await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/email/send-with-attachment`, formData, {
@@ -847,15 +765,12 @@ const UserMeetings = () => {
           "Content-Type": "multipart/form-data",
         },
       })
-
       document.body.removeChild(container)
-
       addNotification({
         type: "info",
         title: "אימייל נשלח",
         message: `סיכום הפגישה נשלח לכתובת ${userEmail} בהצלחה.`,
       })
-
       setEmailSentSuccess(true)
       setTimeout(() => {
         setEmailSentSuccess(false)
@@ -863,7 +778,6 @@ const UserMeetings = () => {
     } catch (error) {
       console.error("Failed to send email:", error)
       handleError(error, "sendEmail")
-
       addNotification({
         type: "error",
         title: "שגיאה בשליחת אימייל",
@@ -876,7 +790,6 @@ const UserMeetings = () => {
 
   useEffect(() => {
     let isMounted = true
-
     const fetchMeetings = async () => {
       if (!userId) {
         console.error("User not authenticated")
@@ -885,13 +798,12 @@ const UserMeetings = () => {
         handleError(new Error("User not authenticated"), "userAuthentication")
         return
       }
-
       try {
         const response = await axios.get<Meeting[]>(
           `https://${import.meta.env.VITE_API_BASE_URL}/api/files/get-user-meetings/${userId}`,
         )
         const meetingsData = response.data
-
+        console.log("Meetings data received from server:", meetingsData)
         if (meetingsData.length === 0) {
           addNotification({
             type: "info",
@@ -912,29 +824,23 @@ const UserMeetings = () => {
             message: `נטענו ${meetingsData.length} ישיבות.`,
           })
         }
-
         if (isMounted) {
           setMeetings(meetingsData)
         }
 
         const params = new URLSearchParams(window.location.search)
         const meetingId = params.get("meetingId")
-
         if (meetingId) {
           const meetingIdNum = Number.parseInt(meetingId, 10)
-
           if (!isNaN(meetingIdNum)) {
             let meeting = meetingsData.find((m: Meeting) => m.id === meetingIdNum)
-
             if (!meeting) {
               const tempKey = `meeting_${meetingIdNum}`
               const storedMeetingData = localStorage.getItem(tempKey)
-
               if (storedMeetingData) {
                 try {
                   meeting = JSON.parse(storedMeetingData)
                   console.log("Found meeting in localStorage:", meeting)
-
                   if (!meetingsData.some((m) => m.id === meetingIdNum)) {
                     setMeetings((prev) => (meeting ? [...prev, meeting] : prev))
                   }
@@ -943,7 +849,6 @@ const UserMeetings = () => {
                 }
               }
             }
-
             if (meeting && isMounted) {
               setSelectedMeeting(meeting)
               console.log("Selected meeting from URL parameters:", meeting)
@@ -995,7 +900,6 @@ const UserMeetings = () => {
     }, 300)
 
     window.addEventListener("scroll", handleScroll)
-
     return () => {
       window.removeEventListener("scroll", handleScroll)
       isMounted = false
@@ -1007,20 +911,16 @@ const UserMeetings = () => {
       const hash = window.location.hash
       const urlParams = new URLSearchParams(window.location.search)
       const meetingId = urlParams.get("meetingId")
-
       const hashMeetingMatch = hash.match(/#\/meeting\/(\d+)/)
       const targetMeetingId = hashMeetingMatch ? hashMeetingMatch[1] : meetingId
 
       if (targetMeetingId) {
         const meetingIdNum = Number.parseInt(targetMeetingId, 10)
-
         if (!isNaN(meetingIdNum)) {
           let meeting = meetings.find((m) => m.id === meetingIdNum)
-
           if (!meeting) {
             const tempKey = `meeting_${meetingIdNum}`
             const storedMeetingData = localStorage.getItem(tempKey)
-
             if (storedMeetingData) {
               try {
                 meeting = JSON.parse(storedMeetingData)
@@ -1030,7 +930,6 @@ const UserMeetings = () => {
               }
             }
           }
-
           if (meeting) {
             setSelectedMeeting(meeting)
             console.log("Selected meeting from hash/URL:", meeting)
@@ -1040,9 +939,7 @@ const UserMeetings = () => {
     }
 
     handleHashChange()
-
     window.addEventListener("hashchange", handleHashChange)
-
     return () => {
       window.removeEventListener("hashchange", handleHashChange)
     }
@@ -1058,7 +955,6 @@ const UserMeetings = () => {
         }
       }
     }
-
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [selectedMeeting, confirmDialog.isOpen])
@@ -1069,18 +965,15 @@ const UserMeetings = () => {
       cards.forEach((card) => {
         card.classList.add("card-scroll-trigger")
       })
-
       const searchSection = document.querySelector(".search-section")
       if (searchSection) {
         searchSection.classList.add("scroll-trigger")
       }
-
       const filterTabs = document.querySelector(".filter-tabs")
       if (filterTabs) {
         filterTabs.classList.add("scroll-trigger")
       }
     }
-
     setTimeout(() => {
       addScrollTriggerClass()
       handleScroll()
@@ -1093,7 +986,6 @@ const UserMeetings = () => {
 
   const renderMeetingDetails = () => {
     if (!selectedMeeting) return null
-
     return (
       <div className="meeting-details-container">
         <div className="meeting-details-header">
@@ -1102,31 +994,26 @@ const UserMeetings = () => {
             <span>חזרה לרשימת הפגישות</span>
           </button>
         </div>
-
         <div className="meeting-details-card">
           <div className="meeting-details-title-section">
             <h2 className="meeting-details-title">{selectedMeeting.name}</h2>
             <div className="meeting-details-date">
               <Calendar size={16} />
-              <span>{formatDate(selectedMeeting.summaryContent)}</span>
+              <span>{formatDate(selectedMeeting.meetingDate)}</span>
             </div>
           </div>
-
           <div className="meeting-details-content">
             <p>{selectedMeeting.summaryContent}</p>
           </div>
-
           <div className="meeting-details-actions">
             <button className="details-action details-action-fixed" onClick={handleCopyContent}>
               {copied ? <CheckCircle size={18} /> : <Copy size={18} />}
               <span>{copied ? "הועתק!" : "העתק תוכן"}</span>
             </button>
-
             <button className="details-action details-action-fixed" onClick={handlePrint}>
               <Printer size={18} />
               <span>הדפס</span>
             </button>
-
             <button
               className={`details-action details-action-fixed ${downloadingPdf ? "downloading" : ""}`}
               onClick={() => handleDownloadPDF(selectedMeeting)}
@@ -1135,7 +1022,6 @@ const UserMeetings = () => {
               <FileDown size={18} />
               <span>{downloadingPdf ? "מוריד..." : "הורד PDF"}</span>
             </button>
-
             <button
               className={`details-action details-action-fixed ${sendingEmail ? "downloading" : ""}`}
               onClick={() => handleSendToEmail(selectedMeeting)}
@@ -1214,7 +1100,6 @@ const UserMeetings = () => {
             onClick={() => handleCardClick(meeting)}
           >
             <div className={`card-accent-bar accent-${(index % 5) + 1}`}></div>
-
             <div className="card-content-enhanced">
               <div className="card-header-enhanced">
                 <div className="meeting-info-enhanced">
@@ -1224,7 +1109,6 @@ const UserMeetings = () => {
                     <span>{formatDate(meeting.meetingDate)}</span>
                   </div>
                 </div>
-
                 <div className="meeting-status-enhanced">
                   {favorites.includes(meeting.id) && (
                     <div className="favorite-indicator-enhanced">
@@ -1233,7 +1117,6 @@ const UserMeetings = () => {
                   )}
                 </div>
               </div>
-
               <div className="card-actions-enhanced">
                 <button
                   className="action-btn-enhanced favorite-btn"
@@ -1289,12 +1172,10 @@ const UserMeetings = () => {
             onClick={() => handleCardClick(meeting)}
           >
             <div className={`list-accent-indicator accent-${(index % 5) + 1}`}></div>
-
             <div className="list-content">
               <div className="list-main-info">
                 <h3 className="list-title">{highlightMatch(meeting.name, searchName)}</h3>
               </div>
-
               <div className="list-meta">
                 <div className="list-date">
                   <Calendar size={14} />
@@ -1307,7 +1188,6 @@ const UserMeetings = () => {
                 )}
               </div>
             </div>
-
             <div className="list-actions">
               <button
                 className="list-action-btn favorite-btn"
@@ -1316,7 +1196,6 @@ const UserMeetings = () => {
               >
                 {favorites.includes(meeting.id) ? <Star size={16} fill="currentColor" /> : <StarOff size={16} />}
               </button>
-
               <button
                 className="list-action-btn download-btn"
                 title="הורד PDF"
@@ -1325,7 +1204,6 @@ const UserMeetings = () => {
               >
                 <FileDown size={16} />
               </button>
-
               <button
                 className="list-action-btn email-btn"
                 title="שלח לאימייל"
@@ -1334,7 +1212,6 @@ const UserMeetings = () => {
               >
                 <FileText size={16} />
               </button>
-
               <button
                 className="list-action-btn delete-btn"
                 title="מחק"
@@ -1342,7 +1219,6 @@ const UserMeetings = () => {
               >
                 <Trash2 size={16} />
               </button>
-
               <button
                 className="list-action-btn expand-btn"
                 title="פתח בחלון חדש"
@@ -1366,16 +1242,13 @@ const UserMeetings = () => {
             onClick={() => handleCardClick(meeting)}
           >
             <div className={`compact-accent accent-${(index % 5) + 1}`}></div>
-
             <div className="compact-info">
               <h4 className="compact-title">{highlightMatch(meeting.name, searchName)}</h4>
-              <span className="compact-date">{formatDate(meeting.summaryContent)}</span>
+              <span className="compact-date">{formatDate(meeting.meetingDate)}</span>
             </div>
-
             <div className="compact-status">
               {favorites.includes(meeting.id) && <Star size={12} fill="currentColor" className="compact-favorite" />}
             </div>
-
             <div className="compact-actions">
               <button className="compact-action-btn" title="פתח" onClick={(e) => handleOpenInNewTab(meeting, e)}>
                 <ExternalLink size={14} />
@@ -1412,9 +1285,7 @@ const UserMeetings = () => {
         onConfirm={handleDeleteMeeting}
         onCancel={closeConfirmDialog}
       />
-
       {menuOpen && <div className="sidebar-overlay" onClick={() => toggleDrawer(false)} />}
-
       <Header
         animateHeader={animateHeader}
         toggleDrawer={toggleDrawer}
@@ -1423,7 +1294,6 @@ const UserMeetings = () => {
         user={user ?? undefined}
         onLogout={logOut}
       />
-
       <main className="dashboard-content">
         {!selectedMeeting && (
           <section className="search-section">
@@ -1436,7 +1306,6 @@ const UserMeetings = () => {
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                   />
-  {/* ----------------------------------------------------------------------------------------------------------- */}
                 </div>
                 <div className="search-input date-input">
                   <input type="date" value={searchDate} onChange={(e) => setSearchDate(e.target.value)} />
@@ -1447,7 +1316,6 @@ const UserMeetings = () => {
                 <span>איפוס</span>
               </button>
             </div>
-
             <div className="filter-tabs">
               <button
                 className={`filter-tab ${activeFilter === "all" ? "active" : ""}`}
@@ -1470,7 +1338,6 @@ const UserMeetings = () => {
                 <Star size={16} />
                 <span>מועדפים</span>
               </button>
-
               <div className="view-mode-selector">
                 <button
                   className={`view-mode-btn ${viewMode === "grid" ? "active" : ""}`}
@@ -1513,12 +1380,10 @@ const UserMeetings = () => {
             </div>
           </section>
         )}
-
         <section className="meetings-section">
           {selectedMeeting ? renderMeetingDetails() : renderMeetingsList()}
         </section>
       </main>
-
       <ScrollToTopButton />
       {sendingEmail && (
         <div className="email-overlay">
@@ -1559,7 +1424,6 @@ const UserMeetings = () => {
           </div>
         </div>
       )}
-
       <MinimalFooter></MinimalFooter>
     </div>
   )

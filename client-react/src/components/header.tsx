@@ -88,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             >
               <span className="logo-text">
-                TalkToMe.<span className="logo-highlight">AI</span>
+                Ai.<span className="logo-highlight">TalkToMe</span>
               </span>
             </div>
           </div>

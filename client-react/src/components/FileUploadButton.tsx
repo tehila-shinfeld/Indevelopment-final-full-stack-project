@@ -17,6 +17,7 @@ import {
   Edit3,
   Calendar,
   User,
+  AlertCircle,
 } from "lucide-react"
 import SummaryFile from "./SummarizeFile"
 import axios from "axios"
@@ -26,6 +27,7 @@ import "pdfjs-dist/build/pdf.worker.entry"
 import "../styleSheets/FileUploadButton.css"
 import { useNavigate } from "react-router-dom"
 import MySidebar from "../components/my-sidbar"
+
 // הגדרת מצבי התהליך הראשיים
 type ProcessState =
   | "meeting-details" // מצב הזנת פרטי הפגישה - חדש!
@@ -188,6 +190,15 @@ const FileUploadButton = () => {
     setProcessState("meeting-details")
   }
 
+  // פונקציה לסגירת הודעות שגיאה
+  const handleCloseError = () => {
+    setError(null)
+  }
+
+  const handleCloseMeetingError = () => {
+    setMeetingDetailsError(null)
+  }
+
   // פונקציה מאוחדת להעלאה ועיבוד הקובץ
   const handleFileUploadAndProcess = async (selectedFile: File) => {
     setProcessState("uploading")
@@ -276,7 +287,8 @@ const FileUploadButton = () => {
       try {
         const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
           fileName: selectedFile.name,
-          fileType: selectedFile.type,
+          fileType: meetingName,
+          date: meetingDate,
         })
 
         // בדקי את תגובת השרת
@@ -289,7 +301,6 @@ const FileUploadButton = () => {
           await axios.put(fileUrl, selectedFile)
 
           console.log("File uploaded successfully to S3.")
-          alert("הקובץ הועלה בהצלחה.")
         } catch (error) {
           console.error("Error uploading file to S3:", error)
 
@@ -337,10 +348,17 @@ const FileUploadButton = () => {
     setProcessState("summarizing")
 
     try {
+      console.log("📄 מתחיל ליצור סיכום עבור הקובץ:", fileTextContent.substring(0, 100));
+      
       const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/summarize`, {
         text: fileTextContent,
       })
+
       setSummary(response.data.summary)
+      console.log(response.data.summary) // הצגת הסיכום בקונסול;
+      
+      // setSummary("בלה בלה")
+
 
       // Show success animation
       setCelebrationActive(true)
@@ -469,9 +487,9 @@ const FileUploadButton = () => {
       case "uploading":
         return `מעלה קובץ... ${uploadProgress}%`
       case "processing":
-        return "מעבד את תוכן הקובץ..."
+        return "רק רגע ..."
       case "ready-to-summarize":
-        return "הקובץ עובד בהצלחה! כעת ניתן ליצור סיכום"
+        return "הקובץ עלה בהצלחה! כעת ניתן ליצור סיכום"
       case "summarizing":
         return "יוצר סיכום חכם של התוכן..."
       case "completed":
@@ -531,7 +549,7 @@ const FileUploadButton = () => {
           <div className="header-right-group">
             <div className="logo" onClick={() => navigate("/home")} style={{ cursor: "pointer" }}>
               <span className="logo-text">
-                TalkToMe.<span className="logo-highlight">AI</span>
+                Ai.<span className="logo-highlight">TalkToMe</span>
               </span>
             </div>
           </div>
@@ -570,34 +588,6 @@ const FileUploadButton = () => {
               </button>
             </div>
           )}
-
-          {/* אינדיקטור התקדמות */}
-          <div className="process-indicator">
-            <div className="steps">
-              <div className={`step ${processState !== "meeting-details" ? "completed" : "current"}`}>
-                <div className="step-number">1</div>
-                <div className="step-label">פרטי פגישה</div>
-              </div>
-              <div
-                className={`step ${processState !== "meeting-details" && processState !== "idle" ? "completed" : processState === "idle" ? "current" : ""}`}
-              >
-                <div className="step-number">2</div>
-                <div className="step-label">בחירת קובץ</div>
-              </div>
-              <div
-                className={`step ${["uploading", "processing", "ready-to-summarize", "summarizing", "completed"].includes(processState) ? "completed" : ["uploading", "processing"].includes(processState) ? "current" : ""}`}
-              >
-                <div className="step-number">3</div>
-                <div className="step-label">עיבוד הקובץ</div>
-              </div>
-              <div
-                className={`step ${["summarizing", "completed"].includes(processState) ? "completed" : processState === "ready-to-summarize" ? "current" : ""}`}
-              >
-                <div className="step-number">4</div>
-                <div className="step-label">יצירת סיכום</div>
-              </div>
-            </div>
-          </div>
 
           {processState === "meeting-details" ? (
             <div className="meeting-details-section">
@@ -646,9 +636,18 @@ const FileUploadButton = () => {
                     </div>
 
                     {meetingDetailsError && (
-                      <div className="error-message">
-                        <X size={16} />
-                        <span>{meetingDetailsError}</span>
+                      <div className="error-message closable">
+                        <div className="error-content">
+                          <AlertCircle size={16} />
+                          <span>{meetingDetailsError}</span>
+                        </div>
+                        <button
+                          className="close-error-button"
+                          onClick={handleCloseMeetingError}
+                          aria-label="סגור הודעה"
+                        >
+                          <X size={14} />
+                        </button>
                       </div>
                     )}
 
@@ -662,14 +661,15 @@ const FileUploadButton = () => {
             </div>
           ) : processState === "completed" ? (
             <div className="summary-section">
+
               {summary && (
-                <>
-                  <SummaryFile fileUrl={s3url ?? ""} />
+                <div className="summary-content">
+                  <SummaryFile fileUrl={s3url ?? "bla bla"} />
                   <button className="new-document-button" onClick={handleReset}>
                     <span className="button-text">העלאת מסמך נוסף</span>
                     <FileUp size={18} className="button-icon" />
                   </button>
-                </>
+                </div>
               )}
             </div>
           ) : (
@@ -726,12 +726,12 @@ const FileUploadButton = () => {
                       </div>
                       <h3 className="processing-title">
                         {processState === "uploading" && "מעלה מסמך"}
-                        {processState === "processing" && "מעבד תוכן"}
+                        {processState === "processing" && " רק רגע..."}
                         {processState === "summarizing" && "יוצר סיכום"}
                       </h3>
                       <p className="processing-description">
                         {processState === "uploading" && `רק רגע.. ${uploadProgress}%`}
-                        {processState === "processing" && "קורא ומעבד את תוכן הקובץ"}
+                        {processState === "processing" && "  ממש עכשיו הקובץ שלך עולה לענן  "}
                         {processState === "summarizing" && "ה AI שלנו מכין לך סיכום מהיר ומדויק"}
                       </p>
                       <div className="processing-progress">
@@ -832,11 +832,16 @@ const FileUploadButton = () => {
                         )}
                       </div>
 
-                      {/* הצגת שגיאה */}
+                      {/* הצגת שגיאה עם אפשרות סגירה */}
                       {error && (
-                        <div className="error-message">
-                          <X size={16} />
-                          <span>{error}</span>
+                        <div className="error-message closable">
+                          <div className="error-content">
+                            <AlertCircle size={16} />
+                            <span>{error}</span>
+                          </div>
+                          <button className="close-error-button" onClick={handleCloseError} aria-label="סגור הודעה">
+                            <X size={14} />
+                          </button>
                         </div>
                       )}
 

@@ -146,14 +146,9 @@ body {
 
 .menu-button,
 .theme-toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius);
   background: var(--muted);
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
   color: var(--muted-foreground);
   cursor: pointer;
   transition: var(--transition);
@@ -164,20 +159,26 @@ body {
   background: var(--border);
   color: var(--foreground);
 }
-
-/* תוכן ראשי */
-.app-content {
-  flex: 1;
-  padding: 3rem 2rem;
+.summary-content
+{
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 80px);
+  flex-direction: column;
+}
+/* תוכן ראשי - הסרת הגבלות גובה וגלילה */
+.app-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: auto; /* הסרת min-height קבוע */
 }
 
 .content-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* הסתרת אינדיקטור השלבים */
@@ -187,12 +188,17 @@ body {
 
 /* הודעת מצב מינימליסטית */
 .status-message {
-  background: var(--primary-light);
+  background: linear-gradient(135deg, var(--primary-light), rgba(217, 70, 239, 0.05));
   border: 1px solid var(--primary);
   border-radius: calc(var(--radius) * 2);
   padding: 1rem 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
 
 .status-content {
@@ -200,28 +206,32 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  color: var(--primary);
+  color: var(--foreground);
   font-weight: 500;
 }
 
 .status-spinner {
   animation: spin 1s linear infinite;
+  color: var(--primary);
 }
 
 .status-check {
   color: var(--success);
 }
 
-/* כרטיס העלאה מינימליסטי */
+/* כרטיס העלאה מינימליסטי - הסרת הגבלות גובה */
 .upload-card {
+  max-width: 900px;
+  width: 100%;
+  padding: 2.5rem;
+  /* הסרת max-height ו overflow-y */
+  margin: 0 auto;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
   background: var(--card);
-  border: 2px dashed var(--border);
-  border-radius: calc(var(--radius) * 3);
-  padding: 3rem 2rem;
-  text-align: center;
+  border-radius: calc(var(--radius) * 2);
   transition: var(--transition-slow);
   position: relative;
-  overflow: hidden;
 }
 
 .upload-card:hover:not(.has-file) {
@@ -297,20 +307,20 @@ body {
 
 /* טקסטים */
 .upload-heading {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
   color: var(--foreground);
 }
 
 .upload-instructions {
   color: var(--muted-foreground);
   margin-bottom: 2rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .upload-instructions p {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 /* כפתורים נקיים */
@@ -319,8 +329,8 @@ body {
   background: linear-gradient(135deg, var(--gradient-from), var(--gradient-via));
   color: var(--primary-foreground);
   border: none;
-  border-radius: calc(var(--radius) * 2);
-  padding: 0.875rem 2rem;
+  border-radius: calc(var(--radius) * 1.5);
+  padding: 0.875rem 1.5rem;
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
@@ -328,8 +338,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0.5rem auto;
   box-shadow: var(--shadow-sm);
+  min-width: 160px;
+  justify-content: center;
 }
 
 .upload-button:hover,
@@ -341,6 +352,10 @@ body {
 
 .process-button.summarize-button {
   background: linear-gradient(135deg, var(--gradient-via), var(--gradient-to));
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  min-width: 200px;
+  margin: 0 auto;
 }
 
 .process-button.summarize-button:hover {
@@ -351,7 +366,7 @@ body {
   background: var(--muted);
   color: var(--foreground);
   border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 2);
+  border-radius: calc(var(--radius) * 1.5);
   padding: 0.875rem 2rem;
   font-size: 0.95rem;
   font-weight: 500;
@@ -361,10 +376,13 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin: 2rem auto 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .new-document-button:hover {
   background: var(--border);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* תגיות מידע */
@@ -379,9 +397,10 @@ body {
   background: var(--muted);
   color: var(--muted-foreground);
   padding: 0.25rem 0.75rem;
-  border-radius: calc(var(--radius) * 4);
+  border-radius: calc(var(--radius) * 3);
   font-size: 0.75rem;
   font-weight: 500;
+  border: 1px solid var(--border);
 }
 
 .file-input {
@@ -391,27 +410,38 @@ body {
 /* תצוגת קובץ נקייה */
 .file-status {
   animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .file-preview {
   background: var(--muted);
-  border-radius: calc(var(--radius) * 2);
+  border-radius: calc(var(--radius) * 1.5);
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.file-preview:hover {
+  box-shadow: var(--shadow-sm);
 }
 
 .file-icon-container {
   width: 48px;
   height: 48px;
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * 1.5);
   background: var(--card);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 .file-icon {
@@ -438,6 +468,7 @@ body {
   font-weight: 600;
   color: var(--foreground);
   margin-bottom: 0.25rem;
+  font-size: 0.95rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -453,8 +484,8 @@ body {
   width: 32px;
   height: 32px;
   border-radius: var(--radius);
-  background: none;
-  border: none;
+  background: var(--muted);
+  border: 1px solid var(--border);
   color: var(--muted-foreground);
   cursor: pointer;
   transition: var(--transition);
@@ -464,39 +495,79 @@ body {
 }
 
 .reset-button:hover {
-  background: var(--border);
-  color: var(--destructive);
+  background: var(--destructive);
+  color: white;
+  border-color: var(--destructive);
 }
 
-/* הודעת שגיאה */
+/* הודעת שגיאה משופרת עם אפשרות סגירה */
 .error-message {
-  background: #fef2f2;
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
   border: 1px solid #fecaca;
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem;
+  border-radius: calc(var(--radius) * 1.5);
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   color: var(--destructive);
   font-weight: 500;
   margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+  animation: slideInDown 0.3s ease;
+}
+
+.error-message.closable {
+  padding-right: 0.5rem;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.close-error-button {
+  background: none;
+  border: none;
+  color: var(--destructive);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: calc(var(--radius) / 2);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  margin-right: 0.5rem;
+}
+
+.close-error-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+  opacity: 1;
 }
 
 /* שכבת עיבוד נקייה */
 .processing-overlay {
   position: absolute;
   inset: 0;
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: calc(var(--radius) * 3);
+  border-radius: calc(var(--radius) * 2);
   z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.dark-mode .processing-overlay {
+  background: rgba(15, 23, 42, 0.95);
 }
 
 .processing-content {
   text-align: center;
-  max-width: 300px;
+  max-width: 400px;
+  padding: 2rem;
 }
 
 .processing-spinner {
@@ -658,6 +729,173 @@ body {
   100% {
     transform: translateX(100%);
   }
+}
+
+/* עיצוב אופקי לשלב פרטי הפגישה */
+.meeting-details-section .upload-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 3rem;
+}
+
+.meeting-illustration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.meeting-form-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.meeting-form {
+  max-width: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* פס מידע פגישה משופר */
+.meeting-info-bar {
+  background: linear-gradient(135deg, var(--primary-light), rgba(217, 70, 239, 0.05));
+  border: 1px solid var(--primary);
+  border-radius: calc(var(--radius) * 2);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.meeting-info {
+  display: flex;
+  gap: 2rem;
+}
+
+.meeting-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.meeting-info-item svg {
+  color: var(--primary);
+}
+
+.meeting-name {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.meeting-date {
+  color: var(--muted-foreground);
+}
+
+.edit-meeting-button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: calc(var(--radius) * 1.5);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.edit-meeting-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* עיצוב זורם לכל המצבים */
+.upload-section .upload-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.5rem;
+}
+
+/* עיצוב מיוחד למצב file-selected */
+.upload-section .upload-card.has-file:not(.ready-to-summarize) {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem 2.5rem;
+}
+
+/* עיצוב זורם למצב ready-to-summarize */
+.upload-section .upload-card.ready-to-summarize {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2rem;
+  padding: 2.5rem;
+}
+
+/* שיפור אזור הפעולות */
+.summarize-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* שיפור סגנונות הטופס */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: right;
+}
+
+.form-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.95rem;
+  transition: var(--transition);
+  direction: rtl;
+  text-align: right;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.7;
 }
 
 /* תפריט צד */
@@ -822,12 +1060,62 @@ body {
   }
 }
 
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .upload-section {
   animation: slideInUp 0.5s ease;
 }
 
 .summary-section {
   animation: fadeIn 0.5s ease;
+}
+
+.meeting-details-section,
+.upload-section {
+  animation: fadeIn 0.4s ease;
+}
+
+.file-status {
+  animation: fadeIn 0.3s ease;
+}
+
+.meeting-form-content {
+  animation: fadeInRight 0.6s ease;
+}
+
+.meeting-illustration {
+  animation: fadeInLeft 0.6s ease;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* אנימציית חגיגה */
@@ -893,13 +1181,67 @@ body {
 }
 
 /* רספונסיביות */
-@media (max-width: 768px) {
-  .app-content {
-    padding: 2rem 1rem;
+@media (max-width: 1200px) {
+  .upload-card {
+    max-width: 900px;
+    padding: 2rem;
   }
 
+  .meeting-details-section .upload-card {
+    gap: 2.5rem;
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
   .upload-card {
-    padding: 2rem 1rem;
+    max-width: 800px;
+    padding: 2rem;
+  }
+
+  .meeting-details-section .upload-card,
+  .upload-section .upload-card.has-file:not(.ready-to-summarize) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .meeting-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-card {
+    padding: 1.5rem;
+  }
+
+  .app-content {
+    padding: 1rem;
+  }
+
+  .meeting-info-bar {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .meeting-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .file-preview {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .file-info {
+    text-align: center;
   }
 
   .dashboard-header {
@@ -912,6 +1254,19 @@ body {
 }
 
 @media (max-width: 480px) {
+  .upload-card {
+    padding: 1rem;
+  }
+
+  .meeting-details-section .upload-card {
+    padding: 1.5rem;
+  }
+
+  .process-button.summarize-button {
+    min-width: 100%;
+    padding: 1rem;
+  }
+
   .upload-heading {
     font-size: 1.25rem;
   }
@@ -956,7 +1311,7 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   z-index: 5;
-  border-radius: calc(var(--radius) * 3);
+  border-radius: calc(var(--radius) * 2);
   padding: 2rem;
   animation: fadeIn 0.3s ease;
 }
@@ -992,1259 +1347,6 @@ button:focus-visible {
   border-color: var(--destructive);
   background-color: #fef2f2;
 }
-/* סגנונות לטופס פרטי הפגישה */
-.meeting-details-section {
-  animation: slideInUp 0.5s ease;
-}
-
-.meeting-form {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: right;
-}
-
-.form-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border: 2px solid var(--border);
-  border-radius: calc(var(--radius) * 2);
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 0.95rem;
-  transition: var(--transition);
-  direction: rtl;
-  text-align: right;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
-}
-
-.form-input::placeholder {
-  color: var(--muted-foreground);
-  opacity: 0.7;
-}
-
-/* סגנונות מיוחדים לשדה תאריך */
-.form-input[type="date"] {
-  position: relative;
-  cursor: pointer;
-}
-
-.form-input[type="date"]::-webkit-calendar-picker-indicator {
-  background: transparent;
-  bottom: 0;
-  color: transparent;
-  cursor: pointer;
-  height: auto;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: auto;
-}
-
-/* הוספת אייקון תאריך מותאם אישית */
-.form-input[type="date"]::before {
-  content: "📅";
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: 1.1rem;
-}
-
-/* אנימציות לטופס */
-.form-group {
-  animation: fadeInUp 0.4s ease forwards;
-}
-
-.form-group:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.form-group:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* רספונסיביות לטופס */
-@media (max-width: 480px) {
-  .meeting-form {
-    max-width: 100%;
-    gap: 1.25rem;
-  }
-
-  .form-input {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* מצב חושך לטופס */
-.dark-mode .form-input {
-  background: var(--card);
-  border-color: var(--border);
-}
-
-.dark-mode .form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2);
-}
-
-/* סגנונות נוספים לשיפור החוויה */
-.form-input:hover {
-  border-color: var(--muted-foreground);
-}
-
-.form-input:invalid {
-  border-color: var(--destructive);
-}
-
-.form-input:valid {
-  border-color: var(--success);
-}
-
-/* אפקט זוהר עדין לשדות פעילים */
-.form-input:focus {
-  position: relative;
-}
-
-.form-input:focus::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, var(--primary), var(--gradient-via));
-  z-index: -1;
-  opacity: 0.1;
-}
-
-/* עיצוב רחב יותר לכרטיסים */
-.upload-card {
-  max-width: 900px;
-  width: 100%;
-  padding: 2rem 3rem;
-  min-height: auto;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.meeting-details-section .upload-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  padding: 2.5rem 3rem;
-}
-
-.meeting-form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.meeting-form {
-  max-width: none;
-  width: 100%;
-}
-
-/* פס מידע פגישה */
-.meeting-info-bar {
-  background: var(--primary-light);
-  border: 1px solid var(--primary);
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: slideInDown 0.3s ease;
-}
-
-.meeting-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.meeting-name {
-  font-weight: 600;
-  color: var(--primary);
-  font-size: 1rem;
-}
-
-.meeting-date {
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-}
-
-.edit-meeting-button {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.edit-meeting-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
-/* עיצוב אופקי לשלב העלאת קובץ */
-.upload-section .upload-card.has-file {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-}
-
-.file-status {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* רספונסיביות משופרת */
-@media (max-width: 1024px) {
-  .upload-card {
-    max-width: 800px;
-    padding: 2rem;
-  }
-
-  .meeting-details-section .upload-card,
-  .upload-section .upload-card.has-file {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .upload-card {
-    padding: 1.5rem;
-    max-height: 80vh;
-  }
-
-  .meeting-info-bar {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* ניקוי ושיפור העיצוב */
-
-/* עיצוב משופר לכרטיסים רחבים יותר */
-.content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.upload-card {
-  max-width: 900px;
-  width: 100%;
-  padding: 2.5rem;
-  min-height: auto;
-  max-height: 75vh;
-  overflow-y: auto;
-  margin: 0 auto;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
-}
-
-/* עיצוב אופקי לשלב פרטי הפגישה */
-.meeting-details-section .upload-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  padding: 3rem;
-}
-
-.meeting-illustration {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.meeting-form-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.meeting-form {
-  max-width: none;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* פס מידע פגישה משופר */
-.meeting-info-bar {
-  background: var(--primary-light);
-  border: 1px solid var(--primary);
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-  box-shadow: var(--shadow-sm);
-}
-
-.meeting-info {
-  display: flex;
-  gap: 2rem;
-}
-
-.meeting-info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.meeting-name {
-  font-weight: 600;
-  color: var(--foreground);
-}
-
-.meeting-date {
-  color: var(--muted-foreground);
-}
-
-.edit-meeting-button {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.edit-meeting-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* עיצוב אופקי לשלב העלאת קובץ עם קובץ */
-.upload-section .upload-card.has-file {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 2.5rem 3rem;
-}
-
-.file-status {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* שיפור הודעת מצב */
-.status-message {
-  background: var(--primary-light);
-  border: 1px solid var(--primary);
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.status-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.status-spinner {
-  animation: spin 1s linear infinite;
-  color: var(--primary);
-}
-
-.status-check {
-  color: var(--success);
-}
-
-/* שיפור סגנונות הטופס */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: right;
-}
-
-.form-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 0.95rem;
-  transition: var(--transition);
-  direction: rtl;
-  text-align: right;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(217, 70, 239, 0.1);
-}
-
-.form-input::placeholder {
-  color: var(--muted-foreground);
-  opacity: 0.7;
-}
-
-/* שיפור כפתורים */
-.upload-button,
-.process-button {
-  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-via));
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.875rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem auto;
-  box-shadow: var(--shadow-sm);
-}
-
-.upload-button:hover,
-.process-button:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--gradient-via));
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* שיפור תצוגת קובץ */
-.file-preview {
-  background: var(--muted);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0;
-}
-
-.file-icon-container {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius);
-  background: var(--card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-}
-
-/* רספונסיביות משופרת */
-@media (max-width: 1200px) {
-  .upload-card {
-    max-width: 900px;
-    padding: 2rem;
-  }
-
-  .meeting-details-section .upload-card {
-    gap: 3rem;
-    padding: 2.5rem 3rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  .upload-card {
-    max-width: 800px;
-    padding: 2rem;
-  }
-
-  .meeting-details-section .upload-card,
-  .upload-section .upload-card.has-file {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .meeting-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .upload-card {
-    padding: 1.5rem;
-    max-height: 85vh;
-  }
-
-  .meeting-info-bar {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .meeting-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .upload-card {
-    padding: 1rem;
-  }
-
-  .meeting-details-section .upload-card {
-    padding: 1.5rem;
-  }
-
-  .meeting-info {
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
-/* אנימציות מעודנות */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.meeting-details-section,
-.upload-section {
-  animation: fadeIn 0.4s ease;
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.meeting-form-content {
-  animation: fadeInRight 0.6s ease;
-}
-
-.meeting-illustration {
-  animation: fadeInLeft 0.6s ease;
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* מצב חושך משופר */
-.dark-mode .meeting-info-bar {
-  background: linear-gradient(135deg, var(--primary-light), rgba(217, 70, 239, 0.1));
-  border-color: var(--primary);
-}
-
-.dark-mode .form-input {
-  background: var(--card);
-  border-color: var(--border);
-}
-
-.dark-mode .form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2);
-}
-
-/* שיפורים נוספים */
-.upload-heading {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-}
-
-.upload-instructions {
-  margin-bottom: 2rem;
-  line-height: 1.7;
-}
-
-.upload-instructions p {
-  margin-bottom: 0.5rem;
-}
-
-/* התאמת גובה לתוכן */
-.app-content {
-  min-height: calc(100vh - 140px);
-  padding: 2rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 1rem;
-}
-
-/* שיפור שכבת עיבוד */
-.processing-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
-  z-index: 10;
-  backdrop-filter: blur(4px);
-}
-
-.dark-mode .processing-overlay {
-  background: rgba(15, 23, 42, 0.95);
-}
-
-.processing-content {
-  text-align: center;
-  max-width: 400px;
-  padding: 2rem;
-}
-
-/* שיפור הודעת שגיאה */
-.error-message {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--destructive);
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-/* תיקון פריסה למצב ready-to-summarize */
-.upload-section .upload-card.has-file.ready-to-summarize {
-  display: block;
-  text-align: center;
-  padding: 2.5rem;
-}
-
-.upload-card.ready-to-summarize .file-status {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.upload-card.ready-to-summarize .file-preview {
-  max-width: 400px;
-  margin: 0 auto 2rem auto;
-  justify-content: center;
-}
-
-.summarize-action {
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
-.summarize-action .process-button {
-  margin: 0;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  min-width: 200px;
-}
-
-/* שיפור כללי לפריסה */
-.file-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-/* התאמה למצבים שונים */
-.upload-section .upload-card.has-file:not(.ready-to-summarize) {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 2.5rem 3rem;
-}
-
-@media (max-width: 1024px) {
-  .upload-section .upload-card.has-file:not(.ready-to-summarize) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .upload-card.ready-to-summarize .file-preview {
-    max-width: 100%;
-  }
-}
-/* עיצוב מקצועי ומשופר */
-
-/* עיצוב משופר לכרטיסים */
-.content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.upload-card {
-  max-width: 900px;
-  width: 100%;
-  padding: 2.5rem;
-  min-height: auto;
-  max-height: 75vh;
-  overflow-y: auto;
-  margin: 0 auto;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: calc(var(--radius) * 2);
-}
-
-/* עיצוב אופקי לשלב פרטי הפגישה */
-.meeting-details-section .upload-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  padding: 3rem;
-}
-
-.meeting-illustration {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.meeting-form-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.meeting-form {
-  max-width: none;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* פס מידע פגישה משופר */
-.meeting-info-bar {
-  background: linear-gradient(135deg, var(--primary-light), rgba(217, 70, 239, 0.05));
-  border: 1px solid var(--primary);
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(10px);
-}
-
-.meeting-info {
-  display: flex;
-  gap: 2rem;
-}
-
-.meeting-info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.meeting-info-item svg {
-  color: var(--primary);
-}
-
-.meeting-name {
-  font-weight: 600;
-  color: var(--foreground);
-}
-
-.meeting-date {
-  color: var(--muted-foreground);
-}
-
-.edit-meeting-button {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: calc(var(--radius) * 1.5);
-  padding: 0.75rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.edit-meeting-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* עיצוב זורם לכל המצבים */
-.upload-section .upload-card {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2.5rem;
-}
-
-/* עיצוב מיוחד למצב file-selected */
-.upload-section .upload-card.has-file:not(.ready-to-summarize) {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2rem;
-  align-items: center;
-  padding: 2rem 2.5rem;
-}
-
-/* עיצוב זורם למצב ready-to-summarize */
-.upload-section .upload-card.ready-to-summarize {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2rem;
-  padding: 2.5rem;
-}
-
-.file-status {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-}
-
-/* שיפור הודעת מצב */
-.status-message {
-  background: linear-gradient(135deg, var(--primary-light), rgba(217, 70, 239, 0.05));
-  border: 1px solid var(--primary);
-  border-radius: calc(var(--radius) * 2);
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-sm);
-}
-
-.status-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.status-spinner {
-  animation: spin 1s linear infinite;
-  color: var(--primary);
-}
-
-.status-check {
-  color: var(--success);
-}
-
-/* שיפור סגנונות הטופס */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: right;
-}
-
-.form-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.5);
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 0.95rem;
-  transition: var(--transition);
-  direction: rtl;
-  text-align: right;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
-}
-
-.form-input::placeholder {
-  color: var(--muted-foreground);
-  opacity: 0.7;
-}
-
-/* שיפור כפתורים */
-.upload-button,
-.process-button {
-  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-via));
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: calc(var(--radius) * 1.5);
-  padding: 0.875rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: var(--shadow-sm);
-  min-width: 160px;
-  justify-content: center;
-}
-
-.upload-button:hover,
-.process-button:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--gradient-via));
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.process-button.summarize-button {
-  background: linear-gradient(135deg, var(--gradient-via), var(--gradient-to));
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  min-width: 200px;
-  margin: 0 auto;
-}
-
-.process-button.summarize-button:hover {
-  background: linear-gradient(135deg, #7c3aed, #0891b2);
-}
-
-/* שיפור תצוגת קובץ */
-.file-preview {
-  background: var(--muted);
-  border-radius: calc(var(--radius) * 1.5);
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0;
-  border: 1px solid var(--border);
-  transition: var(--transition);
-}
-
-.file-preview:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-.file-icon-container {
-  width: 48px;
-  height: 48px;
-  border-radius: calc(var(--radius) * 1.5);
-  background: var(--card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-}
-
-.file-info {
-  flex: 1;
-  text-align: right;
-}
-
-.file-name {
-  font-weight: 600;
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-  font-size: 0.95rem;
-}
-
-.file-size {
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-}
-
-/* שיפור כפתור איפוס */
-.reset-button {
-  width: 32px;
-  height: 32px;
-  border-radius: calc(var(--radius));
-  background: var(--muted);
-  border: 1px solid var(--border);
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reset-button:hover {
-  background: var(--destructive);
-  color: white;
-  border-color: var(--destructive);
-}
-
-/* שיפור אזור הפעולות */
-.summarize-action {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-/* רספונסיביות משופרת */
-@media (max-width: 1200px) {
-  .upload-card {
-    max-width: 900px;
-    padding: 2rem;
-  }
-
-  .meeting-details-section .upload-card {
-    gap: 2.5rem;
-    padding: 2.5rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  .upload-card {
-    max-width: 800px;
-    padding: 2rem;
-  }
-
-  .meeting-details-section .upload-card,
-  .upload-section .upload-card.has-file:not(.ready-to-summarize) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .meeting-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .upload-card {
-    padding: 1.5rem;
-    max-height: 85vh;
-  }
-
-  .meeting-info-bar {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .meeting-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .file-preview {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .file-info {
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .upload-card {
-    padding: 1rem;
-  }
-
-  .meeting-details-section .upload-card {
-    padding: 1.5rem;
-  }
-
-  .process-button.summarize-button {
-    min-width: 100%;
-    padding: 1rem;
-  }
-}
-
-/* אנימציות מעודנות */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.meeting-details-section,
-.upload-section {
-  animation: fadeIn 0.4s ease;
-}
-
-.file-status {
-  animation: fadeIn 0.3s ease;
-}
-
-.meeting-form-content {
-  animation: fadeInRight 0.6s ease;
-}
-
-.meeting-illustration {
-  animation: fadeInLeft 0.6s ease;
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
 /* מצב חושך משופר */
 .dark-mode .meeting-info-bar {
@@ -2276,152 +1378,16 @@ button:focus-visible {
   border-color: var(--border);
 }
 
-/* שיפורים נוספים */
-.upload-heading {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
+.dark-mode .error-message {
+  background: linear-gradient(135deg, #450a0a, #7f1d1d);
+  border-color: #dc2626;
+  color: #fca5a5;
 }
 
-.upload-instructions {
-  margin-bottom: 2rem;
-  line-height: 1.7;
-  color: var(--muted-foreground);
+.dark-mode .close-error-button {
+  color: #fca5a5;
 }
 
-.upload-instructions p {
-  margin-bottom: 0.5rem;
-}
-
-/* התאמת גובה לתוכן */
-.app-content {
-  min-height: calc(100vh - 140px);
-  padding: 2rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 1rem;
-}
-
-/* שיפור שכבת עיבוד */
-.processing-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: calc(var(--radius) * 2);
-  z-index: 10;
-  backdrop-filter: blur(8px);
-}
-
-.dark-mode .processing-overlay {
-  background: rgba(15, 23, 42, 0.95);
-}
-
-.processing-content {
-  text-align: center;
-  max-width: 400px;
-  padding: 2rem;
-}
-
-.processing-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--foreground);
-}
-
-.processing-description {
-  color: var(--muted-foreground);
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-}
-
-/* שיפור הודעת שגיאה */
-.error-message {
-  background: linear-gradient(135deg, #fef2f2, #fecaca);
-  border: 1px solid #fecaca;
-  border-radius: calc(var(--radius) * 1.5);
-  padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--destructive);
-  font-weight: 500;
-  margin-bottom: 1rem;
-  backdrop-filter: blur(10px);
-}
-
-/* שיפור תגיות מידע */
-.upload-info {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.info-badge {
-  background: var(--muted);
-  color: var(--muted-foreground);
-  padding: 0.25rem 0.75rem;
-  border-radius: calc(var(--radius) * 3);
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid var(--border);
-}
-
-/* שיפור כפתור מסמך חדש */
-.new-document-button {
-  background: var(--muted);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.5);
-  padding: 0.875rem 2rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 2rem auto 0;
-  box-shadow: var(--shadow-sm);
-}
-
-.new-document-button:hover {
-  background: var(--border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* שיפור אייקונים */
-.upload-icon-wrapper {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.icon-pulse {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
+.dark-mode .close-error-button:hover {
+  background: rgba(239, 68, 68, 0.2);
 }

@@ -15,6 +15,7 @@ import LoadingScreen from "./components/loading-screen.tsx"
 import FileUploadButton from "./components/FileUploadButton.tsx"
 import MeetingDetail from "./components/UserMeetings.tsx"
 import { ThemeProvider } from "./context/ThemeContext.tsx"
+import SummaryFile from "./components/SummarizeFile.tsx"
 
 const routes = createHashRouter([
   {
@@ -40,6 +41,10 @@ const routes = createHashRouter([
   {
     path: "/my-profile",
     element: <UserProfile />,
+  },
+  {
+    path: "/Summary",
+    element: <SummaryFile fileUrl="" />,
   },
   {
     path: "/oauth",

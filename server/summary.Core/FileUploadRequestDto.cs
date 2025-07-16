@@ -9,7 +9,10 @@ namespace summary.Core
     public class FileUploadRequestDto
     {
         public string FileName { get; set; } = string.Empty;
-        public string FileType { get; set; } = string.Empty; 
+        public string FileType { get; set; } = string.Empty;
+
+        public DateTime Date { get; set; } = DateTime.Now;
+
 
     }
 }

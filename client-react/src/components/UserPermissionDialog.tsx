@@ -1,7 +1,4 @@
-"use client"
-
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import axios from "axios"
 import "../styleSheets/UserPermissionDialog.css"
@@ -23,7 +20,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  // Dropdown is always open, so no need for isDropdownOpen state
   const [isDarkMode, setIsDarkMode] = useState(false)
 
   const stringToColor = (string: string) => {
@@ -41,13 +37,11 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
 
   const decodeJwt = (token: string) => {
     if (!token) return null
-
     const parts = token.split(".")
     if (parts.length !== 3) {
       console.error("Invalid JWT token")
       return null
     }
-
     const base64Url = parts[1]
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
     const jsonPayload = decodeURIComponent(
@@ -56,7 +50,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
         .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
         .join(""),
     )
-
     return JSON.parse(jsonPayload)
   }
 
@@ -66,9 +59,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
       console.log("No token found in session storage")
       return null
     }
-
     const decodedToken = decodeJwt(token)
-
     if (decodedToken) {
       return decodedToken.company
     } else {
@@ -83,7 +74,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
     if (company) {
       console.log("User's company is:", company)
     }
-
     axios
       .get(`https://${import.meta.env.VITE_API_BASE_URL}/api/User/ByComp`, {
         params: { company: company },
@@ -121,10 +111,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
 
   const selectAllUsers = () => {
     if (selectedUsers.length === filteredUsers.length) {
-      // אם כל המשתמשים כבר נבחרו, נבטל את הבחירה
       setSelectedUsers([])
     } else {
-      // אחרת נבחר את כל המשתמשים המסוננים
       setSelectedUsers(filteredUsers)
     }
   }
@@ -135,7 +123,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
   }
 
   useEffect(() => {
-    // Check for user preference on component mount
     const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
     setIsDarkMode(prefersDark)
     document.documentElement.classList.toggle("dark-mode", prefersDark)
@@ -160,8 +147,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
               {isDarkMode ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -182,8 +169,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -198,8 +185,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
             <button className="dialog-close-button" onClick={onClose}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -232,7 +219,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="error-icon"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -241,7 +227,7 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
               <p>{error}</p>
             </div>
           ) : (
-            <div className="user-selection-container">
+            <>
               <div className="search-container">
                 <input
                   type="text"
@@ -253,8 +239,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                 {selectedUsers.length > 0 && <div className="selected-count">{selectedUsers.length}</div>}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -282,8 +268,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="14"
+                        height="14"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -299,28 +285,29 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                 ))}
               </div>
 
-              {/* Dropdown is always open */}
-                <div className="users-list">
-                  <div className="select-all-option" onClick={selectAllUsers}>
-                    <div className={`select-all-checkbox ${areAllSelected ? "selected" : ""}`}>
-                      {areAllSelected && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      )}
-                    </div>
-                    <span className="select-all-text">{areAllSelected ? "בטל בחירת הכל" : "בחר הכל"}</span>
+              <div className="users-list">
+                <div className="select-all-option" onClick={selectAllUsers}>
+                  <div className={`select-all-checkbox ${areAllSelected ? "selected" : ""}`}>
+                    {areAllSelected && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    )}
                   </div>
+                  <span className="select-all-text">{areAllSelected ? "בטל בחירת הכל" : "בחר הכל"}</span>
+                </div>
+
+                <div className="users-list-container">
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user, index) => {
                       const isSelected = selectedUsers.some((selectedUser) => selectedUser.id === user.id)
@@ -339,8 +326,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                             {isSelected && (
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="14"
-                                height="14"
+                                width="12"
+                                height="12"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -359,8 +346,8 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                     <div className="no-results">לא נמצאו משתמשים</div>
                   )}
                 </div>
-              
-            </div>
+              </div>
+            </>
           )}
         </div>
 

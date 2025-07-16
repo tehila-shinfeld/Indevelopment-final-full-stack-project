@@ -10,7 +10,6 @@ namespace summary.Core
     {
         public string FileUrl { get; set; } = string.Empty;
         public string UploadedBy { get; set; } = string.Empty;
-        public DateTime? CreatedAt { get; set; }
 
     }
 }

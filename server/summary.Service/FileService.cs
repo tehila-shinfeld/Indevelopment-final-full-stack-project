@@ -9,7 +9,11 @@ using summary.Core.DTOs;
 using summary.Core.Entities;
 using summary.Core.IRepositories;
 using summary.Core.IServices;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace summary.Service
 {
@@ -29,13 +33,13 @@ namespace summary.Service
             _userRepository = userRepository;
             _httpClient = httpClient;
         }
-        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string fileType)
+        public async Task<FileUploadResponseDto> GeneratePresignedUrlAsync(string fileName,string fileType,DateTime meetingDate)
         {
             // יצירת ישיבה חדשה
             var meeting = new Meeting
             {
                 Name = $"{fileName}",
-                CreatedAt = DateTime.UtcNow,
+                MeetingDate = meetingDate,
                 UpdatedAt = DateTime.UtcNow
             };
 
@@ -76,7 +80,6 @@ namespace summary.Service
             {
                 FileUrl = meeting.TranscriptionLink,
                 UploadedBy = meeting.CreatedByUserId.ToString(),
-                CreatedAt = meeting.CreatedAt
             };
         }
         public async Task<bool> DeleteFileAsync(int fileId)
@@ -97,48 +100,47 @@ namespace summary.Service
         }
         public async Task<string> GetSummaryFromAIAsync(string inputText)
         {
-            //var apiKey = _configuration["OpenAI:ApiKey"];
             var apiKey = _configuration["OpenAI:ApiKey"];
-            Console.WriteLine(apiKey);
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new BadHttpRequestException("❌ API key is missing or empty. Please check configuration.");
+            }
+
             var requestBody = new
             {
-                model = "gpt-4o-mini",
+                model = "gpt-4.1-mini",
                 messages = new[]
                 {
-                    new { role = "system", content = " אתה מסכם תמלולים של ישיבות צוות בצורה תמציתית, ברורה, ומסודרת. הסיכום חייב לכלול כותרת ראשית, חלוקה לפסקאות קצרות, שימוש ברשימות ממוספרות או בתבליטים לנקודות עיקריות, ושמירה על עימוד ברור." },
-
+            new { role = "system", content = " אתה מסכם תמלולים של ישיבות צוות בצורה תמציתית, ברורה, ומסודרת..." },
             new {
-            role = "user",
-            content =  $@"אתה עוזר חכם שמסכם ישיבות צוות בעברית בפורמט מסודר:
-📅 תאריך הישיבה: 
-👥 משתתפים: 
-📝 עיקרי הדברים:
-✅ החלטות שהתקבלו:
-📌משימות להמשך, אם מתאים גם מחולק לכל מישתתף את המשימות עבורו  :
-❓ נושאים פתוחים/להמשך טיפול:
-הנה התמלול לסיכום:
-{inputText}"
-        }
-    },
+                role = "user",
+                content =  $@"אתה עוזר חכם שמסכם ישיבות צוות בעברית בפורמט מסודר... {inputText}"
+            }
+        },
                 temperature = 0.6
             };
 
-            Console.WriteLine("API KEY: " + apiKey); // רק לבדיקה כמובן, לא להשאיר בקוד פרודקשן
-
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-            request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            request.Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
+
             if (!response.IsSuccessStatusCode)
             {
-                var err = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"❌ Error: {response.StatusCode} - {err}");
+                var errorContent = await response.Content.ReadAsStringAsync();
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new BadHttpRequestException("🚫 API Key לא מורשה או לא תקין (401 Unauthorized). ודא שהוא תקין וללא רווחים מיותרים.");
+                }
+
+                throw new BadHttpRequestException($"שגיאה מהשרת של OpenAI: {(int)response.StatusCode} - {errorContent}");
             }
-            response.EnsureSuccessStatusCode();
 
             using var stream = await response.Content.ReadAsStreamAsync();
-            using var doc = await System.Text.Json.JsonDocument.ParseAsync(stream);
+            using var doc = await JsonDocument.ParseAsync(stream);
 
             return doc.RootElement
                       .GetProperty("choices")[0]
@@ -146,6 +148,10 @@ namespace summary.Service
                       .GetProperty("content")
                       .GetString()!;
         }
+
+
+
+
         public async Task<bool> SaveFileSummaryAsync(FileSummaryDto summary)
         {
             await _meetingRepository.SaveSummaryToDbAsync(summary);

@@ -26,7 +26,7 @@ public class FilesController : ControllerBase
         }
 
         Console.WriteLine($"📂 קובץ מבוקש: {request.FileName}");
-        var response = await _fileService.GeneratePresignedUrlAsync(request.FileName,request.FileType);
+        var response = await _fileService.GeneratePresignedUrlAsync(request.FileName,request.FileType,request.Date);
         return Ok(response);
     }
 
@@ -48,11 +48,12 @@ public class FilesController : ControllerBase
     [HttpPost("summarize")]
     public async Task<IActionResult> Post([FromBody] SummarizeRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Text))
-            return BadRequest("Missing text");
+        //if (string.IsNullOrWhiteSpace(request.Text))
+        //    return BadRequest("Missing text");
 
-        var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
-        return Ok(new { summary });
+        //var summary = await _fileService.GetSummaryFromAIAsync(request.Text);
+        //return Ok(new { summary });
+        return Ok(new { V = "ד' יז כול יכול" });
     }
 
     [HttpPost("assign-file-to-customers")]

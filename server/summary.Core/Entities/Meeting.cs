@@ -19,7 +19,7 @@ namespace summary.Core.Entities
 
         public string? SummaryContent { get; set; } // קישור לסיכום בענן
 
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow; // תאריך יצירה
+        public DateTime? MeetingDate { get; set; } = DateTime.UtcNow; // תאריך הפגישה
 
         public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow; // תאריך עדכון
 

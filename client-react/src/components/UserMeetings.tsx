@@ -1221,7 +1221,7 @@ const UserMeetings = () => {
                   <h3 className="meeting-title-enhanced">{highlightMatch(meeting.name, searchName)}</h3>
                   <div className="meeting-date-enhanced">
                     <Calendar size={16} />
-                    <span>{formatDate(meeting.summaryContent)}</span>
+                    <span>{formatDate(meeting.meetingDate)}</span>
                   </div>
                 </div>
 

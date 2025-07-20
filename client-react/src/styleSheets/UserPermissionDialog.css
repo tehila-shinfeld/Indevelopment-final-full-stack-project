@@ -22,17 +22,14 @@
   --input: #e2e8f0;
   --ring: #d946ef;
   --radius: 0.5rem;
-
   /* Gradient Colors */
   --gradient-from: #d946ef;
   --gradient-via: #8b5cf6;
   --gradient-to: #06b6d4;
-
   /* Animation Speeds */
   --transition-fast: 0.15s;
   --transition-normal: 0.3s;
   --transition-slow: 0.5s;
-
   /* Clean shadows */
   --shadow-clean: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-clean-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -89,7 +86,7 @@
   height: min(85vh, 700px); /* גובה מותאם */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* מונע גלילה על הקונטיינר הראשי */
   animation: slideIn var(--transition-normal) ease-out;
   border: 1px solid var(--border);
 }
@@ -142,9 +139,8 @@
 /* ===== תוכן נקי ===== */
 .dialog-content {
   padding: 2rem;
-  overflow-y: auto;
-  flex: 1;
-  background: var(--card);
+  /* הסרת overflow-y: auto; */
+  flex: 1; /* מאפשר לו לתפוס את השטח הזמין */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -209,11 +205,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  min-height: 3rem;
   padding: 1rem;
   background: var(--secondary);
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  /* הסרת גובה קבוע כדי לאפשר לו להתכווץ/להתרחב */
+  transition: all var(--transition-fast);
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.selected-users-container:hover {
+  background: var(--accent);
 }
 
 .selected-user-chip {
@@ -274,19 +277,20 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
-  overflow: hidden;
-  flex: 1;
+  overflow: hidden; /* מונע גלילה על users-list עצמו */
+  flex: 1; /* מאפשר לו לתפוס את השטח הנותר בתוך dialog-content */
   display: flex;
   flex-direction: column;
-  min-height: 300px; /* גובה מינימלי */
-  max-height: 400px; /* גובה מקסימלי */
+  /* הסרת min-height ו-max-height מכאן */
 }
 
 /* רשימת משתמשים עם גלילה */
 .users-list-container {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 250px; /* גובה מינימלי לגלילה */
+  flex: 1; /* מאפשר לו לתפוס את השטח הנותר בתוך users-list */
+  overflow-y: auto; /* זהו האלמנט היחיד שאחראי על גלילת רשימת המשתמשים */
+  min-height: 0; /* חשוב עבור flex items */
+  min-height: 250px; /* גובה מינימלי שיאפשר הצגת 4-5 משתמשים */
+  /* הסרנו את ה-max-height כדי לאפשר לו לגדול ככל האפשר */
 }
 
 /* אפשרות בחר הכל */
@@ -402,6 +406,7 @@
   padding: 3rem;
   gap: 1rem;
   color: var(--card-foreground);
+  flex: 1; /* מאפשר לו למלא את השטח המרכזי */
 }
 
 .spinner {
@@ -515,30 +520,24 @@
   .dialog-overlay {
     padding: 1vh 1vw;
   }
-
   .dialog-container {
     width: 98vw;
     height: 95vh;
   }
-
   .dialog-header {
     padding: 1.25rem 1.5rem;
   }
-
   .dialog-title {
     font-size: 1.125rem;
   }
-
   .dialog-content {
     padding: 1.5rem;
     gap: 1.25rem;
   }
-
   .dialog-actions {
     padding: 1.25rem 1.5rem;
     flex-direction: column-reverse;
   }
-
   .cancel-button,
   .save-button {
     width: 100%;
@@ -552,20 +551,16 @@
     height: 100vh;
     border-radius: 0;
   }
-
   .dialog-header {
     padding: 1rem;
   }
-
   .dialog-content {
     padding: 1rem;
     gap: 1rem;
   }
-
   .dialog-actions {
     padding: 1rem;
   }
-
   .selected-users-container {
     padding: 0.75rem;
   }
@@ -585,24 +580,30 @@
 }
 
 /* גלילה מותאמת */
-.dialog-content::-webkit-scrollbar,
 .users-list-container::-webkit-scrollbar {
   width: 6px;
 }
 
-.dialog-content::-webkit-scrollbar-track,
 .users-list-container::-webkit-scrollbar-track {
   background: var(--muted);
   border-radius: 3px;
 }
 
-.dialog-content::-webkit-scrollbar-thumb,
 .users-list-container::-webkit-scrollbar-thumb {
   background: var(--muted-foreground);
   border-radius: 3px;
 }
 
-.dialog-content::-webkit-scrollbar-thumb:hover,
 .users-list-container::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* הסרת גלילה כפולה מ-dialog-content */
+.dialog-content::-webkit-scrollbar {
+  display: none; /* הסתרת סרגל הגלילה */
+  width: 0; /* וודא שאין לו רוחב */
+}
+.dialog-content {
+  -ms-overflow-style: none; /* הסתרת סרגל גלילה ב-IE/Edge */
+  scrollbar-width: none; /* הסתרת סרגל גלילה ב-Firefox */
 }

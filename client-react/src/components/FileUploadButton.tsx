@@ -1,4 +1,4 @@
-"use client"
+
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useSummary } from "../context/SummaryContext"
@@ -23,8 +23,7 @@ import SummaryFile from "./SummarizeFile"
 import axios from "axios"
 import mammoth from "mammoth"
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"
-import "pdfjs-dist/build/pdf.worker.entry"
-import "../styleSheets/FileUploadButton.css"
+import "../styleSheets/FileUploadButton.css" // This will be replaced by the new CSS file
 import { useNavigate } from "react-router-dom"
 import MySidebar from "../components/my-sidbar"
 
@@ -93,16 +92,13 @@ const FileUploadButton = () => {
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-
     if (!dragging) {
       setDragging(true)
     }
-
     // בדיקה אם הקובץ הנגרר הוא מסוג מתאים
     if (event.dataTransfer.items && event.dataTransfer.items.length > 0) {
       const item = event.dataTransfer.items[0]
       const isValidType = item.type === "text/plain" || item.type === "application/pdf" || item.type.includes("word")
-
       if (isValidType) {
         setDragFileValid(true)
       } else {
@@ -115,12 +111,10 @@ const FileUploadButton = () => {
   const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-
     // בדיקה אם העכבר יצא מהאלמנט ולא נכנס לאלמנט בן
     const rect = event.currentTarget.getBoundingClientRect()
     const x = event.clientX
     const y = event.clientY
-
     if (x <= rect.left || x >= rect.right || y <= rect.top || y >= rect.bottom) {
       setDragging(false)
       setDragFileValid(null)
@@ -133,19 +127,16 @@ const FileUploadButton = () => {
     event.stopPropagation()
     setDragging(false)
     setDragFileValid(null)
-
     if (event.dataTransfer.files.length > 0) {
       const selectedFile = event.dataTransfer.files[0]
       const isValidType =
         selectedFile.type === "text/plain" ||
         selectedFile.type === "application/pdf" ||
         selectedFile.type.includes("word")
-
       if (isValidType) {
         setFile(selectedFile)
         setProcessState("file-selected")
         setError(null)
-
         // הפעלת אנימציית הצלחת שחרור
         setShowDropSuccess(true)
         setTimeout(() => setShowDropSuccess(false), 1500)
@@ -153,7 +144,6 @@ const FileUploadButton = () => {
         // הצגת שגיאה אם הקובץ אינו מסוג מתאים
         setError("סוג קובץ לא נתמך. אנא השתמש בקבצי PDF, TXT, או DOCX.")
         setProcessState("idle")
-
         // הפעלת אנימציית שגיאת שחרור
         setShowDropError(true)
         setTimeout(() => setShowDropError(false), 1500)
@@ -169,18 +159,15 @@ const FileUploadButton = () => {
   // פונקציה לטיפול בשליחת פרטי הפגישה
   const handleMeetingDetailsSubmit = () => {
     setMeetingDetailsError(null)
-
     // בדיקת תקינות הנתונים
     if (!meetingName.trim()) {
       setMeetingDetailsError("אנא הזן שם פגישה")
       return
     }
-
     if (!meetingDate) {
       setMeetingDetailsError("אנא בחר תאריך פגישה")
       return
     }
-
     // אם הכל תקין, עבור לשלב הבא
     setProcessState("idle")
   }
@@ -219,7 +206,6 @@ const FileUploadButton = () => {
       // שלב 1: עיבוד תוכן הקובץ
       setProcessState("processing")
       let textContent = ""
-
       if (selectedFile.type === "text/plain") {
         // TXT
         const reader = new FileReader()
@@ -233,11 +219,9 @@ const FileUploadButton = () => {
         console.log("Processing PDF file:", selectedFile.name)
         const pdfData = await selectedFile.arrayBuffer()
         console.log("PDF data loaded, size:", pdfData.byteLength, "bytes")
-
         try {
           const pdf = await getDocument({ data: pdfData }).promise
           console.log(`PDF loaded successfully with ${pdf.numPages} pages`)
-
           textContent = ""
           for (let i = 1; i <= pdf.numPages; i++) {
             console.log(`Processing page ${i}/${pdf.numPages}...`)
@@ -254,7 +238,6 @@ const FileUploadButton = () => {
             console.log(`Page ${i} text length: ${pageText.length} characters`)
             textContent += pageText + "\n"
           }
-
           console.log(`Total extracted text length: ${textContent.length} characters`)
           if (textContent.length > 0) {
             console.log(`First 100 characters: "${textContent.substring(0, 100)}"`)
@@ -277,21 +260,18 @@ const FileUploadButton = () => {
       } else {
         throw new Error("Unsupported file type")
       }
-
       setFileTextContent(textContent) // שומר את התוכן
       console.log("📄 תוכן הקובץ:", textContent.substring(0, 300)) // תצוגה חלקית
 
       // שלב 2: העלאה לשרת
       console.log("➡️ שולח בקשה ליצירת כתובת העלאה לשרת...")
-
       try {
-        console.log("📅 פרטי הפגישה:",meetingDate,meetingName);
+        console.log("📅 פרטי הפגישה:", meetingDate, meetingName)
         const response1 = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
           fileName: meetingName,
           fileType: selectedFile.type,
           date: meetingDate,
         })
-
         // בדקי את תגובת השרת
         console.log("Upload URL created successfully:", response1.data)
         console.log("📤 מעלה קובץ לשרת:", response1.data)
@@ -300,22 +280,18 @@ const FileUploadButton = () => {
         sets3url(s3Url)
         try {
           await axios.put(fileUrl, selectedFile)
-
           console.log("File uploaded successfully to S3.")
         } catch (error) {
           console.error("Error uploading file to S3:", error)
-
           if (axios.isAxiosError(error)) {
             alert(`שגיאה בהעלאת הקובץ: ${error.response?.status} - ${error.response?.data?.message || error.message}`)
           } else {
             alert("אירעה שגיאה בלתי צפויה במהלך ההעלאה ל-S3.")
           }
         }
-
         // תוכלי להמשיך מכאן עם קוד להעלאה בפועל ל-S3
       } catch (error) {
         console.error("Error creating upload URL:", error)
-
         if (axios.isAxiosError(error)) {
           // שגיאה מהשרת (לדוגמה 500/403)
           alert(`שגיאה מהשרת: ${error.response?.status} - ${error.response?.data?.message || error.message}`)
@@ -326,7 +302,6 @@ const FileUploadButton = () => {
       }
       setUploadProgress(100)
       clearInterval(progressInterval)
-
       // מעבר למצב מוכן לסיכום
       setTimeout(() => {
         setProcessState("ready-to-summarize")
@@ -345,22 +320,15 @@ const FileUploadButton = () => {
       setError("אין תוכן קובץ זמין לסיכום")
       return
     }
-
     setProcessState("summarizing")
-
     try {
-      console.log("📄 מתחיל ליצור סיכום עבור הקובץ:", fileTextContent.substring(0, 100));
-      
+      console.log("📄 מתחיל ליצור סיכום עבור הקובץ:", fileTextContent.substring(0, 100))
       const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/summarize`, {
         text: fileTextContent,
       })
-
       setSummary(response.data.summary)
       console.log(response.data.summary) // הצגת הסיכום בקונסול;
-      
       // setSummary("בלה בלה")
-
-
       // Show success animation
       setCelebrationActive(true)
       setTimeout(() => {
@@ -393,7 +361,6 @@ const FileUploadButton = () => {
   // קבלת אייקון מתאים לסוג הקובץ
   const getFileIcon = () => {
     if (!file) return <Upload className="upload-icon" />
-
     const fileType = file.type
     if (fileType === "application/pdf") {
       return <FileText className="file-icon pdf" />
@@ -402,7 +369,6 @@ const FileUploadButton = () => {
     } else if (fileType.includes("word")) {
       return <FileText className="file-icon docx" />
     }
-
     return <FileText className="file-icon" />
   }
 
@@ -414,7 +380,6 @@ const FileUploadButton = () => {
   // פונקציה לפתיחה/סגירה של התפריט
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev)
-
     // הוספת/הסרת מחלקה לגוף המסמך למניעת גלילה כשהתפריט פתוח
     if (!menuOpen) {
       document.body.classList.add("menu-open")
@@ -436,13 +401,11 @@ const FileUploadButton = () => {
   useEffect(() => {
     const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
     setDarkMode(prefersDarkMode)
-
     // האזנה לשינויים בהעדפת ערכת הנושא
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     const handleChange = (e: MediaQueryListEvent) => {
       setDarkMode(e.matches)
     }
-
     mediaQuery.addEventListener("change", handleChange)
     return () => mediaQuery.removeEventListener("change", handleChange)
   }, [])
@@ -606,7 +569,6 @@ const FileUploadButton = () => {
                     <p>הפרטים יעזרו לנו ליצור סיכום מותאם ומדויק יותר</p>
                   </div>
                 </div>
-
                 <div className="meeting-form-content">
                   <div className="meeting-form">
                     <div className="form-group">
@@ -622,7 +584,6 @@ const FileUploadButton = () => {
                         onChange={(e) => setMeetingName(e.target.value)}
                       />
                     </div>
-
                     <div className="form-group">
                       <label htmlFor="meetingDate" className="form-label">
                         תאריך הפגישה
@@ -635,7 +596,6 @@ const FileUploadButton = () => {
                         onChange={(e) => setMeetingDate(e.target.value)}
                       />
                     </div>
-
                     {meetingDetailsError && (
                       <div className="error-message closable">
                         <div className="error-content">
@@ -651,7 +611,6 @@ const FileUploadButton = () => {
                         </button>
                       </div>
                     )}
-
                     <button className="upload-button" onClick={handleMeetingDetailsSubmit}>
                       <span className="button-text">המשך להעלאת קובץ</span>
                       <ArrowUp size={18} className="button-icon" />
@@ -662,15 +621,14 @@ const FileUploadButton = () => {
             </div>
           ) : processState === "completed" ? (
             <div className="summary-section">
-
               {summary && (
-                <div className="summary-content">
+                <>
                   <SummaryFile fileUrl={s3url ?? "bla bla"} />
                   <button className="new-document-button" onClick={handleReset}>
                     <span className="button-text">העלאת מסמך נוסף</span>
                     <FileUp size={18} className="button-icon" />
                   </button>
-                </div>
+                </>
               )}
             </div>
           ) : (
@@ -732,7 +690,7 @@ const FileUploadButton = () => {
                       </h3>
                       <p className="processing-description">
                         {processState === "uploading" && `רק רגע.. ${uploadProgress}%`}
-                        {processState === "processing" && "  ממש עכשיו הקובץ שלך עולה לענן  "}
+                        {processState === "processing" && "  ממש עכשיו הקובץ שלך עולה לענן  "}
                         {processState === "summarizing" && "ה AI שלנו מכין לך סיכום מהיר ומדויק"}
                       </p>
                       <div className="processing-progress">
@@ -751,7 +709,13 @@ const FileUploadButton = () => {
 
                 {/* כרטיס העלאה */}
                 <div
-                  className={`upload-card ${dragging ? "dragging" : ""} ${processState !== "idle" ? "has-file" : ""} ${processState === "ready-to-summarize" ? "ready-to-summarize" : ""} ${dragFileValid === true ? "valid-file" : ""} ${dragFileValid === false ? "invalid-file" : ""} ${showDropSuccess ? "drop-success" : ""} ${showDropError ? "drop-error" : ""}`}
+                  className={`upload-card ${dragging ? "dragging" : ""} ${
+                    processState !== "idle" ? "has-file" : ""
+                  } ${processState === "ready-to-summarize" ? "ready-to-summarize" : ""} ${
+                    dragFileValid === true ? "valid-file" : ""
+                  } ${dragFileValid === false ? "invalid-file" : ""} ${
+                    showDropSuccess ? "drop-success" : ""
+                  } ${showDropError ? "drop-error" : ""}`}
                   onDragEnter={handleDragEnter}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -769,7 +733,9 @@ const FileUploadButton = () => {
                   {/* Drag overlay */}
                   {dragging && (
                     <div
-                      className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${dragFileValid === true ? "valid" : ""}`}
+                      className={`drag-overlay ${dragFileValid === false ? "invalid" : ""} ${
+                        dragFileValid === true ? "valid" : ""
+                      }`}
                     >
                       <div className="drag-icon">
                         {dragFileValid === true && <FileUp size={48} />}
@@ -853,7 +819,6 @@ const FileUploadButton = () => {
                           <FileUp size={18} className="button-icon" />
                         </button>
                       )}
-
                       {processState === "ready-to-summarize" && (
                         <div className="summarize-action">
                           <button className="process-button summarize-button" onClick={handleSummarize}>

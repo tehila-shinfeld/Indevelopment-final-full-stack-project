@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useEffect, useState } from "react"
 import axios from "axios"
@@ -200,7 +202,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
             </button>
           </div>
         </div>
-
         <div className="dialog-content">
           {loading ? (
             <div className="loading-container">
@@ -253,7 +254,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                   <path d="m21 21-4.3-4.3"></path>
                 </svg>
               </div>
-
               <div className="selected-users-container">
                 {selectedUsers.map((user) => (
                   <div key={user.id} className="selected-user-chip">
@@ -284,7 +284,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                   </div>
                 ))}
               </div>
-
               <div className="users-list">
                 <div className="select-all-option" onClick={selectAllUsers}>
                   <div className={`select-all-checkbox ${areAllSelected ? "selected" : ""}`}>
@@ -306,7 +305,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
                   </div>
                   <span className="select-all-text">{areAllSelected ? "בטל בחירת הכל" : "בחר הכל"}</span>
                 </div>
-
                 <div className="users-list-container">
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user, index) => {
@@ -350,7 +348,6 @@ const UserPermissionDialog: React.FC<UserPermissionDialogProps> = ({ open, onClo
             </>
           )}
         </div>
-
         <div className="dialog-actions">
           <button className="cancel-button" onClick={onClose}>
             ביטול

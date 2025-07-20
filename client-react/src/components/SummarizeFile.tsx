@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import axios from "axios"
@@ -11,6 +9,7 @@ import ReactMarkdown from "react-markdown"
 import dynamic from "next/dynamic"
 import "../styleSheets/SummarizeFile.css"
 import "../styleSheets/canva-editor.css"
+
 const CanvasEditor = dynamic(() => import("../components/CanvasEditor"), { ssr: false })
 
 const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
@@ -33,7 +32,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 
     setTypedSummary("")
     setIsTyping(true)
-
     let currentIndex = 0
     const typingSpeed = 15 // milliseconds per character
 
@@ -41,7 +39,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
       if (currentIndex < summary.length) {
         setTypedSummary((prev) => prev + summary[currentIndex])
         currentIndex++
-
         // Auto-scroll to keep up with typing
         if (summaryRef.current) {
           summaryRef.current.scrollTop = summaryRef.current.scrollHeight
@@ -56,56 +53,58 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   }, [summary])
 
   const handleSavePermissionsAndSummary = async (users: User[]) => {
-    console.log(users.map((user) => user.id))
+    setLoading(true) // Start loading when save process begins
+    console.log(
+      "Saving permissions for users:",
+      users.map((user) => user.id),
+    )
+
     try {
+      // Step 1: Assign permissions
       await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/assign-file-to-customers`, {
         FileUrl: fileUrl,
         UserIds: users.map((user) => user.id),
       })
+      console.log("Permissions assigned successfully.")
 
-      // Show success notification
-      setPermissionsSaved(true)
-      setTimeout(() => setPermissionsSaved(false), 3000)
-
-      handleSaveSummary()
-    } catch {
-      setError("שגיאה בשמירת ההרשאות")
-      return
-    }
-  }
-
-  const handleSaveSummary = async () => {
-    if (!summary) {
-      alert("error")
-      return
-    }
-    try {
-      console.log(fileUrl)
-      const summaryy = {
+      // Step 2: Save the summary
+      if (!summary) {
+        throw new Error("אין תוכן סיכום זמין לשמירה")
+      }
+      const summaryData = {
         FileUrl: fileUrl,
         summary: summary,
       }
-      console.log("שולח נתונים:", summaryy)
-      const response = await axios.post(`https://${import.meta.env.VITE_API_BASE_URL}/api/files/save-summary`, summaryy, {
-        headers: {
-          "Content-Type": "application/json",
+      console.log("Sending summary data:", summaryData)
+      const response = await axios.post(
+        `https://${import.meta.env.VITE_API_BASE_URL}/api/files/save-summary`,
+        summaryData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      })
+      )
+
       if (response.data.success) {
         console.log("הסיכום נשמר בהצלחה!")
+        setPermissionsSaved(true) // Show success notification
+        setTimeout(() => setPermissionsSaved(false), 3000)
+        setError(null) // Clear any previous errors
       } else {
         console.error("שגיאה בשמירת הסיכום")
         setError("שגיאה בשמירת הסיכום")
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("שגיאה לא צפויה. אנא נסה שוב.")
+      console.error("שגיאה כללית בשמירה:", err)
+      setError("שגיאה בשמירת ההרשאות או הסיכום. אנא נסה שוב.")
+    } finally {
+      setLoading(false) // End loading regardless of success or failure
     }
   }
 
   const handleCopyToClipboard = () => {
     if (!summary) return
-
     navigator.clipboard
       .writeText(summary)
       .then(() => {
@@ -120,13 +119,11 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const handleDownloadPDF = () => {
     try {
       setLoading(true)
-
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       })
-
       const container = document.createElement("div")
       container.style.position = "absolute"
       container.style.left = "-9999px"
@@ -161,23 +158,17 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                 </div>
               </div>
             </div>
-            
             <div style="border-bottom: 2px solid #0078c8; margin-bottom: 20px;"></div>
-            
             <h1 style="color: #0078c8; padding-bottom: 10px; font-size: 24px;">${getFileName()}</h1>
-            
             <div style="white-space: pre-wrap; line-height: 1.7; font-size: 14px;">${summary}</div>
-            
             <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 12px; color: #9ca3af; text-align: center;">
               TalkToMe.AI © ${new Date().getFullYear()}
             </div>
           </div>
         `
-
       import("html2canvas")
         .then((html2canvasModule) => {
           const html2canvas = html2canvasModule.default
-
           html2canvas(container, {
             scale: 2,
             useCORS: true,
@@ -212,16 +203,13 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const handleSaveCanvas = (editedText: string) => {
     try {
       setLoading(true)
-
       // Update the summary text
       if (editedText) {
         setSummary(editedText)
         setTypedSummary(editedText)
       }
-
       setIsEditing(false)
       setLoading(false)
-
       // Show success notification
       setError(null)
       setSaveSuccess(true)
@@ -254,7 +242,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             </div>
           </div>
         )}
-
         <div className="card-content">
           <div className="card-header">
             <div className="title-container">
@@ -275,7 +262,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
               </div>
             </div>
           </div>
-
           <div className="summary-content-wrapper">
             {isEditing ? (
               <CanvasEditor onSave={handleSaveCanvas} onCancel={handleCancelEdit} initialText={summary || ""} />
@@ -287,7 +273,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                 </div>
               </>
             )}
-
             {typedSummary.length > 0 && !isTyping && !isEditing && (
               <div className="scroll-indicator">
                 <div className="scroll-dot"></div>
@@ -296,14 +281,12 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
               </div>
             )}
           </div>
-
           {error && (
             <div className="error-message">
               <AlertCircle size={16} />
               <span>{error}</span>
             </div>
           )}
-
           {permissionsSaved && (
             <div className="success-notification">
               <div className="success-content">
@@ -318,7 +301,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
               <div className="success-progress"></div>
             </div>
           )}
-
           <div className="action-toolbar">
             {isEditing ? (
               <div className="canvas-actions-info">
@@ -330,7 +312,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                   <Save size={18} />
                   <span>Save</span>
                 </button>
-
                 <button
                   className={`toolbar-button ${copied ? "active" : ""}`}
                   onClick={handleCopyToClipboard}
@@ -340,12 +321,10 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
                   {copied ? <CheckCircle size={18} /> : <ContentCopy size={18} />}
                   <span>{copied ? "Copied!" : "Copy"}</span>
                 </button>
-
                 <button className="toolbar-button" disabled={loading || isTyping} onClick={handleEdit}>
                   <Edit size={18} />
                   <span>Edit</span>
                 </button>
-
                 <button className="toolbar-button" disabled={loading} onClick={handleDownloadPDF}>
                   <Download size={18} />
                   <span>Download</span>
@@ -354,7 +333,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
             )}
           </div>
         </div>
-
         <div className="card-decoration">
           <div className="decoration-circle circle-1"></div>
           <div className="decoration-circle circle-2"></div>
@@ -367,7 +345,6 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
           <div className="decoration-dot dot-4"></div>
         </div>
       </div>
-
       <UserPermissionDialog
         open={openPermissionDialog}
         onClose={handleClosePermissionDialog}
@@ -378,4 +355,3 @@ const SummaryFile: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 }
 
 export default SummaryFile
-

@@ -66,7 +66,7 @@ namespace summary.Api.controllerss
             return NotFound(id);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var deletedUser = await userService.DelAsync(id);

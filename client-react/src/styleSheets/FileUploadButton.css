@@ -1,4 +1,3 @@
-/* פלטת צבעים מקצועית */
 :root {
   /* Light Mode Colors */
   --background: #ffffff;
@@ -148,7 +147,6 @@ body {
 .theme-toggle {
   background: var(--muted);
   border: none;
-
   color: var(--muted-foreground);
   cursor: pointer;
   transition: var(--transition);
@@ -159,12 +157,7 @@ body {
   background: var(--border);
   color: var(--foreground);
 }
-.summary-content
-{
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
+
 /* תוכן ראשי - הסרת הגבלות גובה וגלילה */
 .app-content {
   flex: 1;
@@ -362,27 +355,30 @@ body {
   background: linear-gradient(135deg, #7c3aed, #0891b2);
 }
 
+/* Updated styles for the "Upload another document" button */
 .new-document-button {
-  background: var(--muted);
-  color: var(--foreground);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--gradient-from), var(--gradient-via)); /* Use gradient */
+  color: var(--primary-foreground); /* White text */
+  border: none; /* Remove border */
   border-radius: calc(var(--radius) * 1.5);
-  padding: 0.875rem 2rem;
-  font-size: 0.95rem;
-  font-weight: 500;
+  padding: 1rem 2.5rem; /* Slightly larger padding */
+  font-size: 1rem; /* Slightly larger font */
+  font-weight: 600; /* Bolder text */
   cursor: pointer;
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 2rem auto 0;
-  box-shadow: var(--shadow-sm);
+  gap: 0.75rem; /* Slightly more gap */
+  margin: 2.5rem auto 0; /* Keep centered, slightly more top margin */
+  box-shadow: var(--shadow-md); /* Stronger shadow */
+  min-width: 220px; /* Ensure a good minimum width */
+  justify-content: center;
 }
 
 .new-document-button:hover {
-  background: var(--border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--primary-hover), var(--gradient-via)); /* Darker gradient on hover */
+  transform: translateY(-2px); /* More pronounced lift */
+  box-shadow: var(--shadow-lg); /* Stronger shadow on hover */
 }
 
 /* תגיות מידע */
@@ -452,9 +448,11 @@ body {
 .file-icon.pdf {
   color: #dc2626;
 }
+
 .file-icon.txt {
   color: #2563eb;
 }
+
 .file-icon.docx {
   color: #1d4ed8;
 }
@@ -1077,6 +1075,9 @@ body {
 
 .summary-section {
   animation: fadeIn 0.5s ease;
+  display: flex; /* Added for centering the button */
+  flex-direction: column; /* Added for centering the button */
+  align-items: center; /* Added for centering the button */
 }
 
 .meeting-details-section,
@@ -1186,7 +1187,6 @@ body {
     max-width: 900px;
     padding: 2rem;
   }
-
   .meeting-details-section .upload-card {
     gap: 2.5rem;
     padding: 2.5rem;
@@ -1198,13 +1198,11 @@ body {
     max-width: 800px;
     padding: 2rem;
   }
-
   .meeting-details-section .upload-card,
   .upload-section .upload-card.has-file:not(.ready-to-summarize) {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-
   .meeting-info {
     flex-direction: column;
     gap: 0.5rem;
@@ -1216,38 +1214,31 @@ body {
   .upload-card {
     padding: 1.5rem;
   }
-
   .app-content {
     padding: 1rem;
   }
-
   .meeting-info-bar {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
     padding: 1rem;
   }
-
   .meeting-info {
     flex-direction: column;
     gap: 0.5rem;
     align-items: center;
   }
-
   .file-preview {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
   }
-
   .file-info {
     text-align: center;
   }
-
   .dashboard-header {
     padding: 1rem;
   }
-
   .dashboard-title {
     font-size: 1.125rem;
   }
@@ -1257,24 +1248,19 @@ body {
   .upload-card {
     padding: 1rem;
   }
-
   .meeting-details-section .upload-card {
     padding: 1.5rem;
   }
-
   .process-button.summarize-button {
     min-width: 100%;
     padding: 1rem;
   }
-
   .upload-heading {
     font-size: 1.25rem;
   }
-
   .file-name {
     max-width: 200px;
   }
-
   .sidebar {
     width: 100%;
   }

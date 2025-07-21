@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent {
   loginError = signal('');
   isFormValid = signal(false);
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   onUsernameChange(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -34,7 +35,7 @@ export class LoginComponent {
 
   validateForm() {
     this.isFormValid.set(
-      this.username().length >= 3 && this.password().length >= 6
+      this.username().trim().length >= 3 && this.password().length >= 6
     );
   }
 
@@ -42,31 +43,23 @@ export class LoginComponent {
     this.showPassword.set(!this.showPassword());
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (!this.isFormValid()) return;
 
     this.isLoading.set(true);
     this.loginError.set('');
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock authentication logic
-      if (this.username() === 'admin' && this.password() === 'password123') {
-        const mockToken = 'jwt-token-' + Date.now();
-        sessionStorage.setItem('authToken', mockToken);
+    this.authService.login(this.username(), this.password()).subscribe({
+      next: () => {
         sessionStorage.setItem('username', this.username());
-        
-        // Navigate to dashboard
         this.router.navigate(['/dashboard']);
-      } else {
+        this.isLoading.set(false);
+      },
+      error: (err) => {
         this.loginError.set('שם משתמש או סיסמה שגויים');
+        console.error(err);
+        this.isLoading.set(false);
       }
-    } catch (error) {
-      this.loginError.set('שגיאה בהתחברות, נסה שוב');
-    } finally {
-      this.isLoading.set(false);
-    }
+    });
   }
 }

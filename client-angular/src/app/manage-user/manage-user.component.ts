@@ -1,41 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NavigationComponent } from "../navigation/navigation.component";
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive';
-  joinDate: Date;
-  avatar: string;
-}
+import { User } from '../models/User';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-manage-user',
+  standalone: true,
   imports: [CommonModule, FormsModule, NavigationComponent],
   templateUrl: './manage-user.component.html',
-  styleUrl: './manage-user.component.css',
+  styleUrls: ['./manage-user.component.css'],  // תיקון כאן מ-styleUrl ל-styleUrls
   animations: [
     trigger('slideInUp', [
       transition(':enter', [
         style({ transform: 'translateY(100px)', opacity: 0 }),
         animate('600ms cubic-bezier(0.35, 0, 0.25, 1)', 
           style({ transform: 'translateY(0)', opacity: 1 }))
-      ])
-    ]),
-    trigger('fadeInStagger', [
-      transition('* => *', [
-        query(':enter', [
-          style({ opacity: 0, transform: 'translateY(30px)' }),
-          stagger(100, [
-            animate('500ms cubic-bezier(0.35, 0, 0.25, 1)', 
-              style({ opacity: 1, transform: 'translateY(0)' }))
-          ])
-        ], { optional: true })
       ])
     ]),
     trigger('scaleIn', [
@@ -45,98 +27,80 @@ export interface User {
           style({ transform: 'scale(1)', opacity: 1 }))
       ])
     ]),
-    trigger('slideModal', [
-      transition(':enter', [
-        style({ transform: 'translateY(-100%)', opacity: 0 }),
-        animate('500ms cubic-bezier(0.68, -0.55, 0.265, 1.55)', 
-          style({ transform: 'translateY(0)', opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in', 
-          style({ transform: 'translateY(-100%)', opacity: 0 }))
+    trigger('fadeInStagger', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(30px)' }),
+          stagger(100, [
+            animate('500ms ease', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
       ])
     ])
   ]
 })
-export class ManageUserComponent {
-  users: User[] = [
-    {
-      id: 1,
-      name: 'יונתן כהן',
-      email: 'yonatan@example.com',
-      role: 'מנהל מערכת',
-      status: 'active',
-      joinDate: new Date('2023-01-15'),
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      id: 2,
-      name: 'שרה לוי',
-      email: 'sarah@example.com',
-      role: 'מנהלת תוכן',
-      status: 'active',
-      joinDate: new Date('2023-03-22'),
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b2e938e8?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      id: 3,
-      name: 'דוד אברמוביץ',
-      email: 'david@example.com',
-      role: 'מפתח',
-      status: 'inactive',
-      joinDate: new Date('2023-05-10'),
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      id: 4,
-      name: 'רחל גולדברג',
-      email: 'rachel@example.com',
-      role: 'מעצבת UX/UI',
-      status: 'active',
-      joinDate: new Date('2023-07-18'),
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      id: 5,
-      name: 'אמיר רוזן',
-      email: 'amir@example.com',
-      role: 'מתמחה',
-      status: 'active',
-      joinDate: new Date('2023-09-05'),
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
-    }
+export class ManageUserComponent implements OnInit {
+  users: User[] = [];
+  avatars: string[] = [
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1494790108755-2616b2e938e8?w=150&h=150&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
+    'https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F3%2F37%2FOryctolagus_cuniculus_Tasmania_2.jpg%2F1200px-Oryctolagus_cuniculus_Tasmania_2.jpg&tbnid=HJC1wS6Ccfn3KM&vet=1&imgrefurl=https%3A%2F%2Fhe.wikipedia.org%2Fwiki%2F%25D7%2590%25D7%25A8%25D7%25A0%25D7%2591%25D7%2595%25D7%259F_%25D7%259E%25D7%25A6%25D7%2595%25D7%2599&docid=5qGR8fzRvio0qM&w=1200&h=1500&source=sh%2Fx%2Fim%2Fm1%2F1&kgs=32836362cd233afa'
+  ,'https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.dogs-cats.co.il%2Fstores%2F20265%2Fzoom%2F1321533054-2.jpg&tbnid=DZVaH3YwhIGkOM&vet=1&imgrefurl=https%3A%2F%2Fwww.dogs-cats.co.il%2Fproducts%2F910777%2F%25D7%2590%25D7%25A8%25D7%25A0%25D7%2591-%25D7%25A9%25D7%259E%25D7%2595%25D7%2598-%25D7%2590%25D7%2595%25D7%2596%25D7%25A0%25D7%2599%25D7%2599%25D7%259D%3Fsrsltid%3DAfmBOooWyUSzjVsf7Deg28k4kxasgdGW2kw2SWEqlp_pcyYyooMmhHvn&docid=UpHOscW5s8LrWM&w=500&h=498&source=sh%2Fx%2Fim%2Fm1%2F1&kgs=59674135a9e38e0e',
+  'https://www.google.com/imgres?imgurl=https%3A%2F%2Fbubabuba.com%2Fwp-content%2Fuploads%2F2017%2F01%2Fbunny4.jpg&tbnid=gQvy_Gk84kL5iM&vet=1&imgrefurl=https%3A%2F%2Fbubabuba.com%2Fshop%2Fbuying-costumes%2Fbunny%2F&docid=Vu4250TN2ar8bM&w=800&h=1200&source=sh%2Fx%2Fim%2Fm1%2F1&kgs=657859adf06e1294'
   ];
-
+  
+  selectedUser: User | null = null;
   showAddUserModal = false;
   showEditUserModal = false;
   showEmailModal = false;
-  selectedUser: User | null = null;
-  
-  newUser: Partial<User> = {
-    name: '',
-    email: '',
-    role: '',
-    status: 'active'
-  };
 
   emailSubject = '';
   emailMessage = '';
   searchTerm = '';
   selectedRole = '';
+  roles: string[] = ['Admin', 'User'];
+  newUser: Partial<User> = {
+    username: '',
+    email: '',
+    passwordHash: '',
+    company: '',
+    role: ''
+  };
 
-  roles = ['מנהל מערכת', 'מנהלת תוכן', 'מפתח', 'מעצבת UX/UI', 'מתמחה'];
+  constructor(private userService: UserServiceService) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (data) => this.users = data,
+      error: () => alert('שגיאה בטעינת המשתמשים מהשרת.')
+    });
+  }
 
   get filteredUsers() {
     return this.users.filter(user => {
-      const matchesSearch = user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const search = this.searchTerm.toLowerCase();
+      const matchesSearch = user.username.toLowerCase().includes(search) ||
+                            user.email.toLowerCase().includes(search);
       const matchesRole = !this.selectedRole || user.role === this.selectedRole;
       return matchesSearch && matchesRole;
     });
   }
 
   openAddUserModal() {
-    this.newUser = { name: '', email: '', role: '', status: 'active' };
+    this.newUser = {
+      username: '',
+      email: '',
+      passwordHash: '',
+      company: '',
+      role: ''
+    };
     this.showAddUserModal = true;
   }
 
@@ -159,64 +123,73 @@ export class ManageUserComponent {
   }
 
   addUser() {
-    if (this.newUser.name && this.newUser.email && this.newUser.role) {
-      const user: User = {
-        id: Math.max(...this.users.map(u => u.id)) + 1,
-        name: this.newUser.name,
-        email: this.newUser.email,
-        role: this.newUser.role,
-        status: this.newUser.status || 'active',
-        joinDate: new Date(),
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this.newUser.name)}&background=6366f1&color=fff&size=150`
-      };
-      this.users.unshift(user);
-      this.closeModal();
+    console.log(this.newUser.username);
+    console.log(this.newUser.email);
+    console.log(this.newUser.passwordHash);
+    console.log(this.newUser.company);
+    console.log(this.newUser.role);
+    if (this.newUser.username && this.newUser.email && this.newUser.passwordHash && this.newUser.company) {
+      console.log("add")
+
+      const user = new User(
+        this.newUser.username,
+        this.newUser.email,
+        this.newUser.passwordHash,
+        this.newUser.company,
+        this.newUser.role || ''
+      );
+
+      this.userService.addUser(user).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.closeModal();
+        },
+        error: () => alert('שגיאה בהוספת המשתמש.')
+      });
     }
   }
 
   updateUser() {
     if (this.selectedUser) {
-      const index = this.users.findIndex(u => u.id === this.selectedUser!.id);
-      if (index !== -1) {
-        this.users[index] = { ...this.selectedUser };
-        this.closeModal();
-      }
+      this.userService.updateUser(this.selectedUser).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.closeModal();
+        },
+        error: () => alert('שגיאה בעדכון המשתמש.')
+      });
     }
   }
 
-  deleteUser(userId: number) {
-    if (confirm('האם אתה בטוח שברצונך למחוק משתמש זה?')) {
-      this.users = this.users.filter(u => u.id !== userId);
+  deleteUser(user: User) {
+    if (confirm(`האם את בטוחה שברצונך למחוק את ${user.username}?`)) {
+      if(user.id){
+        this.userService.deleteUser(user.id).subscribe({
+          next: () => this.loadUsers(),
+          error: () => alert('שגיאה במחיקת המשתמש.')
+        });
+      }
     }
   }
 
   sendEmailToAll() {
     if (this.emailSubject && this.emailMessage) {
-      // כאן תוכלי להוסיף את הלוגיקה לשליחת המייל
       console.log('שליחת מייל לכל המשתמשים:', {
         subject: this.emailSubject,
         message: this.emailMessage,
         recipients: this.users.map(u => u.email)
       });
-      
-      // הצגת הודעת הצלחה
+
       alert(`המייל נשלח בהצלחה ל-${this.users.length} משתמשים!`);
       this.closeModal();
     }
   }
 
-  getStatusColor(status: string): string {
-    return status === 'active' ? '#10b981' : '#ef4444';
-  }
-
-  getRoleColor(role: string): string {
+  getRoleColor(role?: string): string {
     const colors: { [key: string]: string } = {
-      'מנהל מערכת': '#8b5cf6',
-      'מנהלת תוכן': '#f59e0b',
-      'מפתח': '#3b82f6',
-      'מעצבת UX/UI': '#ec4899',
-      'מתמחה': '#6b7280'
+      'Admin': '#8b5cf6',
+      'User': '#f59e0b',
     };
-    return colors[role] || '#6b7280';
+    return role ? (colors[role] || '#6b7280') : '#6b7280';
   }
 }

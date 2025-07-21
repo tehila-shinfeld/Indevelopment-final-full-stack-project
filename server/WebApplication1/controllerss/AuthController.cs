@@ -19,7 +19,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
     {
-        var user = await _authService.AuthenticateUserAsync(loginModel.Username, loginModel.Password); 
+        Console.WriteLine("loginModel");
+
+        Console.WriteLine($"Email: {loginModel.username}, Password: {loginModel.password}");
+        var user = await _authService.AuthenticateUserAsync(loginModel.username, loginModel.password);
         if (user == null)
         {
             return Unauthorized("Invalid email or password");

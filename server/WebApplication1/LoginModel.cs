@@ -2,8 +2,9 @@
 {
     public class LoginModel
     {
-        public string Username { get; set; } // שם משתמש
 
-        public string Password { get; set; } // סיסמה (מוצפנת
+            public string username { get; set; } // שם משתמש
+
+        public string password { get; set; } // סיסמה (מוצפנת
     }
 }

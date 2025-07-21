@@ -19,7 +19,8 @@ import {
   ɵɵdirectiveInject,
   ɵɵprojection,
   ɵɵprojectionDef
-} from "./chunk-Q2625NID.js";
+} from "./chunk-GAKRZWTD.js";
+import "./chunk-AQYIT73X.js";
 import "./chunk-YHCV7DAQ.js";
 
 // node_modules/lucide-angular/fesm2015/lucide-angular.mjs

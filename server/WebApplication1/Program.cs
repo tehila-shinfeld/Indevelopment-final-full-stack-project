@@ -1,4 +1,5 @@
-﻿using Amazon.Extensions.NETCore.Setup;
+﻿
+using Amazon.Extensions.NETCore.Setup;
 using Amazon;
 using Amazon.S3;
 using DotNetEnv;
@@ -18,26 +19,33 @@ using System.Text;
 using Amazon.Runtime;
 using System.Globalization;
 
-//---------------
 var cultureInfo = new CultureInfo("he-IL");
-cultureInfo.DateTimeFormat.Calendar = new GregorianCalendar(); // ✅ החלק הקריטי
+cultureInfo.DateTimeFormat.Calendar = new GregorianCalendar();
 
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-//----------------
 var builder = WebApplication.CreateBuilder(args);
+
+// ✅ קריאת קבצי config
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// 🔐 Swagger + JWT
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // הוספת אפשרות לאימות עם JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "אנא הכנס את ה-JWT Token בפורמט: Bearer {token}",
+        Description = "הכנס JWT בפורמט: Bearer {token}",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer"
@@ -54,20 +62,35 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 
     c.OperationFilter<SwaggerFileOperationFilter>();
+});
 
-});//ידידינו הסווגר-----
-//DI
+// CORS 🚀 - לא לשכוח לשים למעלה!
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClientApp", policy =>
+    {
+        policy.WithOrigins(
+                "https://talktome-ai-client.onrender.com",
+                "http://localhost:5173",
+                            "http://localhost:4200" // ⬅️ זה מה שחסר
+
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// 🛠 הגדרות DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
-    ServiceLifetime.Scoped
-);
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+// 🔗 DI
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -80,32 +103,18 @@ builder.Services.AddHttpClient<IFileService, FileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddAutoMapper(typeof(Mapping));
 
-var configuration = builder.Configuration;
-
-
-var awsAccessKey = configuration["AWS:AccessKey"];
-var awsSecretKey = configuration["AWS:SecretKey"];
-var bucketName = configuration["AWS:BucketName"];
-var region = configuration["AWS:Region"];
-
-// הדפסות לבדיקה
-Console.WriteLine("AccessKey: " + configuration["AWS:AccessKey"]);
-Console.WriteLine("SecretKey: " + configuration["AWS:SecretKey"]);
-Console.WriteLine("Region: " + configuration["AWS:Region"]);
-Console.WriteLine("Bucket: " + configuration["AWS:BucketName"]);
-// הגדרת AWS S3
+// AWS S3
 builder.Services.AddDefaultAWSOptions(new AWSOptions
 {
     Credentials = new BasicAWSCredentials(
-        configuration["AWS:AccessKey"],
-        configuration["AWS:SecretKey"]
+        builder.Configuration["AWS:AccessKey"],
+        builder.Configuration["AWS:SecretKey"]
     ),
-    Region = RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
+    Region = RegionEndpoint.GetBySystemName(builder.Configuration["AWS:Region"])
 });
 builder.Services.AddAWSService<IAmazonS3>();
 
-//jwt
-// הוספת JWT Authentication
+// 🛡️ JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -125,7 +134,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// הוספת הרשאות מבוססות-תפקידים
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
@@ -134,27 +142,16 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 104857600; // מגביל את גודל הקובץ ל-100MB
+    options.MultipartBodyLengthLimit = 100 * 1024 * 1024; // 100MB
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowClientApp", policy =>
-    {
-        policy.WithOrigins(
-                "https://talktome-ai-client.onrender.com",
-                "http://localhost:5173"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 var app = builder.Build();
+
+// ⚠️ סדר קריטי
+app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseCors("AllowClientApp");
-
-
+app.UseCors("AllowClientApp"); // ✅ לפני כל דבר אחר!
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -168,12 +165,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
-
 app.MapControllers();
 app.MapGet("/", () => "running");
 
 app.Run();
-
-
-

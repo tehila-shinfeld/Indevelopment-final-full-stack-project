@@ -9,8 +9,6 @@ import {
   NgModule,
   Optional,
   Renderer2,
-  __spreadProps,
-  __spreadValues,
   setClassMetadata,
   ɵɵNgOnChangesFeature,
   ɵɵdefineComponent,
@@ -20,7 +18,12 @@ import {
   ɵɵdirectiveInject,
   ɵɵprojection,
   ɵɵprojectionDef
-} from "./chunk-TXZMGFPN.js";
+} from "./chunk-DFKIJZYP.js";
+import "./chunk-P6U2JBMQ.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-WDMUDEB6.js";
 
 // node_modules/lucide-angular/fesm2020/lucide-angular.mjs
 var _c0 = ["*"];
